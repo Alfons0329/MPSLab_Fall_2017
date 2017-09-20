@@ -1,0 +1,12 @@
+20:05:35 **** Incremental Build of configuration Debug for project mpslab1-1 ****
+make all 
+'Building file: ../src/main.s'
+'Invoking: MCU GCC Assembler'
+D:\mps lab1 0416324\mpslab1-1\Debug
+arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -I"D:/mps lab1 0416324/mpslab1-1/inc" -g -o "src/main.o" "../src/main.s" "../main1.s"
+../main1.s: Assembler messages:
+../main1.s:9: Error: symbol `main' is already defined
+make: *** [src/main.o] Error 1
+
+20:05:35 Build Finished (took 408ms)
+
