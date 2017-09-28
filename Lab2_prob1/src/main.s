@@ -7,8 +7,8 @@
     tmp2: .word 0
 .text
     .global main
-    .equ X, 0x40 //0x55AA
-    .equ Y, 0x39 //0xAA55
+    .equ X, 0x1000 //0x55AA
+    .equ Y, 0x3F //0xAA55
 
 hamm:
     //TODO
