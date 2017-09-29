@@ -4,7 +4,7 @@
 
 .text
     .global main
-    .equ N, 47
+    .equ N, 220
 
 fib:
     //TODO

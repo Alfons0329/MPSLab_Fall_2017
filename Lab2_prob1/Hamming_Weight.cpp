@@ -1,9 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
-int bitCount(unsigned int n) {
+int bitCount(unsigned int n)
+{
 
    int counter = 0;
-   while(n) {
+   while(n)
+   {
        counter += n % 2;
        n >>= 1;
    }

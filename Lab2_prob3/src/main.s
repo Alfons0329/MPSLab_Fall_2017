@@ -37,7 +37,7 @@ do_sort:
             ldrb r7, [r6]
 
             cmp r5,r7
-            blt swap
+            bgt swap
             swap_is_done:
             //j++ then j<len-1-i
             add r2, r2, #1
