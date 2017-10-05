@@ -139,6 +139,10 @@ monte_carlo_main:
 		vcvt.f32.s32 s3, s3 //s3 to x but in float type
 		vcvt.f32.s32 s4, s4 //s2 to y but in float type
 
+		//unit plane abs
+		vabs.f32 s3, s3
+		vabs.f32 s4, s4
+
 		//Map x,y in unit range [0,1] using FPU
 		//using div
 		vdiv.f32 s3, s3, s2
