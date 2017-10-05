@@ -118,7 +118,7 @@ calc:
 	//use r2 to get value of U32_MAX
 	//should use s32 or it will generate error of infinite loop since if use 2^32-1 and store it in r2 but use unsigned, does not fbits
 
-	ldr r2, =INT_MAX //r2 gets -INT_MAX
+	ldr r2, =INT_MAX //r2 gets INT_MAX
 	/*vmov.f32 s2, r2 //mov it into the floating point type which will cause error see
 	NOTE: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489g/Bcfhcbhb.html
 	Directly use vcvt float, int will cause CE, should use the following pseudo conversion first then do real conversion*/
