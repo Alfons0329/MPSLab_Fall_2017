@@ -11,12 +11,12 @@
 enable_fpu:
 	//Your code start from here
 
-	LDR.W R0, =0xE000ED88
+	/*LDR.W R0, =0xE000ED88
 
 	LDR R1, [R0]
 	ORR R1, R1, #(0xF << 20)
 	STR R1, [R0]
-	bx lr
+	bx lr*/
 
 main:
 	bl enable_fpu
@@ -40,7 +40,8 @@ main:
 	// load z into r0,
 	ldr r0,=z
 	// copy z from r0 to s2,
-	ldr s2, [r0]
+	vldr.f32 s2, [r0]
+
 	//u32 a word(4bytes), actually uint32_t (POSIX Standard)
 	// convert z from U32 to float representation F32 in s2
 	//conversion reference to: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489c/CIHFFGJG.html
