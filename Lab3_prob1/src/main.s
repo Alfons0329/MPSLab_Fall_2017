@@ -69,13 +69,14 @@ atoi: //r7 for atoi value r8 for signed_bool_value
 	for_loop_get_digit:
 
 		mov r3, r0
+		add r3, r3, r2
 		add r3, r3, r9
 		ldrb r3, [r3]
 		cmp r3, #32
 		beq atoi_get_value
 		add r9, r9, #1
 
-		b atoi_get_value
+		b for_loop_get_digit
 
 		atoi_done:
 			cmp r8, #1
@@ -86,22 +87,25 @@ atoi: //r7 for atoi value r8 for signed_bool_value
 
 		ret_positive:
 			push {r7}
-bx lr
+			b getvalue_done
+
 atoi_get_value:
 	movs r4, #1 //pow
 	movs r5, #10 //ten
 	movs r7, #0 //sum, or say atoi value
+	add r2, r2, r9//update i in i<len for iterator
 	while_cnt:
 		mov r3, r0
 		add r3, r3, r9
 		ldrb r3, [r3]
-		sub r3, r3 #48
+		sub r3, r3, #48
 		mul r3, r3, r4 //str[i+cnt]*pow;
-		add r7, r7, r4 //sum+=str[i+cnt]*pow;
+		add r7, r7, r3 //sum+=str[i+cnt]*pow;
 		mul r4, r4, r5 //pow*=10
 		sub r9, r9, #1
 		cmp r9, #0
-		beq atoi_done
+		bne while_cnt
+	b atoi_done
 
 postfix_expr_eval:
 	bl strlen
@@ -122,22 +126,20 @@ postfix_expr_eval:
 		add r3, r3, r2
 		ldrb r3, [r3]
 
-		cmp r3, #48
-		bge get_value
-
 		cmp r3, #32
 		bne is_not_space
+		cmp r3, #32
+		beq is_space_increment_one
 
 		is_not_space:
 			cmp r3, #48
+			bge get_value
 
 			cmp r3, #45
-			ite eq
 			beq is_negative_sign
 
 			cmp r3, #43
-			bne is_plus_operation
-
+			beq is_plus_operation
 
 		is_negative_sign:
 			add r2, r2, #1 //test if next is a space or not
@@ -148,24 +150,32 @@ postfix_expr_eval:
 			cmp r3, #32
 			beq is_minus_operation
 			mov r8, #1 //neg_flag=1
+			add r2, r2, #1
 			bl atoi
 			b getvalue_done
 
 		is_minus_operation:
-			pop {r4-r5}
+			pop {r4}
+			pop {r5}
 			add r4, r4, r5
 			push {r4}
 
 		is_plus_operation:
-			pop {r4-r5}
-			sub r4, r4, r5
-			push{r4}
+			pop {r4}
+			pop {r5}
+			sub r4, r5, r4
+			push {r4}
 
 		get_value:
 			bl atoi
 			b getvalue_done
 		getvalue_done:
-		cmp r2, r1
-		blt expr_eval_for_loop
+			cmp r2, r1
+			blt expr_eval_for_loop
+		is_space_increment_one:
+			add r2, r2, #1
+			cmp r2, r1
+			blt expr_eval_for_loop
+
 
 b program_end
