@@ -7,8 +7,8 @@
     tmp2: .word 0
 .text
     .global main
-    .equ X, 39 //0x55AA
-    .equ Y, 125 //0xAA55
+    .equ X, 0x5555
+    .equ Y, 0xAA55
 
 hamm:
     //TODO
@@ -28,9 +28,13 @@ hamm:
     return:
     bx lr
 main:
-    movs R0, #X //This code will cause assemble error. Why? And how to fix.
-    movs R1, #Y
-    ldr R2, =result
-    ldr R3, [R2]
+    //ldr R8, =X //This code will cause assemble error. Why? And how to fix.
+    ldr R0, =X
+    //ldr R9, =Y
+    ldr R1, =Y
+
+	ldr R2, =result
     bl hamm
+
+	str R3, [R2]
 L: b L
