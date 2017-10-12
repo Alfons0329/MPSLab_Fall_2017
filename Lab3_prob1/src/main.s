@@ -80,7 +80,7 @@ atoi: //r7 for atoi value r8 for signed_bool_value
 
 		atoi_done:
 			cmp r8, #1
-			b ret_positive
+			bne ret_positive
 			mov r8, #0
 			sub r8, r8, #1
 			mul r7, r7, r8
@@ -93,9 +93,12 @@ atoi_get_value:
 	movs r4, #1 //pow
 	movs r5, #10 //ten
 	movs r7, #0 //sum, or say atoi value
+	add r6, r2, 0 //temp store
+	sub r6, r6, #1
 	add r2, r2, r9//update i in i<len for iterator
 	while_cnt:
 		mov r3, r0
+		add r3, r3, r6
 		add r3, r3, r9
 		ldrb r3, [r3]
 		sub r3, r3, #48
@@ -154,17 +157,24 @@ postfix_expr_eval:
 			bl atoi
 			b getvalue_done
 
-		is_minus_operation:
-			pop {r4}
-			pop {r5}
+		is_plus_operation:
+			pop {r4,r5}
 			add r4, r4, r5
 			push {r4}
+			add r2, r2, #1
+			cmp r2, r1
+			bge all_done_store_ans_in_expr_value //end and leave
 
-		is_plus_operation:
-			pop {r4}
-			pop {r5}
+			b expr_eval_for_loop
+		is_minus_operation:
+			pop {r4,r5}
 			sub r4, r5, r4
 			push {r4}
+			add r2, r2, #1
+			cmp r2, r1
+			bge all_done_store_ans_in_expr_value //end and leave
+
+			b expr_eval_for_loop
 
 		get_value:
 			bl atoi
@@ -177,5 +187,7 @@ postfix_expr_eval:
 			cmp r2, r1
 			blt expr_eval_for_loop
 
-
-b program_end
+all_done_store_ans_in_expr_value:
+	ldr r2, =expr_result
+	str r4, [r2]
+	b program_end
