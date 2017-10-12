@@ -152,6 +152,9 @@ postfix_expr_eval:
 			sub r2, r2, #1
 			cmp r3, #32
 			beq is_minus_operation
+			cmp r3, #0 //if reach end, still evaluate last minus operator
+			beq is_minus_operation
+
 			mov r8, #1 //neg_flag=1
 			add r2, r2, #1
 			bl atoi
