@@ -1,6 +1,7 @@
-	.syntax unified
-	.cpu cortex-m4
-	.thumb
+.syntax unified
+.cpu cortex-m4
+.thumb
+
 .data
     result: .byte 0 //1 byte = 8 bits, 1 word = 16bits
     tmp1: .word 0
