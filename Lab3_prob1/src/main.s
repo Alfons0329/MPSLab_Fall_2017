@@ -8,7 +8,7 @@
 
 .text
 	.global main
-	postfix_expr: .asciz  "-100 10 20 + - 10 +" //result should be -120
+	postfix_expr: .asciz  "2 3 1 + + 9 -" //result should be -120
 
 
 main:
@@ -42,7 +42,7 @@ strlen:
 		add r1, r1, #1 //i++
 		b strlen_for_loop
 
-	b strlen_quit:
+	strlen_quit:
 	bx lr
 
 atoi: //r7 for atoi value r8 for signed_bool_value
