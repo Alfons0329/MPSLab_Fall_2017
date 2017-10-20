@@ -6,8 +6,8 @@
 	max_size: .word 0
 
 .text
-	m: .word 0x5E //94
-	n: .word 0x60 //96
+	m: .word 0x200 //94
+	n: .word 0x400 //96
 	.global main
 
 main:
