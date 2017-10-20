@@ -14,6 +14,7 @@ leds: .byte 0
 	.equ GPIOB_OSPEEDR, 0x48000408
 	.equ GPIOB_PUPDR  , 0x4800040C
 	.equ GPIOB_ODR    , 0x48000414
+	.equ onesec, 800000
 
 main:
    	BL   GPIO_init
@@ -22,22 +23,25 @@ main:
 	STRB	R1, [R0]
 	bl first_led
 	b Loop
+//use
+//use r3 for counter values	ex for moving and shift left/right
 //use r2 for led data output value address in the future
 //use r1 for output the led data value
 first_led:
-	mov r1, 0xfff7
+	mov r1, 0xfff3
 	strh r1, [r2]
 	bx lr
 Loop:
 	//TODO: Write the display pattern into leds variable
 
-	BL		DisplayLED
-   	BL   	Delay
+	//BL		DisplayLED
+
 	switch_left:
+	mov r3, 0x0
 	b goleft
 	switch_right:
+	mov r3, 0x0
 	b goright
-
 	B		Loop
 
 GPIO_init:
@@ -65,26 +69,59 @@ GPIO_init:
 	//usage r2 for led data output value address in the future
 	ldr r2, =GPIOB_ODR
   	BX LR
-
+/*
 DisplayLED:
+							//		  76543210
 	mov r1, 0xffffffe7 //FFFF|1111111111100111
 	strh r1,[r2]
-	BX LR
+	bx lr
+*/
 goleft:
+	push {r3}
+	ldr r3, =onesec
+	bl Delay
 	lsl r1, r1, #1
 	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
-	strh r1,[r2]
-	ite eq
+ 	pop {r3}
+ 	cmp r3, #3
+ 	it eq
+ 	moveq r1,0xff3f //special case of shift logic
+
+ 	strh r1,[r2] //srote to output value
+
+	add r3, r3, #1
+	cmp r3,#4
 	beq switch_right
 	bne goleft
 goright:
+	push {r3}
+	ldr r3, =onesec
+	bl Delay
 	lsr r1, r1, #1
-	strh r1,[r2]
-	cmp
+	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
+	strh r1,[r2] //srote to output value
+
+	pop {r3}
+	add r3, r3, #1
+	cmp r3,#4
+	beq switch_left
+	bne goright
+
 Delay:
    //TODO: Write a delay 1sec function
-
-BX LR
-
-end:
-	b end
+	sub r3, r3, #1
+	cmp r3, 0
+	bne Delay
+	bx lr
+/*
+fedbca9876543210
+1111111111110011 initialize
+1111111111100110 lsl 1
+1111111111001100 lsl 2
+1111111110011000 lsl 3
+1111111100110000 lsl 4
+0111111110011000 lsr 1
+0011111111001100 lsr 2
+0001111111100110 lsr 3
+0000111111110011 lsr 4
+*/
