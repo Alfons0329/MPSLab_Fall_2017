@@ -135,37 +135,37 @@ led_blink_three:
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xffff //ff|1111|1111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xff87
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xffff
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xff87
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xffff
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xffff
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 
 	b blink_end
@@ -174,7 +174,7 @@ led_blink_once:
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
-	b delay_quarter_sec
+	bl delay_quarter_sec
 	delay_end:
 	mov r1, 0xffff //ff|1111|1111|
 	strh r1, [r2]
@@ -185,4 +185,4 @@ delay_quarter_sec:
 	subs r3, r3, #1
 	cmp r3, #0
 	bne delay_quarter_sec
-	b delay_end
+	bx lr
