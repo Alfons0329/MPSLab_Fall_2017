@@ -134,31 +134,31 @@ led_blink_three
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xffff //ff|1111|1111|
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xff87
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xffff
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xff87
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xffff
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xffff
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 
 	b blink_end
 
@@ -166,7 +166,7 @@ led_blink_once
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	mov r3, #100000
-	delay_quarter_sec
+	b delay_quarter_sec
 	mov r1, 0xffff //ff|1111|1111|
 	strh r1, [r2]
 
