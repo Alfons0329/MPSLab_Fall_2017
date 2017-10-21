@@ -89,7 +89,7 @@ GPIO_init:
 	ldr r0, =GPIOA_MODER
 	ldr r1, [r0]
 	//clear pa12~pa15 to zero
-	and r1, r1, 0x0fffffff
+	and r1, r1, 0x00ffffff
 	str r1, [r0]
 
 	ldr r8, =GPIOA_IDR
