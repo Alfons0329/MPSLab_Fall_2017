@@ -115,12 +115,12 @@ goleft:
 
 	lsl r1, r1, #1
 	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
-
-	stop_move_left:
 	pop {r3}
  	cmp r3, #3
  	it eq
  	moveq r1,0xff3f //special case of shift logic
+
+	stop_move_left:
 
  	strh r1,[r2] //srote to output value
 
@@ -139,12 +139,14 @@ goright:
 
 	lsr r1, r1, #1
 	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
-	stop_move_right:
-	strh r1,[r2] //srote to output value
-
 	pop {r3}
 	add r3, r3, #1
 	cmp r3,#4
+
+	stop_move_right:
+	strh r1,[r2] //srote to output value
+
+
 	beq switch_left
 	bne goright
 
