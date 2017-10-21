@@ -15,8 +15,8 @@
 	.equ GPIOB_OSPEEDR, 0x48000408
 	.equ GPIOB_PUPDR  , 0x4800040C
 	.equ GPIOB_ODR    , 0x48000414
-	.equ interval_cnt, 200000
-	.equ quarldr ,400000 //from trial and error XD
+	.equ interval_cnt , 200000
+	.equ quarter_sec  , 400000 //from trial and error XD
 	//GPIOC for button
 	.equ GPIOC_MODER  , 0x48000800
 	.equ GPIOC_OTYPER ,	0x48000804
@@ -131,49 +131,57 @@ check_lock:
 	cmp r7, 0xc
 	bne led_blink_once
 
-led_blink_three
+led_blink_three:
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xffff //ff|1111|1111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xff87
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xffff
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xff87
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xffff
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xffff
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 
 	b blink_end
 
-led_blink_once
+led_blink_once:
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	b delay_quarter_sec
+	delay_end:
 	mov r1, 0xffff //ff|1111|1111|
 	strh r1, [r2]
 
 	b blink_end
 
-delay_quarter_sec
+delay_quarter_sec:
 	subs r3, r3, #1
 	cmp r3, #0
 	bne delay_quarter_sec
