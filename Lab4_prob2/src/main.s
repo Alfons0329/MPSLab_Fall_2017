@@ -166,7 +166,7 @@ check_button: //check every cycle, and accumulate 1
 	it eq
 	addeq r0, r0 ,#1
 
-	cmp r5, #0 //not stable, go back to accumulate again
+	cmp r5, #1 //not stable, go back to accumulate again
 	it eq
 	moveq r0, #1
 
