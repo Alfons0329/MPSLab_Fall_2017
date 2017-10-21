@@ -110,22 +110,22 @@ goleft:
 	mov r0, #0 //threshold 1000 stable 1000 secs
 	bl delay
 
-	cmp r6, #0
+	cmp r6, #0 //1 move 0 stop_move_left
+	pop {r3} //regain the moving counter
 	beq stop_move_left
 
-	lsl r1, r1, #1
-	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
-	pop {r3}
- 	cmp r3, #3
- 	it eq
+	lsl r1, r1, #1 /*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
+
+ 	cmp r3, #3 //special case of shift logic
+ 	it eq//special case of shift logic
  	moveq r1,0xff3f //special case of shift logic
+	add r3, r3, #1 //move_left_counter++
 
 	stop_move_left:
 
  	strh r1,[r2] //srote to output value
 
-	add r3, r3, #1
-	cmp r3,#4
+	cmp r3,#4 //cmp if need to switch direction
 	beq switch_right
 	bne goleft
 goright:
@@ -134,19 +134,18 @@ goright:
 	mov r0, #0 //threshold 1000 stable 1000 secs
 	bl delay
 
-	cmp r6, #0
+	cmp r6, #0 //1 move 0 stop_move_right
+	pop {r3} //regain the moving counter
 	beq stop_move_right
 
-	lsr r1, r1, #1
-	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
-	pop {r3}
+	lsr r1, r1, #1 /*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111111110000 //rightboundary*/
+	
 	add r3, r3, #1
-	cmp r3,#4
 
 	stop_move_right:
 	strh r1,[r2] //srote to output value
 
-
+	cmp r3,#4 //cmp if need to switch direction
 	beq switch_left
 	bne goright
 
@@ -163,18 +162,18 @@ delay:
 check_button: //check every cycle, and accumulate 1
 	ldr r5, [r4] //fetch the data from button
 	lsr r5, r5, #13
-	and r5, r5, 0x1
-	cmp r5, #0 //filter the signal
+	and r5, r5, 0x1 //filter the signal
+	cmp r5, #0 //FUCK DONT KNOW WHY THE PRESSED SIGNAL IS 0
 	it eq
-	addeq r0, r0 ,#1
+	addeq r0, r0 ,#1 //accumulate until the threshold
 
 	cmp r5, #1 //not stable, go back to accumulate again
 	it eq
 	moveq r0, #1
 
-	cmp r0, #1000 //threshold achieved
+	cmp r0, #1000 //threshold achieved BREAKDOWN!
 	it eq
-	eoreq r6, r6, #1
+	eoreq r6, r6, #1 //r6^=1
 
 	b check_end
 /*
