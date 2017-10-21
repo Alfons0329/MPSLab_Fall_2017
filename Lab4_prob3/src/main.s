@@ -90,7 +90,7 @@ GPIO_init:
 	ldr r1, [r0]
 	//clear pa12~pa15 to zero
 	and r1, r1, 0x00ffffff
-	str r1, [r0]
+	str r1, [r0] //PROGRAM HALT HERE STRANGELY
 
 	ldr r8, =GPIOA_IDR
 	ldr r2, =GPIOB_ODR
