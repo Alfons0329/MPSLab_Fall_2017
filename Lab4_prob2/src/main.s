@@ -15,15 +15,15 @@ leds: .byte 0
 	.equ GPIOB_OSPEEDR, 0x48000408
 	.equ GPIOB_PUPDR  , 0x4800040C
 	.equ GPIOB_ODR    , 0x48000414
-	.equ onesec, 80000
-
+	.equ onesec, 800000
+	.equ interval_cnt, 200000
 	/*GPIOC for button*/
 	.equ GPIOC_MODER  , 0x48000800
 	.equ GPIOC_OTYPER ,	0x48000804
 	.equ GPIOC_OSPEEDR,	0x48000808
 	.equ GPIOC_PUPDR  ,	0x4800080c
 	.equ GPIOC_IDR    , 0x48000810
-	.equ debounce_delay_time,24000 //800k for 1 sec moving the led, button bounce for 10-20m, hence use 800000(30/1000)=24k for interval
+	//.equ debounce_delay_time,24000 //800k for 1 sec moving the led, button bounce for 10-20m, hence use 800000(30/1000)=24k for interval
 
 main:
     BL GPIO_init
@@ -33,7 +33,8 @@ main:
 	mov r6, #1
 	bl first_led
 	b Loop
-	//use r6 for flag of moving, default 1 (moving)
+	//use r7 for sampling probing logic
+	//use r6 for flag of moving, default 1 (moving) 0 stop, eor with 1 for bit inverse
 	//use r5 to get data from button
 	//use r4 to get the address of button
 	//use r3 for counter values	ex for moving and shift left/right
@@ -60,8 +61,7 @@ GPIO_init:
   	//TODO: Initial LED GPIO pins as output
 	//enable the gpio port b to do the tasks
 	ldr r0, =RCC_AHB2ENR
-	ldr r1, [r0]
-	eor r1, 0x00000002
+	mov r1, 0b110
 	str r1, [r0]
 
 	//enable the port b GPIOB_MODER for output mode
@@ -84,16 +84,15 @@ GPIO_init:
 	//enable the port c GPIOC_MODER for input mode
 	ldr r0, =GPIOC_MODER
 	ldr r1, [r0]
-	mov r2, 0x0
 	//clear pc13 to zero
 	and r1, r1, 0xf3ffffff
-	orr r1, r1, r2 //get the value of F|0011|FFFFFF
+
 	str r1,	[r0]
 
 	//otype is default to pp , no need to change
-	mov r1, 0x08000000
+	/*mov r1, 0x08000000
 	ldr r0, =GPIOC_OSPEEDR
-	str r1, [r0]
+	str r1, [r0]*/
 	//usage r4 for button data input value address in the future
 	ldr r2, =GPIOB_ODR
 	ldr r4, =GPIOC_IDR
@@ -107,18 +106,18 @@ GPIO_init:
 	*/
 goleft:
 	push {r3}
-	ldr r3, =onesec
+	ldr r3, =interval_cnt
+	mov r0, #0 //threshold 1000 stable 1000 secs
+	bl delay
 
-	bl check_button
+	cmp r6, #0
+	beq stop_move_left
 
-	cmp r6, #1
-	bne stop_move_left
-
-	bl Delay
 	lsl r1, r1, #1
 	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
- 	pop {r3}
+
 	stop_move_left:
+	pop {r3}
  	cmp r3, #3
  	it eq
  	moveq r1,0xff3f //special case of shift logic
@@ -131,14 +130,13 @@ goleft:
 	bne goleft
 goright:
 	push {r3}
-	ldr r3, =onesec
+	ldr r3, =interval_cnt
+	mov r0, #0 //threshold 1000 stable 1000 secs
+	bl delay
 
-	bl check_button
+	cmp r6, #0
+	beq stop_move_right
 
-	cmp r6, #1
-	bne stop_move_right
-
-	bl Delay
 	lsr r1, r1, #1
 	/*cmp r1, 0xffffff38cmp r1, 0b11111111111111111111111100111000 //leftboundary*/
 	stop_move_right:
@@ -150,34 +148,33 @@ goright:
 	beq switch_left
 	bne goright
 
-Delay:
+delay:
    //TODO: Write a delay 1sec function
 	sub r3, r3, #1
+
+	b check_button
+	check_end:
 	cmp r3, #0
-	bne Delay
+	bne delay
 	bx lr
 
-check_button:
-	ldr r5, [r4]
-	mov r0, #24000
-
-	b button_delay //sampling 30ms later
-	delay_end:
-	cmp r5, #1 //doesn't press
+check_button: //check every cycle, and accumulate 1
+	ldr r5, [r4] //fetch the data from button
+	lsr r5, r5, #13
+	and r5, r5, 0x1
+	cmp r5, #0 //filter the signal
 	it eq
-	bxeq lr
+	addeq r0, r0 ,#1
 
-	cmp r5, #0 //does press
-	bne button_delay
+	cmp r5, #0 //not stable, go back to accumulate again
+	it eq
+	moveq r0, #1
 
-	neg r6, r6 //flag inverse, negate
-	bx lr
+	cmp r0, #1000 //threshold achieved
+	it eq
+	eoreq r6, r6, #1
 
-button_delay:
-	sub r0, r0, #1
-	cmp r0, #0
-	bne button_delay
-	b delay_end
+	b check_end
 /*
 fedbca9876543210
 1111111111110011 initialize
