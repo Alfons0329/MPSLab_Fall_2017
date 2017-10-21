@@ -38,6 +38,7 @@ main:
 	LDR	R0, =leds
 	STRB	R1, [R0]
 	mov r6, #0
+	mov r1, 0xffff
 	b Loop
 
 Loop:
