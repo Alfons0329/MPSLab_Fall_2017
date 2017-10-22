@@ -8,8 +8,8 @@
 
 .text
 	.global main
-	postfix_expr: .asciz  "2 3 1 + + 9 -" //result should be -120
-
+	postfix_expr: .asciz  "70 0 -1 + 50 + -" //result should be -120
+	.align 4
 
 main:
 	LDR	R0, =postfix_expr
@@ -46,7 +46,7 @@ strlen:
 	bx lr
 
 atoi: //r7 for atoi value r8 for signed_bool_value
-    //TODO: implement a “convert string to integer” function
+    //TODO: implement a �onvert string to integer�� function
 
 	//r9 as counter
 	mov r9, #0
