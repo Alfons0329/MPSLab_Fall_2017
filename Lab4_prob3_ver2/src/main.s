@@ -17,7 +17,7 @@
 	.equ GPIOB_ODR    , 0x48000414
 
 	.equ quarter_sec  , 200000 //from trial and error XD
-	.equ wait_for_input, 1000000
+	.equ wait_for_input, 4000000
 	//GPIOC for button
 	.equ GPIOC_MODER  , 0x48000800
 	.equ GPIOC_OTYPER ,	0x48000804
@@ -32,7 +32,7 @@ main:
 	LDR	R0, =leds
 	STRB	R1, [R0]
 	mov r6, #0
-
+	ldr r1, =LED_ALLOFF
 	strh r1, [r2]
 	mov r0, #0
 	b Loop
@@ -107,7 +107,7 @@ check_button: //check every cycle, and accumulate 1
 	it eq
 	moveq r0, #0
 
-	cmp r0, #1000 //threshold achieved BREAKDOWN! //use #1 for slow motion debug
+	cmp r0, #1000//threshold achieved BREAKDOWN! //use #1 for slow motion debug
 	it eq
 	moveq r6, #1 //r6 0 not pressed, 1 pressed
 
