@@ -4,7 +4,8 @@
 
 .data
 	leds: .byte 0
-	password: .byte 0b1100
+	password: .byte 0b0100 /*Lock 1down 2up 3up 4up correct, otherwise, blink, debug purpose*/
+	//Problem: seems onlt lock2 has the correct signal, the rest all1(or output 0 at lock due to eor)
 .text
 	//Start from manual p75 of GPIO Address data
 	.global main
@@ -15,7 +16,8 @@
 	.equ GPIOB_PUPDR  , 0x4800040C
 	.equ GPIOB_ODR    , 0x48000414
 
-	.equ quarter_sec  , 400000 //from trial and error XD
+	.equ quarter_sec  , 200000 //from trial and error XD
+	.equ wait_for_input, 1000000
 	//GPIOC for button
 	.equ GPIOC_MODER  , 0x48000800
 	.equ GPIOC_OTYPER ,	0x48000804
@@ -30,14 +32,17 @@ main:
 	STRB	R1, [R0]
 	mov r6, #0
 	mov r1, 0xffff
+	strh r1, [r2]
+	mov r0, #0
 	b Loop
 
 Loop:
-	mov r0, #0
+	mov r0, r0 //continue to accumulate the signal of threshold
 	b check_button
 	check_end:
 	cmp r6, #1 //button is pressed, check lock
 	beq check_lock
+
 	blink_end:
 	mov r6, #0
 	B		Loop
@@ -99,9 +104,9 @@ check_button: //check every cycle, and accumulate 1
 
 	cmp r5, #1 //not stable, go back to accumulate again
 	it eq
-	moveq r0, #1
+	moveq r0, #0
 
-	cmp r0, #1000 //threshold achieved BREAKDOWN!
+	cmp r0, #1000 //threshold achieved BREAKDOWN! //use #1 for slow motion debug
 	it eq
 	moveq r6, #1 //r6 0 not pressed, 1 pressed
 
@@ -116,6 +121,8 @@ check_button: //check every cycle, and accumulate 1
 	//use r1 to output the led data value
 	//use r0 for check_button counter
 check_lock:
+	ldr r3, =wait_for_input //if slow motion debug, comment this line
+	bl delay_quarter_sec //if slow motion debug, comment this line
 	ldr  r7, [r8]
 	and  r7, 0b1111
 	eor  r7, 0b1111
@@ -127,6 +134,10 @@ check_lock:
 	b led_blink_once
 
 led_blink_three:
+	ldr r3, =quarter_sec
+	bl delay_quarter_sec //delay for sometime
+	ldr r3, =quarter_sec
+	bl delay_quarter_sec
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
@@ -167,6 +178,10 @@ led_blink_three:
 	b blink_end
 
 led_blink_once:
+	ldr r3, =quarter_sec
+	bl delay_quarter_sec //delay for sometime
+	ldr r3, =quarter_sec
+	bl delay_quarter_sec
 	mov r1, 0xff87 //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
