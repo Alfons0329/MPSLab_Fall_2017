@@ -4,7 +4,7 @@
 
 .data
 	leds: .byte 0
-	password: .byte 0b0100 /*Lock 1down 2up 3up 4up correct, otherwise, blink, debug purpose*/
+	password: .byte 0b1100 /*Lock 1down 2up 3up 4up correct, otherwise, blink, debug purpose*/
 	//Problem: seems onlt lock2 has the correct signal, the rest all1(or output 0 at lock due to eor)
 .text
 	//Start from manual p75 of GPIO Address data
@@ -24,14 +24,15 @@
 	.equ GPIOC_OSPEEDR,	0x48000808
 	.equ GPIOC_PUPDR  ,	0x4800080C
 	.equ GPIOC_IDR    , 0x48000810
-
+	.equ LED_ALLON    , 0xff87
+	.equ LED_ALLOFF	  , 0xffff
 main:
     BL GPIO_init
 	MOVS	R1, #1
 	LDR	R0, =leds
 	STRB	R1, [R0]
 	mov r6, #0
-	mov r1, 0xffff
+	ldr r1, =LED_ALLON
 	strh r1, [r2]
 	mov r0, #0
 	b Loop
@@ -138,40 +139,36 @@ led_blink_three:
 	bl delay_quarter_sec //delay for sometime
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
-	mov r1, 0xff87 //ff|1000|0111|
+	ldr r1, =LED_ALLON//ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xffff //ff|1111|1111|
+	ldr r1, =LED_ALLOFF //ff|1111|1111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xff87
+	ldr r1, =LED_ALLON
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xffff
+	ldr r1, =LED_ALLOFF
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xff87
+	ldr r1, =LED_ALLON
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xffff
+	ldr r1, =LED_ALLOFF
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xffff
-	strh r1, [r2]
-	ldr r3, =quarter_sec
-	bl delay_quarter_sec
 
 	delay_end:
 
@@ -182,12 +179,12 @@ led_blink_once:
 	bl delay_quarter_sec //delay for sometime
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
-	mov r1, 0xff87 //ff|1000|0111|
+	ldr r1, =LED_ALLON //ff|1000|0111|
 	strh r1, [r2]
 	ldr r3, =quarter_sec
 	bl delay_quarter_sec
 
-	mov r1, 0xffff //ff|1111|1111|
+	ldr r1, =LED_ALLOFF  //ff|1111|1111|
 	strh r1, [r2]
 
 	b blink_end
