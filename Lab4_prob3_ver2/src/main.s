@@ -32,7 +32,7 @@ main:
 	LDR	R0, =leds
 	STRB	R1, [R0]
 	mov r6, #0
-	ldr r1, =LED_ALLON
+
 	strh r1, [r2]
 	mov r0, #0
 	b Loop
