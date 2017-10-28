@@ -57,7 +57,7 @@ GPIO_init:
 
 	//enable the port b GPIOB_MODER for output mode
 	ldr r0, =GPIOB_MODER
-	ldr r1, [r0] //get originally initilized reset value 0xFFFFFEBF
+	ldr r1, [r0] //get originally initialized reset value 0xFFFFFEBF
 	mov r2, 0x00001540 //0001010101(pb_mode6 to pb_mode3)000000
 	//clear pb6~pb3 to zero
 	and r1, r1, 0xFFFFC03F //FFFF1100000000111111 from manual p25
