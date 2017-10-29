@@ -33,8 +33,21 @@ main:
     BL   GPIO_init
     BL   max7219_init
     //TODO: display your student id on 7-Seg LED
-Program_end:
-	B Program_end
+    BL	Display_student_ID
+    BX LR
+
+Display_student_ID:
+	mov r0, 0x8 //init digit = 8
+	mov r2, 0x0 //arr index
+	ldr r3, =student_id1
+display_loop:
+	subs r0, r0, 1 //digit -1
+	ldrb r1, [r3,r2] //student_id1[r2]
+	bl MAX7219Send
+	adds r2, r2, 1 //arr index +1
+	cmp r0, 1 //digit == 1
+	bne display_loop
+	b Display_student_ID
 
 GPIO_init:
 	//TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
@@ -62,7 +75,7 @@ GPIO_init:
 	orrs r2, r2, r0
 	str r0, [r1]
 
-	BX LR //back to loop
+	BX LR
 
 MAX7219Send:
 //input parameter: r0 is ADDRESS , r1 is DATA
@@ -123,3 +136,4 @@ max7219_init:
 	bl MAX7219Send
 
 	pop {r0, r1, PC}
+	BX LR
