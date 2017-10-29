@@ -1,16 +1,15 @@
 	.syntax unified
 	.cpu cortex-m4
 	.thumb
+
 .data
-	//arr: 0,1,2,3,4,5,6,7,8,9,A,b,C,d,E
-	arr: .byte 0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x77, 0x1F, 0x4E, 0x3D, 0x4F, 0x47 //TODO: put 0 to F 7-Seg LED pattern here
+	student_id1: .byte 0, 4, 1, 0, 1, 3, 7 //TODO: put your student id here
+	student_id2: .byte 0, 4, 1, 6, 3, 2, 4
 
 .text
 	.global main
-	//GPIO
 	.equ	RCC_AHB2ENR,	0x4002104C
 	.equ	GPIOA_MODER,	0x48000000
-	.equ	GPIOA_OTYPER,	0x48000004
 	.equ	GPIOA_OSPEEDER,	0x48000008
 	.equ	GPIOA_PUPDR,	0x4800000C
 	.equ	GPIOA_IDR,		0x48000010
@@ -30,31 +29,12 @@
 	.equ	SHUT_DOWN,		0x1C //關閉
 	.equ	DISPLAY_TEST,	0x1F //顯示測試
 
-	//timer
-	.equ	one_sec,		5400000 //try
-
 main:
     BL   GPIO_init
     BL   max7219_init
-
-Display0toF:
-	//TODO: Display 0 to F at first digit on 7-SEG LED Display one per second
-	mov r2, 0x0
-	ldr r3, =arr
-display_loop:
-	mov r0, 0x1
-	ldrb r1, [r3,r2]
-	bl MAX7219Send
-
-	ldr r0, =one_sec
-	bl Delay
-
-	add r2, 1
-	cmp r2, 0x10
-	bne display_loop
-	b	Display0toF
-	//mov r2, 0x0
-	//b display_loop
+    //TODO: display your student id on 7-Seg LED
+Program_end:
+	B Program_end
 
 GPIO_init:
 	//TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
@@ -85,7 +65,7 @@ GPIO_init:
 	BX LR //back to loop
 
 MAX7219Send:
-   //input parameter: r0 is ADDRESS , r1 is DATA
+//input parameter: r0 is ADDRESS , r1 is DATA
 	//TODO: Use this function to send a message to max7219
 	push {r0, r1, r2, r3, r4, r5, r6, r7, LR}
 	lsl	r0, 8 //move to D15-D8
@@ -123,7 +103,7 @@ max7219_init:
 	//TODO: Initialize max7219 registers
 	push {r0, r1, LR}
 	ldr r0, =DECODE
-	ldr r1, =0x0 //NO DECODE
+	ldr r1, =0xFF //CODE B decode for digit 0-7
 	bl MAX7219Send
 
 	ldr r0, =DISPLAY_TEST
@@ -131,11 +111,11 @@ max7219_init:
 	bl MAX7219Send
 
 	ldr r0, =INTENSITY
-	ldr r1, =0xA // 21/32 (亮度)
+	ldr r1, =0xA //亮度 21/32
 	bl MAX7219Send
 
 	ldr r0, =SCAN_LIMIT
-	ldr r1, =0x0 //only light up digit 0
+	ldr r1, =0x6 //light up digit 0-6
 	bl MAX7219Send
 
 	ldr r0, =SHUT_DOWN
@@ -143,13 +123,3 @@ max7219_init:
 	bl MAX7219Send
 
 	pop {r0, r1, PC}
-	BX LR
-
-Delay:
-   //TODO: Write a delay 1sec function
-	beq  delay_end
-	subs r0, 0x4
-	b    Delay
-
-delay_end:
-	bx   lr
