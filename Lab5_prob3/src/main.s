@@ -41,6 +41,7 @@
 
     //
     .equ one_sec, 5400000
+    .equ point_one_sec, 1000
 main:
     BL   GPIO_init
     BL   max7219_init
@@ -105,9 +106,12 @@ check_button: //check every cycle, and accumulate 1
 
 	ldr r11, =ans_digit
 
-	cmp r12, #2 //threshold achieved BREAKDOWN!, r6 flag rises use 1 for slo mo debug
-	it ge
-	movsge r6, #1
+    push {r10}
+    ldr r10, =point_one_sec //trial and error
+    cmp r12, r10 //threshold achieved BREAKDOWN!, r6 flag rises use 1 for slo mo debug
+	it eq
+	movseq r6, #1
+    pop {r10}
 
     cmp r6, #1
     it eq
@@ -117,6 +121,10 @@ check_button: //check every cycle, and accumulate 1
     it eq
     addeq r4, r4, 0x1//go to next fibonacci digit
 
+    cmp r4, 0x20
+    it ge
+    movsge r4, 0x20
+
     cmp r6, #1
     it eq
     addeq r7, r7, r11 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
@@ -125,7 +133,7 @@ check_button: //check every cycle, and accumulate 1
 
 	push {r10}
     ldr r10, =one_sec
-    cmp r0, r10
+    cmp r12, r10
     beq clear_to_zero
     pop {r10}
 
