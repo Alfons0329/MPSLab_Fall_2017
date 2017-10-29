@@ -19,9 +19,9 @@
 	.equ	GPIOA_BRR,		0x48000028 //clear bit
 
 	//Din, CS, CLK offset
-	.equ 	DIN,	0x20 	//PA5
-	.equ	CS,		0x40	//PA6
-	.equ	CLK,	0x80	//PA7
+	.equ 	DIN,	0b100000 	//PA5
+	.equ	CS,		0b1000000	//PA6
+	.equ	CLK,	0b10000000	//PA7
 
 	//max7219
 	.equ	DECODE,			0x19 //解碼控制
@@ -31,7 +31,7 @@
 	.equ	DISPLAY_TEST,	0x1F //顯示測試
 
 	//timer
-	.equ	one_sec,		4000000
+	.equ	one_sec,		5400000 //try
 
 main:
     BL   GPIO_init
