@@ -49,21 +49,23 @@ main:
     BX LR
 //use r0 for digit of current number, in ans_digit, or the accumulation in fibonacci
 //use r1 for get data in fibonacci array
-//use r9 for accumulation the pointer in fibonacci array, current MSB starting point
+
 //use r3 for the address of fibonacci array
 //use r4 for get the current digit
 //use r5 to get the button data
 //use r6 for press flag
+//use r9 for the extend address of current fibo MSB
 //use r8 to get data from button
 //use r10 as current digit counter
+//use r11 for accumulation the pointer in fibonacci array, current MSB starting point
 Display_fibo_number:
     mov r10, 0x0
+    mov r9, r7
     ldr r3, =fib_ans
     ldr r0, =ans_digit
     ldrb r0, [r0,r4] //get current fibonacci digit this r0 will decrease
 display_loop:
 
-    subs r0, r0, 1 //digit -1
     adds r9, r9, r10
     ldrb r1, [r3,r9] //fibo_ans[r9+r10] ex: 144 then r9 at 1 r10 in [0,2] to get 1, 4 and 4 from MSB to LSB
     sub r1, r1, #48
@@ -77,9 +79,8 @@ display_loop:
     pop {r0}
     bl MAX7219Send
 
-	cmp r0, 0 //only increment the fibo_ptr when the digit is still positive
     adds r10, r10, 1 //arr idex +1
-    cmp r0, 0 //digit == 1
+    cmp r0, r10
     bne display_loop
 
     b Display_fibo_number
@@ -100,6 +101,7 @@ check_button: //check every cycle, and accumulate 1
 	ldr r11, =ans_digit
 
 	cmp r0, #1 //threshold achieved BREAKDOWN!, r6 flag rises use 1 for slo mo debug
+	it eq
 	moveq r6, #1
 
     cmp r6, #1
@@ -112,7 +114,7 @@ check_button: //check every cycle, and accumulate 1
 
     cmp r6, #1
     it eq
-    addeq r9, r9, r11 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
+    addeq r7, r7, r11 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
 
 	mov r6, #0
 
