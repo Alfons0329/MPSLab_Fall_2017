@@ -44,25 +44,29 @@
 main:
     BL   GPIO_init
     BL   max7219_init
-
+	mov r9, 0x0
     BL	Display_fibo_number
     BX LR
 //use r0 for digit of current number, in ans_digit, or the accumulation in fibonacci
 //use r1 for get data in fibonacci array
-//use r2 for accumulation the pointer in fibonacci array
+//use r9 for accumulation the pointer in fibonacci array, current MSB starting point
 //use r3 for the address of fibonacci array
 //use r4 for get the current digit
 //use r5 to get the button data
 //use r8 to get data from button
+//use r10 as current digit counter
 Display_fibo_number:
+    mov r10, 0x0
     ldr r3, =fib_ans
     ldr r0, =ans_digit
-    ldrb r0, [r0,r4]
+    ldrb r0, [r0,r4] //get current fibonacci digit
 display_loop:
 
     subs r0, r0, 1 //digit -1
-    ldrb r1, [r3,r2]
-
+    adds r9, r9, r10
+    ldrb r1, [r3,r9] //fibo_ans[r9+r10] ex: 144 then r9 at 1 r10 in [0,2] to get 1, 4 and 4 from MSB to LSB
+    sub r1, r1, #31
+    
     push {r0}
     mov r0, 0x0
 
@@ -72,7 +76,8 @@ display_loop:
     pop {r0}
     bl MAX7219Send
 
-    adds r2, r2, 1 //arr idex +1
+	cmp r0, 0 //only increment the fibo_ptr when the digit is still positive
+    adds r10, r10, 1 //arr idex +1
     cmp r0, 0 //digit == 1
     bne display_loop
 
@@ -91,17 +96,19 @@ check_button: //check every cycle, and accumulate 1
     it eq
     moveq r0, #0
 
-    cmp r0, #1000 //threshold achieved BREAKDOWN!
+    cmp r0, #1 //threshold achieved BREAKDOWN! use 1 for slo mo breakdown
     it eq
     addeq r4, r4, 0x1//go to next fibonacci digit
 
-    cmp r0, #1000 //threshold achieved BREAKDOWN!
+    cmp r0, #1//threshold achieved BREAKDOWN! use 1 for slo mo breakdown
     it eq
-    addeq r2, r2, 0x1 //move to the start of next fibonacci digit
+    addeq r9, r9, r4 //move to the start of next fibonacci digit
 
-    ldr r9, =one_sec
-    cmp r0, r9
+	push {r10}
+    ldr r10, =one_sec
+    cmp r0, r10
     beq clear_to_zero
+    pop {r10}
 
     b check_end
 clear_to_zero:
@@ -110,8 +117,8 @@ clear_to_zero:
     b check_end
 GPIO_init:
     //TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
-    //RCC_AHB2ENR: enable GPIOA
-    mov r0, 0b1
+    //RCC_AHB2ENR: enable GPIOA and GPIOC
+    mov r0, 0b101
     ldr r1, =RCC_AHB2ENR
     str r0, [r1]
 
@@ -150,9 +157,6 @@ GPIO_init:
 	ldr r8, =GPIOC_IDR
   	BX LR
 
-
-    BX LR
-
 MAX7219Send:
     //input parameter: r0 is ADDRESS , r1 is DATA
     //TODO: Use this function to send a message to max7219
@@ -173,7 +177,6 @@ send_loop:
     str r3, [r5] //CLK -> 0
     tst r0, r7 //同ANDS但不存結果 (update condition flags)
     beq bit_not_set //r0要送的那位!=1
-    sub r1, r1, #48
     str r1, [r4] //din -> 1
     b if_done
 
