@@ -53,6 +53,7 @@ main:
 //use r3 for the address of fibonacci array
 //use r4 for get the current digit
 //use r5 to get the button data
+//use r6 for press flag
 //use r8 to get data from button
 //use r10 as current digit counter
 Display_fibo_number:
@@ -97,17 +98,23 @@ check_button: //check every cycle, and accumulate 1
     moveq r0, #0
 
 	ldr r11, =ans_digit
-    cmp r0, #1//threshold achieved BREAKDOWN! use 1 for slo mo breakdown
+
+	cmp r0, #1 //threshold achieved BREAKDOWN!, r6 flag rises use 1 for slo mo debug
+	moveq r6, #1
+
+    cmp r6, #1
     it eq
     ldrbeq r11, [r11,r4] //get current fibonacci digit this r0 will decrease
 
-    cmp r0, #1 //threshold achieved BREAKDOWN! use 1 for slo mo breakdown
+    cmp r6, #1
     it eq
     addeq r4, r4, 0x1//go to next fibonacci digit
 
-    cmp r0, #1//threshold achieved BREAKDOWN! use 1 for slo mo breakdown
+    cmp r6, #1
     it eq
     addeq r9, r9, r11 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
+
+	mov r6, #0
 
 	push {r10}
     ldr r10, =one_sec
