@@ -15,8 +15,8 @@
 	.equ	GPIOA_PUPDR,	0x4800000C
 	.equ	GPIOA_IDR,		0x48000010
 	.equ	GPIOA_ODR,		0x48000014
-	.equ	GPIOA_BSRR,		0x48000018 //set bit
-	.equ	GPIOA_BRR,		0x48000028 //clear bit
+	.equ	GPIOA_BSRR,		0x48000018 //set bit -> 1
+	.equ	GPIOA_BRR,		0x48000028 //clear bit -> 0
 
 	//Din, CS, CLK offset
 	.equ 	DIN,	0b100000 	//PA5
@@ -24,14 +24,14 @@
 	.equ	CLK,	0b10000000	//PA7
 
 	//max7219
-	.equ	DECODE,			0x19 //解碼控制
-	.equ	INTENSITY,		0x1A //亮度控制
-	.equ	SCAN_LIMIT,		0x1B //設定顯示範圍
-	.equ	SHUT_DOWN,		0x1C //關閉
-	.equ	DISPLAY_TEST,	0x1F //顯示測試
+	.equ	DECODE,			0x19 //decode control
+	.equ	INTENSITY,		0x1A //brightness
+	.equ	SCAN_LIMIT,		0x1B //how many digits to display
+	.equ	SHUT_DOWN,		0x1C //shut down -- we did't use this
+	.equ	DISPLAY_TEST,	0x1F //display test -- we did' use this
 
 	//timer
-	.equ	one_sec,		5400000 //try
+	.equ	one_sec,		5400000 //try and error
 
 main:
     BL   GPIO_init
@@ -102,8 +102,8 @@ send_loop:
 	mov r7, 1
 	lsl r7, r6
 	str r3, [r5] //CLK -> 0
-	tst r0, r7 //同ANDS但不存結果 (update condition flags)
-	beq bit_not_set //r0要送的那位!=1
+	tst r0, r7 //same as ANDS but discard the result (just update condition flags)
+	beq bit_not_set //the sending bit(r0) != 1
 	str r1, [r4] //din -> 1
 	b if_done
 
@@ -131,7 +131,7 @@ max7219_init:
 	bl MAX7219Send
 
 	ldr r0, =INTENSITY
-	ldr r1, =0xA // 21/32 (亮度)
+	ldr r1, =0xA // 21/32 (brightness)
 	bl MAX7219Send
 
 	ldr r0, =SCAN_LIMIT
