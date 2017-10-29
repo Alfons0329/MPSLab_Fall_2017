@@ -23,11 +23,11 @@
 	.equ	CLK,	0b10000000	//PA7
 
 	//max7219
-	.equ	DECODE,			0x19 //解碼控制
-	.equ	INTENSITY,		0x1A //亮度控制
-	.equ	SCAN_LIMIT,		0x1B //設定顯示範圍
-	.equ	SHUT_DOWN,		0x1C //關閉
-	.equ	DISPLAY_TEST,	0x1F //顯示測試
+	.equ	DECODE,			0x19 //decode control
+	.equ	INTENSITY,		0x1A //brightness
+	.equ	SCAN_LIMIT,		0x1B //how many digits to display
+	.equ	SHUT_DOWN,		0x1C //shut down -- we did't use this actually
+	.equ	DISPLAY_TEST,	0x1F //display test -- we did' use this actually
 
 main:
     BL   GPIO_init
@@ -95,8 +95,8 @@ send_loop:
 	mov r7, 1
 	lsl r7, r6
 	str r3, [r5] //CLK -> 0
-	tst r0, r7 //同ANDS但不存結果 (update condition flags)
-	beq bit_not_set //r0要送的那位!=1
+	tst r0, r7 //same as ANDS but discard the result (just update condition flags)
+	beq bit_not_set //the sending bit(r0) != 1
 	str r1, [r4] //din -> 1
 	b if_done
 
@@ -124,7 +124,7 @@ max7219_init:
 	bl MAX7219Send
 
 	ldr r0, =INTENSITY
-	ldr r1, =0xA //亮度 21/32
+	ldr r1, =0xA //brightness (21/32)
 	bl MAX7219Send
 
 	ldr r0, =SCAN_LIMIT
