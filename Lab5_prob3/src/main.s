@@ -60,12 +60,12 @@ main:
 //use r11 for accumulation the pointer in fibonacci array, current MSB starting point
 Display_fibo_number:
     mov r10, 0x0
-    mov r9, r7
+
     ldr r3, =fib_ans
     ldr r0, =ans_digit
     ldrb r0, [r0,r4] //get current fibonacci digit this r0 will decrease
 display_loop:
-
+	mov r9, r7
     adds r9, r9, r10
     ldrb r1, [r3,r9] //fibo_ans[r9+r10] ex: 144 then r9 at 1 r10 in [0,2] to get 1, 4 and 4 from MSB to LSB
     sub r1, r1, #48
@@ -79,9 +79,10 @@ display_loop:
     pop {r0}
     bl MAX7219Send
 
+
     adds r10, r10, 1 //arr idex +1
-    cmp r0, r10
-    bne display_loop
+    cmp r10, r0
+    blt display_loop
 
     b Display_fibo_number
 
