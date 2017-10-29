@@ -40,7 +40,7 @@
     .equ GPIOC_IDR    , 0x48000810
 
     //
-    .equ one_sec, 5400000
+    .equ one_sec, 10000
     .equ point_one_sec, 1000
 main:
     BL   GPIO_init
@@ -83,6 +83,7 @@ display_loop:
     check_end:
 
     pop {r0}
+    is_reset:
     bl MAX7219Send
 
     adds r10, r10, 1 //arr idex +1
@@ -121,27 +122,31 @@ check_button: //check every cycle, and accumulate 1
     it eq
     addeq r4, r4, 0x1//go to next fibonacci digit
 
-    cmp r4, 0x20
-    it ge
-    movsge r4, 0x20
-
     cmp r6, #1
     it eq
     addeq r7, r7, r11 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
+
+    cmp r4, #40
+    it ge
+    movsge r4, #40
+
+    cmp r4, #40
+    it ge
+    movsge r7, #170 //for -1
 
 	mov r6, #0
 
 	push {r10}
     ldr r10, =one_sec
     cmp r12, r10
-    beq clear_to_zero
+    bge clear_to_zero
     pop {r10}
 
     b check_end
 clear_to_zero:
     mov r1,0x0
     mov r0,0x1
-    b check_end
+    b is_reset
 GPIO_init:
     //TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
     //RCC_AHB2ENR: enable GPIOA and GPIOC
@@ -235,7 +240,7 @@ max7219_init:
     bl MAX7219Send
 
     ldr r0, =SCAN_LIMIT
-    ldr r1, =0x6 //light up digit 0-6
+    ldr r1, =0x7 //light up digit 0-7
     bl MAX7219Send
 
     ldr r0, =SHUT_DOWN
