@@ -56,13 +56,13 @@ GPIO_init:
 	ldr r1, =RCC_AHB2ENR
 	str r0, [r1]
 
-	//GPIOA_MODER: PA2,1,0: output
+	//GPIOA_MODER: PA7 6 5: output
 	ldr r0, =0b010101
 	lsl r0, 10
 	ldr r1, =GPIOA_MODER
 	ldr r2, [r1]
-	and r2, 0xFFFF03FF //clear 2 1 0
-	orrs r2, r2, r0 //2 1 0 --> output
+	and r2, 0xFFFF03FF //clear 7 6 5
+	orrs r2, r2, r0 //7 6 5  --> output
 	str r2, [r1]
 
 	//GPIOA_OTYPER: push-pull (reset state)
