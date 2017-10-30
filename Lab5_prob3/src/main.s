@@ -67,7 +67,48 @@ Display_fibo_number:
     ldr r3, =fib_ans
     ldr r0, =ans_digit
     ldrb r0, [r0,r4] //get current fibonacci digit this r0 will decrease
-    adds r0, r0, 1
+
+
+    push {r0}
+
+    cmp r0, 1
+    it eq
+    ldreq r1, =0x0
+
+    cmp r0, 2
+    it eq
+    ldreq r1, =0x1
+
+    cmp r0, 3
+    it eq
+    ldreq r1, =0x2
+
+    cmp r0, 4
+    it eq
+    ldreq r1, =0x3
+
+    cmp r0, 5
+    it eq
+    ldreq r1, =0x4
+
+    cmp r0, 6
+    it eq
+    ldreq r1, =0x5
+
+    cmp r0, 7
+    it eq
+    ldreq r1, =0x6
+
+    cmp r0, 8
+    it eq
+    ldreq r1, =0x7
+
+    ldr r0, =SCAN_LIMIT
+    bl MAX7219Send
+
+    pop {r0}
+
+    adds r0, r0, 1//after comparison is right
 display_loop:
     subs r0, r0, 1
 
@@ -114,6 +155,12 @@ check_button: //check every cycle, and accumulate 1
 	movseq r6, #1
     pop {r10}
 
+    push {r10}
+    ldr r10, =one_sec
+    cmp r12, r10
+    beq clear_to_zero
+    pop {r10}
+
     cmp r6, #1
     it eq
     ldrbeq r11, [r11,r4] //get current fibonacci digit this r0 will decrease
@@ -136,17 +183,14 @@ check_button: //check every cycle, and accumulate 1
 
 	mov r6, #0
 
-	push {r10}
-    ldr r10, =one_sec
-    cmp r12, r10
-    bge clear_to_zero
-    pop {r10}
-
     b check_end
 clear_to_zero:
-    mov r1,0x0
-    mov r0,0x1
-    b is_reset
+    ldr r1, =0x0
+    ldr r0, =SCAN_LIMIT
+    bl MAX7219Send
+
+    bl max7219_init
+    b clear_to_zero
 GPIO_init:
     //TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
     //RCC_AHB2ENR: enable GPIOA and GPIOC
@@ -235,13 +279,14 @@ max7219_init:
     ldr r1, =0x0 //normal operation
     bl MAX7219Send
 
+    ldr r0, =SCAN_LIMIT
+    ldr r1, =0x0 //dynamically light up the digit
+    bl MAX7219Send
+
     ldr r0, =INTENSITY
     ldr r1, =0xA //�G�� 21/32
     bl MAX7219Send
 
-    ldr r0, =SCAN_LIMIT
-    ldr r1, =0x7 //light up digit 0-7
-    bl MAX7219Send
 
     ldr r0, =SHUT_DOWN
     ldr r1, =0x1 //normal operation
