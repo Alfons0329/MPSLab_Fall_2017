@@ -158,7 +158,9 @@ check_button: //check every cycle, and accumulate 1
     push {r10}
     ldr r10, =one_sec
     cmp r12, r10
-    beq clear_to_zero
+    it eq
+    movseq r6, #2
+    //beq clear_to_zero
     pop {r10}
 
     cmp r6, #1
@@ -173,6 +175,18 @@ check_button: //check every cycle, and accumulate 1
     it eq
     addeq r7, r7, r11 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
 
+    cmp r6, #2
+    it eq
+    moveq r7, #0 //move to the start of next fibonacci digit, by increment the digit of current fibonacci number
+
+    cmp r6, #2
+    it eq
+    moveq r4, #0//case 2 reset all fibonacci pointers
+
+
+
+
+
     cmp r4, #40
     it ge
     movsge r4, #40
@@ -185,11 +199,14 @@ check_button: //check every cycle, and accumulate 1
 
     b check_end
 clear_to_zero:
+    push {r7}
     ldr r1, =0x0
     ldr r0, =SCAN_LIMIT
     bl MAX7219Send
 
-    bl max7219_init
+    ldr r1, =0x0
+    ldr r0, =0x1
+    bl MAX7219Send
     b clear_to_zero
 GPIO_init:
     //TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
