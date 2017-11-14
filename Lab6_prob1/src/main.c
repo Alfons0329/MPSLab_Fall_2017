@@ -24,12 +24,17 @@ int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
-    int i=0;
-    for(i=1;i<=ID_LEN;i++)
+    int i=0,dig;
+    for(i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
-        
+        dig=data%10;
+        //printf("data is now %d and send %d ",data,dig);
         data/=10; //get the next digit 
+        if(i==num_digs)
+        {
+        	max7219_send(i,0); //send 0
+        }
     }
     for(i=1;i<=8;i++)
     {
@@ -40,10 +45,10 @@ int display(int data, int num_digs)
     else
         return 0; //end this function
 }
-void main()
+int main()
 {
-    int student_id = 0416324;
+    int student_id = 416324;
     GPIO_init();
     max7219_init();
-    display(student_id, 8);
+    display(student_id, 7);
 }
