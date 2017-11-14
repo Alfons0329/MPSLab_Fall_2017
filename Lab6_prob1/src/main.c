@@ -36,10 +36,10 @@ int display(int data, int num_digs)
         	max7219_send(i,0); //send 0
         }
     }
-    for(i=1;i<=8;i++)
+    /*for(i=1;i<=8;i++)
     {
-        max7219_send(i,15); //clear the screen
-    }
+        max7219_send(i,15); //clear the screen, but does not need now
+    }*/
     if(data>99999999 || data<99999999)
         return -1; //out of range error
     else
@@ -51,4 +51,5 @@ int main()
     GPIO_init();
     max7219_init();
     display(student_id, 7);
+    return 0;
 }
