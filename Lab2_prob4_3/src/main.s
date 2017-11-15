@@ -50,11 +50,11 @@ enable_fpu:
 
 enable_rng:
 	ldr r0, =RNG_BASE
-	ldr r1, =RNG_CR_OFFSET
+	ldr r1, =RNG_CR_OFFSET //CR offset is fine
 	ldr r3, =4  //bit 2 is RNGEN (ref p.814 of manual)
 	ldr r2,[r0]
 	orr r2,r2,r3 //open it, enablt it
-	str r2,[r0]
+	str r2,[r0] //just like lab 4 to enable something
 	bx lr
 get_rand:
 	//Your code start from here

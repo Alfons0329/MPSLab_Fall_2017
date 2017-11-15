@@ -12,14 +12,14 @@
     .equ	GPIOA_BSRR,		0x48000018 //set bit
     .equ	GPIOA_BRR,		0x48000028 //clear bit
     //use for
-    .equ RCC_AHB2ENR  , 0x4002104C
-    .equ GPIOB_MODER  , 0x48000400
-    .equ GPIOB_OTYPER , 0x48000404
-    .equ GPIOB_OSPEEDR, 0x48000408
-    .equ GPIOB_PUPDR  , 0x4800040C
-    .equ GPIOB_ODR    , 0x48000414
-    .equ onesec, 800000
-    .equ interval_cnt, 200000
+    .equ    RCC_AHB2ENR  , 0x4002104C
+    .equ    GPIOB_MODER  , 0x48000400
+    .equ    GPIOB_OTYPER , 0x48000404
+    .equ    GPIOB_OSPEEDR, 0x48000408
+    .equ    GPIOB_PUPDR  , 0x4800040C
+    .equ    GPIOB_ODR    , 0x48000414
+    //.equ    onesec, 800000
+    //.equ    interval_cnt, 200000
     //Din, CS, CLK offset
     .equ 	DIN,	0b100000 	//PA5
     .equ	CS,		0b1000000	//PA6
@@ -33,7 +33,7 @@
 
 GPIO_init:
 	//TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
-	//RCC_AHB2ENR: enable GPIOA
+	//RCC_AHB2ENR: enable GPIOA and B
 	push {r0,r1,r2,lr}
     ldr r0, =RCC_AHB2ENR
     mov r1, 0b110
@@ -58,6 +58,7 @@ GPIO_init:
 	orrs r2, r2, r0
 	str r0, [r1]
 
+    /*
     //enable the port b GPIOB_MODER for INPUT MODE FOR KEYPAD
 	ldr r0, =GPIOB_MODER
 	ldr r1, [r0] //get originally initilized reset value 0xFFFFFEBF
@@ -65,7 +66,7 @@ GPIO_init:
 	//clear pb7~pb0 to zero
 	and r1, r1, 0xFFFF0000 //FFFF1100000000111111 from manual p25
 	orr r1, r1, r2 //get the value of
-	str r1,	[r0]
+	str r1,	[r0]*/
 
 	pop {r0,r1,r2,lr}
 	BX LR
