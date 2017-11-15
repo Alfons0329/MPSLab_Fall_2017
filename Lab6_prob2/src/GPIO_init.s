@@ -33,10 +33,10 @@
 
 GPIO_init:
 	//TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
-	//RCC_AHB2ENR: enable GPIOA and B
+	//RCC_AHB2ENR: enable GPIOA and B and C
 	push {r0,r1,r2,lr}
     ldr r0, =RCC_AHB2ENR
-    mov r1, 0b110
+    mov r1, 0b111
     str r1, [r0]
 
 	//GPIOA_MODER: PA7 6 5: output

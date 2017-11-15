@@ -46,28 +46,32 @@ void keypad_init()
 
     GPIOB->MODER   &= 0b11111111111111111111111100000000;
     GPIOB->PUPDR   &= 1111111111111111111111111100000000; //clear and set input as pdown mode
-    GPIOB->PUPDR   |= 0b00000000000000000000000001010101; //clear and set input as pdown mode
+    GPIOB->PUPDR   |= 0b00000000000000000000000000000000; //clear and set input as pdown mode
 }
 /* TODO: scan keypad value
 * return:
 * >=0: key pressed value
 * -1: no key press
 */
+int display_clr(int num_digs)
+{
+	for(int i=1;i<=num_digs;i++)
+	{
+		max7219_send(i,0xF);
+	}
+	return 0;
+}
 int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
-    int i=0,dig;
+    int i=0,dig=0;
     for(i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
         dig=data%10;
         //printf("data is now %d and send %d ",data,dig);
         data/=10; //get the next digit
-        if(i==num_digs)
-        {
-        	max7219_send(i,0); //send 0
-        }
     }
 
     if(data>99999999 || data<99999999)
@@ -83,20 +87,32 @@ char keypad_scan()
     char key_val=-1;
     while(1)
     {
-        for(;keypad_row<4;keypad_row++)
+        //printf("row %d column %d \n",keypad_row,keypad_col);
+    	for(keypad_row=0;keypad_row<4;keypad_row++) //output data from 1st row
         {
-            for(;keypad_col<4;keypad_col++)
+            for(keypad_col=0;keypad_col<4;keypad_col++) //read input data from 1st col
             {
                 /*use pc 3210 for X output row
                 use pb 3210 for Y input col*/
-                GPIOC->ODR=GPIOC->ODR&(1<<keypad_row);//shift the value to do
+                GPIOC->ODR=(GPIOC->ODR)|(1<<keypad_row);//shift the value to send data for that row
+                /*if(keypad_row*4+keypad_col >=10)
+                	display(keypad_row*4+keypad_col,2);
+                else
+                	display(keypad_row*4+keypad_col,1);*/
+                //display(88,2);
                 if(GPIOB->IDR=(GPIOB->IDR>>keypad_col)&1) //key is pressed
                 {
                     key_val=keypad_value[keypad_row][keypad_col];
+                	//display(34,2);
                     display(keypad_value[keypad_row][keypad_col],(keypad_value>=10?2:1));
+                }
+                else
+                {
+                	display_clr(2);
                 }
             }
         }
+        //display(88888888,8);
     }
     return key_val;
 }
@@ -104,6 +120,7 @@ int main()
 {
     GPIO_init();
     max7219_init();
+    //display(888888,6);
     keypad_init();
     keypad_scan();
     return 0;

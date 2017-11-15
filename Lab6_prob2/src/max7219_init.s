@@ -7,7 +7,7 @@
 	student_id2: .byte 0, 4, 1, 6, 3, 2, 4
 
 .text
-	.global max7219_init 
+	.global max7219_init
 	.equ	RCC_AHB2ENR,	0x4002104C
 	.equ	GPIOA_MODER,	0x48000000
 	.equ	GPIOA_OSPEEDER,	0x48000008
@@ -45,7 +45,7 @@ max7219_init:
 	bl max7219_send
 
 	ldr r0, =SCAN_LIMIT
-	ldr r1, =0x6 //light up digit 0-6
+	ldr r1, =0x1 //light up digit 0-6
 	bl max7219_send
 
 	ldr r0, =SHUT_DOWN
