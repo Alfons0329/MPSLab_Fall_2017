@@ -1,29 +1,8 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "stm32l476xx.h"
 #define keypad_row_max 4
 #define keypad_col_max 4
-//#include "my_header.h"
-
-//Todo: define your gpio pin
-//WTF is this sequence order?
-/*#define X0 GPIO_PA3
-#define X1 GPIO_PA2
-#define X2 GPIO_PA1
-#define X3 GPIO_PA0
-#define Y0 GPIO_PA7
-#define Y1 GPIO_PA6
-#define Y2 GPIO_PA5
-#define Y3 GPIO_PA4
-
-unsigned int x_pin = {X0, X1, X2, X3}; //COL 0 1 2 3
-unsigned int y_pin = {Y0, Y1, Y2, Y3}; //ROW 0 1 2 3
-//PA76543210
- Todo: initial keypad gpio pin, X as output and Y as input
-use pc 3210 for X output row
-use pb 3210 for Y input col
-*/
 unsigned int keypad_value[4][4] ={{1,2,3,10},
                             {4,5,6,11},
                             {7,8,9,12},
@@ -34,17 +13,17 @@ extern void max7219_init();
 void keypad_init()
 {
     GPIO_init(); //have initialized in arm
-    RCC->AHB2ENR   |= 0b00000000000000000000000000000111;
+    RCC->AHB2ENR   |= 0b00000000000000000000000000000111; //safely initialize again
 
-    GPIOC->MODER   &= 0b11111111111111111111111100000000;
-    GPIOC->MODER   |= 0b00000000000000000000000001010101;
+    GPIOC->MODER   &= 0b11111111111111111111111100000000; //use pb 3210 for Y input col
+    GPIOC->MODER   |= 0b00000000000000000000000001010101; //use pb 3210 for Y input col
     GPIOC->PUPDR   &= 0b11111111111111111111111100000000; //clear and set output use pup since we want 1 to be sent high level voltage
     GPIOC->PUPDR   |= 0b00000000000000000000000001010101; //clear and set output use pup since we want 1 to be sent high level voltage
     GPIOC->OSPEEDR &= 0b11111111111111111111111100000000;
     GPIOC->OSPEEDR |= 0b00000000000000000000000001010101;
     GPIOC->ODR     |= 0b00000000000000000000000011110000;
 
-    GPIOB->MODER   &= 0b11111111111111111111111100000000;
+    GPIOB->MODER   &= 0b11111111111111111111111100000000; //use pc 3210 for X output row
     GPIOB->PUPDR   &= 1111111111111111111111111100000000; //clear and set input as pdown mode
     GPIOB->PUPDR   |= 0b00000000000000000000000010101010; //clear and set input as pdown mode
 }
@@ -70,10 +49,8 @@ int display(int data, int num_digs)
     {
         max7219_send(i,data%10);
         dig=data%10;
-        //printf("data is now %d and send %d ",data,dig);
         data/=10; //get the next digit
     }
-
     if(data>99999999 || data<99999999)
         return -1; //out of range error
     else
@@ -81,34 +58,28 @@ int display(int data, int num_digs)
 }
 char keypad_scan()
 {
-    //key get 255 for no key press
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
-    int keypad_row=0,keypad_col=0,scanned_col,is_pressed;
+    int keypad_row=0,keypad_col=0;
     char key_val=-1;
     while(1)
     {
-        for(keypad_row=0;keypad_row<4;keypad_row++) //output data from 1st row
+        for(keypad_row=0;keypad_row<keypad_row_max;keypad_row++) //output data from 1st row
         {
-            for(keypad_col=0;keypad_col<4;keypad_col++) //read input data from 1st col
+            for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++) //read input data from 1st col
             {
                 /*use pc 3210 for X output row
                 use pb 3210 for Y input col*/
             	GPIOC->ODR&=0; //clear the output value
                 GPIOC->ODR|=(1<<keypad_row);//shift the value to send data for that row, data set
-                int masked_value=GPIOB->IDR&0xf;
-                scanned_col=(masked_value>>keypad_col);
-                is_pressed=(masked_value>>keypad_col)&1;
-
+                int masked_value=GPIOB->IDR&0xf,is_pressed=(masked_value>>keypad_col)&1;
                 if(is_pressed) //key is pressed
                 {
                     key_val=keypad_value[keypad_row][keypad_col];
-                	//display(12,2);
                     display(keypad_value[keypad_row][keypad_col],(key_val>=10?2:1));
                 }
                 else
                 {
-                	//display(0,1);
-                	display_clr(2);
+                	display_clr(2);//if not pressed, just clear the screen
                 }
             }
         }
@@ -119,13 +90,8 @@ int main()
 {
     GPIO_init();
     max7219_init();
-    //display(888888,6);
     display_clr(2);
     keypad_init();
     keypad_scan();
     return 0;
 }
-/*for(i=1;i<=8;i++)
-{
-    max7219_send(i,15); //clear the screen, but does not need now
-}*/
