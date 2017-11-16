@@ -51,7 +51,7 @@ int display(int data, int num_digs)
         dig=data%10;
         data/=10; //get the next digit
     }
-    if(data>99999999 || data<99999999)
+    if(data>99999999 || data<-9999999)
         return -1; //out of range error
     else
         return 0; //end this function

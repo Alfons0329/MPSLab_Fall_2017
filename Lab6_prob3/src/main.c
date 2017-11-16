@@ -46,13 +46,14 @@ int display(int data, int num_digs)
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
     int i=0,dig=0;
+    display_clr(2); //clear the old number for trash removing
     for(i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
         dig=data%10;
         data/=10; //get the next digit
     }
-    if(data>99999999 || data<99999999)
+    if(data>99999999 || data<-9999999)
         return -1; //out of range error
     else
         return 0; //end this function
@@ -63,7 +64,7 @@ char keypad_scan()
     int keypad_row=0,keypad_col=0,nothing_is_pressed=1;
     char key_val=-1;
     bool hash_map[14]={0}; //hashmap for pressed key
-    memset(hash_map,0,sizeof(bool)*13);
+    memset(hash_map,0,sizeof(bool)*14);
     while(1)
     {
         nothing_is_pressed=1;
@@ -84,7 +85,8 @@ char keypad_scan()
                     key_val=keypad_value[keypad_row][keypad_col];
                     for(int i=0;i<14;i++)
                     {
-                        hash_map[key_val]=1; //if that key is pressed, mark the hash_map value to be 1
+                        if(key_val<14)
+                            hash_map[key_val]=1; //if that key is pressed, mark the hash_map value to be 1
                     }
                     int output_sum=0;
                     for(int i=0;i<14;i++)
@@ -99,7 +101,7 @@ char keypad_scan()
                 else
                 {
                     key_val=keypad_value[keypad_row][keypad_col];
-                    for(int i=0;i<13;i++)
+                    for(int i=0;i<14;i++)
                     {
                         if(key_val<14)
                         {
