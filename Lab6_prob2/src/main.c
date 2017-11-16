@@ -45,7 +45,7 @@ void keypad_init()
     GPIOC->ODR     |= 0b00000000000000000000000011110000;
 
     GPIOB->MODER   &= 0b11111111111111111111111100000000;
-    GPIOB->PUPDR   &= 1111111111111111111111111100000000; //clear and set input as pdown mode
+    GPIOB->PUPDR   &= 1111111111111111111111111110101010; //clear and set input as pdown mode
     GPIOB->PUPDR   |= 0b00000000000000000000000000000000; //clear and set input as pdown mode
 }
 /* TODO: scan keypad value
@@ -81,30 +81,27 @@ int display(int data, int num_digs)
 }
 char keypad_scan()
 {
-    //key get get 255 for no key press
+    //key get 255 for no key press
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
-    int keypad_row=0,keypad_col=0;
+    int keypad_row=0,keypad_col=0,scanned_col,is_pressed;
     char key_val=-1;
     while(1)
     {
-        //printf("row %d column %d \n",keypad_row,keypad_col);
-    	for(keypad_row=0;keypad_row<4;keypad_row++) //output data from 1st row
+        for(keypad_row=0;keypad_row<4;keypad_row++) //output data from 1st row
         {
             for(keypad_col=0;keypad_col<4;keypad_col++) //read input data from 1st col
             {
                 /*use pc 3210 for X output row
                 use pb 3210 for Y input col*/
-                GPIOC->ODR=(GPIOC->ODR)|(1<<keypad_row);//shift the value to send data for that row
-                /*if(keypad_row*4+keypad_col >=10)
-                	display(keypad_row*4+keypad_col,2);
-                else
-                	display(keypad_row*4+keypad_col,1);*/
-                //display(88,2);
-                if(GPIOB->IDR=(GPIOB->IDR>>keypad_col)&1) //key is pressed
+            	GPIOC->ODR&=0; //clear the output value
+                GPIOC->ODR|=(1<<keypad_row);//shift the value to send data for that row, data set
+                scanned_col=(GPIOB->IDR>>keypad_col);
+                is_pressed=(GPIOB->IDR>>keypad_col)&1;
+                if(is_pressed) //key is pressed
                 {
                     key_val=keypad_value[keypad_row][keypad_col];
-                	//display(34,2);
-                    display(keypad_value[keypad_row][keypad_col],(keypad_value>=10?2:1));
+                	//display(12,2);
+                    display(keypad_value[keypad_row][keypad_col],(key_val>=10?2:1));
                 }
                 else
                 {
@@ -112,7 +109,6 @@ char keypad_scan()
                 }
             }
         }
-        //display(88888888,8);
     }
     return key_val;
 }
@@ -121,6 +117,7 @@ int main()
     GPIO_init();
     max7219_init();
     //display(888888,6);
+    display_clr(2);
     keypad_init();
     keypad_scan();
     return 0;
