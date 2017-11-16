@@ -24,7 +24,7 @@ void keypad_init()
     GPIOC->ODR     |= 0b00000000000000000000000011110000;
 
     GPIOB->MODER   &= 0b11111111111111111111111100000000; //use pc 3210 for X output row
-    GPIOB->PUPDR   &= 1111111111111111111111111100000000; //clear and set input as pdown mode
+    GPIOB->PUPDR   &= 0b11111111111111111111111100000000; //clear and set input as pdown mode
     GPIOB->PUPDR   |= 0b00000000000000000000000010101010; //clear and set input as pdown mode
 }
 /* TODO: scan keypad value

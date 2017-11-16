@@ -16,17 +16,28 @@ void keypad_init()
     GPIO_init(); //have initialized in arm
     RCC->AHB2ENR   |= 0b00000000000000000000000000000111; //safely initialize again
 
-    GPIOC->MODER   &= 0b11111111111111111111111100000000; //use pb 3210 for Y input col
+/*  GPIOC->MODER   &= 0b11111111111111111111111100000000; //use pb 3210 for Y input col
     GPIOC->MODER   |= 0b00000000000000000000000001010101; //use pb 3210 for Y input col
     GPIOC->PUPDR   &= 0b11111111111111111111111100000000; //clear and set output use pup since we want 1 to be sent high level voltage
     GPIOC->PUPDR   |= 0b00000000000000000000000001010101; //clear and set output use pup since we want 1 to be sent high level voltage
     GPIOC->OSPEEDR &= 0b11111111111111111111111100000000;
     GPIOC->OSPEEDR |= 0b00000000000000000000000001010101;
-    GPIOC->ODR     |= 0b00000000000000000000000011110000;
+    GPIOC->ODR     |= 0b00000000000000000000000011110000;*/
 
-    GPIOB->MODER   &= 0b11111111111111111111111100000000; //use pc 3210 for X output row
+ /* GPIOB->MODER   &= 0b11111111111111111111111100000000; //use pc 3210 for X output row
     GPIOB->PUPDR   &= 1111111111111111111111111100000000; //clear and set input as pdown mode
-    GPIOB->PUPDR   |= 0b00000000000000000000000010101010; //clear and set input as pdown mode
+    GPIOB->PUPDR   |= 0b00000000000000000000000010101010;*/ //clear and set input as pdown mode
+    GPIOB->MODER   &= 0b11111111111111111111111100000000;
+    GPIOB->MODER   |= 0b00000000000000000000000001010101;
+    GPIOB->PUPDR   &= 0b11111111111111111111111100000000;
+    GPIOB->PUPDR   |= 0b00000000000000000000000001010101;
+    GPIOB->OSPEEDR &= 0b11111111111111111111111100000000;
+    GPIOB->OSPEEDR |= 0b00000000000000000000000001010101;
+    GPIOB->ODR     |= 0b00000000000000000000000011110000;
+
+    GPIOC->MODER   &= 0b11111111111111111111111100000000;
+    GPIOC->PUPDR   &= 0b11111111111111111111111100000000;
+    GPIOC->PUPDR   |= 0b00000000000000000000000010101010;
 }
 /* TODO: scan keypad value
 * return:
@@ -68,15 +79,15 @@ char keypad_scan()
     while(1)
     {
         nothing_is_pressed=1;
-        for(keypad_row=0;keypad_row<keypad_row_max;keypad_row++) //output data from 1st row
+        for(keypad_col=0;keypad_col<keypad_row_max;keypad_col++) //output data from 1st row
         {
-            for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++) //read input data from 1st col
+            for(keypad_row=0;keypad_row<keypad_col_max;keypad_row++) //read input data from 1st col
             {
                 /*use pc 3210 for X output row
                 use pb 3210 for Y input col*/
-            	GPIOC->ODR&=0; //clear the output value
-                GPIOC->ODR|=(1<<keypad_row);//shift the value to send data for that row, data set
-                int masked_value=GPIOB->IDR&0xf,is_pressed=(masked_value>>keypad_col)&1,buffer_idx=0;
+            	GPIOB->ODR&=0; //clear the output value
+                GPIOB->ODR|=(1<<keypad_col);//shift the value to send data for that row, data set
+                int masked_value=GPIOC->IDR&0xf,is_pressed=(masked_value>>keypad_row)&1,buffer_idx=0;
 
                  //clear buffer
                 if(is_pressed) //key is pressed
