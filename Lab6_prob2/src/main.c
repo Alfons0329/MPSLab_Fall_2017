@@ -95,15 +95,15 @@ char keypad_scan()
                 use pb 3210 for Y input col*/
             	GPIOC->ODR&=0; //clear the output value
                 GPIOC->ODR|=(1<<keypad_row);//shift the value to send data for that row, data set
-                display(GPIOB->IDR,2);
-                scanned_col=(GPIOB->IDR>>keypad_col);
-                is_pressed=(GPIOB->IDR>>keypad_col)&1;
+                int masked_value=GPIOB->IDR&0xf;
+                scanned_col=(masked_value>>keypad_col);
+                is_pressed=(masked_value>>keypad_col)&1;
 
                 if(is_pressed) //key is pressed
                 {
                     key_val=keypad_value[keypad_row][keypad_col];
                 	//display(12,2);
-                    //display(keypad_value[keypad_row][keypad_col],(key_val>=10?2:1));
+                    display(keypad_value[keypad_row][keypad_col],(key_val>=10?2:1));
                 }
                 else
                 {
