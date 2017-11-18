@@ -78,13 +78,41 @@ char keypad_scan()
     memset(hash_map,0,sizeof(bool)*14);
     int out_sum=0;
     bool clear=1;
-    bool state=0;
+    int state=0;
 
     while(1)
     {
+    	switch(out_sum){
+    	case 0 ... 9:
+			if(out_sum!=0 || clear!=1)
+				display(out_sum,1);
+			else
+				display_clr(8);
+ 			break;
+ 		case 10 ... 99:
+			display(out_sum,2);
+    		break;
+    	case 100 ... 999:
+			display(out_sum,3);
+    		break;
+    	case 1000 ... 9999:
+    		display(out_sum,4);
+    		break;
+    	case 10000 ... 99999:
+    		display(out_sum,5);
+    		break;
+    	case 100000 ... 999999:
+    		display(out_sum,6);
+    		break;
+    	case 1000000 ... 9999999:
+    		display(out_sum,7);
+    		break;
+    	case 10000000 ... 99999999:
+    		display(out_sum,8);
+    		break;
+    	}
         nothing_is_pressed=1;
         int sum;
-
         switch(state){
         case 0:
         	for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++){ //output data from 1st row
@@ -147,7 +175,35 @@ char keypad_scan()
 					}
 				}
 			}
-
+        	switch(out_sum){
+        	case 0 ... 9:
+        		if(out_sum!=0 || clear!=1)
+        			display(out_sum,1);
+        		else
+        			display_clr(8);
+        	    break;
+        	case 10 ... 99:
+        		display(out_sum,2);
+        	 	break;
+        	case 100 ... 999:
+        		display(out_sum,3);
+        		break;
+        	case 1000 ... 9999:
+        	    display(out_sum,4);
+        	    break;
+        	case 10000 ... 99999:
+        	    display(out_sum,5);
+        	    break;
+        	case 100000 ... 999999:
+        	    display(out_sum,6);
+        	    break;
+        	case 1000000 ... 9999999:
+        	   	display(out_sum,7);
+        	    break;
+        	case 10000000 ... 99999999:
+        	    display(out_sum,8);
+        	    break;
+        	}
 			if(nothing_is_pressed){
 				state=1; //if not pressed, just clear the screen
 				for(int i=0;i<14;i++)
@@ -198,8 +254,8 @@ int main()
 {
     GPIO_init();
     max7219_init();
-    display_clr(8);
     keypad_init();
+    display_clr(8);
     keypad_scan();
     return 0;
 }
