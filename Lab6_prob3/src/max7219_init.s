@@ -45,7 +45,7 @@ max7219_init:
 	bl max7219_send
 
 	ldr r0, =SCAN_LIMIT
-	ldr r1, =0x1 //light up digit 0-6
+	ldr r1, =0x7 //light up digit 0-7
 	bl max7219_send
 
 	ldr r0, =SHUT_DOWN

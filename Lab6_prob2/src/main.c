@@ -27,11 +27,7 @@ void keypad_init()
     GPIOB->PUPDR   &= 0b11111111111111111111111100000000; //clear and set input as pdown mode
     GPIOB->PUPDR   |= 0b00000000000000000000000010101010; //clear and set input as pdown mode
 }
-/* TODO: scan keypad value
-* return:
-* >=0: key pressed value
-* -1: no key press
-*/
+
 int display_clr(int num_digs)
 {
 	for(int i=1;i<=num_digs;i++)
@@ -40,6 +36,7 @@ int display_clr(int num_digs)
 	}
 	return 0;
 }
+//integer to display (-99999999~99999999)
 int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
@@ -56,6 +53,12 @@ int display(int data, int num_digs)
     else
         return 0; //end this function
 }
+
+/* TODO: scan keypad value
+* return:
+* >=0: key pressed value
+* -1: no key press
+*/
 char keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
@@ -71,7 +74,7 @@ char keypad_scan()
                 use pb 3210 for Y input col*/
             	GPIOC->ODR&=0; //clear the output value
                 GPIOC->ODR|=(1<<keypad_row);//shift the value to send data for that row, data set
-                int masked_value=GPIOB->IDR&0xf,is_pressed=(masked_value>>keypad_col)&1;
+                int masked_value=GPIOB->IDR&0xf, is_pressed=(masked_value>>keypad_col)&1;
                 if(is_pressed) //key is pressed
                 {
                     key_val=keypad_value[keypad_row][keypad_col];

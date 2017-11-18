@@ -7,7 +7,7 @@ extern void max7219_send(unsigned char address, unsigned char data);
 int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
-    //7 segpanel from 1 to 7 (not zero base)
+    //7 seg panel from 1 to 7 (not zero base)
     int i=0,dig;
     for(i=1;i<=num_digs;i++)
     {
