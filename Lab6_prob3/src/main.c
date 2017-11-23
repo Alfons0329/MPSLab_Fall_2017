@@ -57,7 +57,7 @@ int display(int data, int num_digs)
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
     int i=0,dig=0;
-    display_clr(8); //clear the old number for trash removing
+    //display_clr(8); //clear the old number for trash removing
     for(i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
