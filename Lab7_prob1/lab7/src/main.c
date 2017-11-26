@@ -25,7 +25,17 @@ unsigned int pll_cofig[5] =
 }
 void GPIO_init()
 {
-    RCC_AHB2ENR
+    RCC->AHB2ENR   |= 0b00000000000000000000000000000111; //turn on papbpc
+
+    GPIOA->MODER   &= 0b11111111111111111111001111111111; //use pa5 to output for one led
+    GPIOA->MODER   |= 0b11111111111111111111011111111111;
+    GPIOA->PUPDR   &= 0b11111111111111111111001111111111;
+    GPIOA->PUPDR   &= 0b11111111111111111111011111111111;
+    GPIOA->OSPEEDR &= 0b11111111111111111111001111111111;
+    GPIOA->OSPEEDR |= 0b11111111111111111111101111111111
+
+    GPIOC->MODER   &= 0xf3ffffff //use pc13 for user button
+
 }
 void systemclk_setting(int state)
 {
@@ -41,8 +51,13 @@ void systemclk_setting(int state)
     while (RCC->CR & 0x02000000);// busy waiting till PLL is really turned on
     RCC->CFGR = 0x00000003; //set PLL as the system clock
 }
+void check_button
 int main()
 {
     GPIO_init();
+    static int state = 0;
     while(1)
+    {
+
+    }
 }
