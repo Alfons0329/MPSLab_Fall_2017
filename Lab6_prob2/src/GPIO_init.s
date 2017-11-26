@@ -50,7 +50,7 @@ GPIO_init:
 
 	//GPIOA_OTYPER: push-pull (reset state)
 	//GPIO_OSPEEDR: high speed
-	mov r0, 0b101010 //PA2,1,0: high speed
+	mov r0, 0b101010 
 	lsl r0, 10
 	ldr r1, =GPIOA_OSPEEDER
 	ldr r2, [r1]
