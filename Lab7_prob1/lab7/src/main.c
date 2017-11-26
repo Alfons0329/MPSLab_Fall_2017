@@ -1,5 +1,5 @@
 #include "stm32l476xx.h"
-extern void GPIO_init();
+
 extern void delay_1s();
 //reference to manual p225/1830
 /*
@@ -23,19 +23,26 @@ unsigned int pll_cofig[5] =
     0b001000000000010000000110001,
     0b001000000000101000000110001
 }
+void GPIO_init()
+{
+    RCC_AHB2ENR
+}
 void systemclk_setting(int state)
 {
     state %= 5 //state cycle
     RCC->CFGR = 0x00000000; //CFGR reset value
     RCC->CR  &= 0xFEFFFFFF; //PLL off
-    while (RCC->CR & 0x02000000); //wait till PLL is really halted
+    while (RCC->CR & 0x02000000); //busy waiting till PLL is really halted
     //after halted, configure the PLLCFGR to set the clock speed
+    RCC->PLLCFGR &= 0x00000001 //off all except the MSI clock source
+    RCC->PLLCFGR |= pll_cofig //customization PLLN PLLM PLLR settings
 
-
-
+    RCC->CR |= 0x01000000; //PLL on again
+    while (RCC->CR & 0x02000000);// busy waiting till PLL is really turned on
     RCC->CFGR = 0x00000003; //set PLL as the system clock
 }
 int main()
 {
-
+    GPIO_init();
+    while(1)
 }
