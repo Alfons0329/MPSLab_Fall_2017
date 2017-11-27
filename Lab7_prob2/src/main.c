@@ -32,11 +32,9 @@ void Timer_init( TIM_TypeDef *timer)
     TIM2->PSC = 39999U;  //prescaler, how many counter clock cycle  I have to upload my counter
     TIM2->ARR = 100U; //arr setting the precision of the counter
     TIM2->EGR = TIM_EGR_UG;  //re-initailzie timer to startup
-
     //counter will be incremented by one symbolize the millisecond
     //1 millisecond is 40000/4000000 = 1/100, so each 40000 clock cycle, increse the counter by one
     //the time precision should be 0.01sec, so set the arr be 99 which means a second should be divieded into 100 parts
-
 }
 void Timer_start(TIM_TypeDef *timer)
 {
