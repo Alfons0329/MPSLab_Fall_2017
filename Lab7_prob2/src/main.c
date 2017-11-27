@@ -1,5 +1,5 @@
 #include "stm32l476xx.h"
-//#define TIME_SEC 12.70
+#define TIME_SEC 12.70
 extern void GPIO_init();
 extern void max7219_init();
 extern void Display();
@@ -42,9 +42,8 @@ void Timer_start(TIM_TypeDef *timer)
 {
     //todo: start timer and show the time on the 7-SEG LED.
     //enable the counter
-
-    TIM2->CR1 |= TIM_CR1_CEN //Turn on the counter mode,
-
+    TIM2->CR1 |= TIM_CR1_CEN //Turn on the counter mode, change in the control register
+    TIM2->SR1 &= ~(TIM_SR_UIF) //off the user interrupt mode, so the cpu can keep working on the clock increment
 }
 void display_clr()
 {
