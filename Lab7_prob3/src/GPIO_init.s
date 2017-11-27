@@ -34,7 +34,7 @@ GPIO_init:
     ldr r0, =RCC_AHB2ENR
     mov r1, 0b111
     str r1, [r0]
-
+/*
 	//GPIOA_MODER: PA7 6 5: output
 	ldr r0, =0b010101
 	lsl r0, 10
@@ -43,8 +43,13 @@ GPIO_init:
 	and r2, 0xFFFF03FF //clear 7 6 5
 	orrs r2, r2, r0 //7 6 5  --> output
 	str r2, [r1]
-
-	//GPIOA_OTYPER: push-pull (reset state)
+*/
+	ldr  r1, =GPIOA_MODER
+	ldr  r2, [r1]
+	and  r2, 0b11111111111111111111111100111111
+	orr  r2, 0b00000000000000000000000010000000 //alternate function mode for PA3
+	str  r2, [r1]
+/*	//GPIOA_OTYPER: push-pull (reset state)
 	//GPIO_OSPEEDR: high speed
 	mov r0, 0b101010 //PA2,1,0: high speed
 	lsl r0, 10
@@ -53,7 +58,7 @@ GPIO_init:
 	and r2, 0xFFFF03FF
 	orrs r2, r2, r0
 	str r0, [r1]
-
+*/
     /*
     //enable the port b GPIOB_MODER for INPUT MODE FOR KEYPAD
 	ldr r0, =GPIOB_MODER
