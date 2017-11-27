@@ -1,36 +1,23 @@
 #include "stm32l476xx.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 #define TIME_SEC 12.70
+#define UPPER_BOUND = TIME_SEC*100
 extern void GPIO_init();
 extern void max7219_init();
 extern void Display();
 extern void max7219_send(unsigned char address, unsigned char data);
 extern void max7219_init();
-void systemclk_setting() //initialize the system clock before doing timing, USE 1 MHZ!!!!!!!!, the code is used from Lab7_prob1
-{
-    //temporarily use ths hsi clock before turning off the pll clock for configuration since the system still need the clock to work
-    RCC->CR |= RCC_CR_HSION; //turn on the hsi clock before configuraion
-    while((RCC->CR & RCC_CR_HSIRDY) == 0); //wait till the hsi clock has been really turned on
-
-    RCC->CFGR = 0x00000000; //CFGR reset value
-    RCC->CR  &= 0xFEFFFFFF; //PLL off
-    while (RCC->CR & 0x02000000); //busy waiting till PLL is really halted
-
-    //after halted, configure the PLLCFGR to set the clock speed
-    RCC->PLLCFGR &= 0x00000001; //off all except the MSI clock source
-    RCC->PLLCFGR |= 0b011000000000000100001110001; //customization PLLN PLLM PLLR settings
-
-    RCC->CR |= RCC_CR_PLLON; //turn on the pll clock again
-	while((RCC->CR & RCC_CR_PLLRDY) == 0); //busy waiting till PLL is really turned on
-
-	RCC->CFGR |= RCC_CFGR_SW_PLL; //set the clock source as pll clock (customized)
-    while ((RCC->CFGR & RCC_CFGR_SWS_PLL) != RCC_CFGR_SWS_PLL); //wait till the pll clock is really set
-}
+unsigned int millisecond;
 void Timer_init( TIM_TypeDef *timer)
 {
     //todo: Initialize timer, dataset from the stm32l476xx.h
     RCC_APB1ENR1 |= RCC_APB1ENR1_TIM2EN; //turn on the timer2
-    TIM2->PSC = 39999U;  //prescaler, how many counter clock cycle  I have to upload my counter
-    TIM2->ARR = 100U; //arr setting the precision of the counter
+    TIM2->CR1 &= 0x0000; //Turned on the counter as the count up mode
+    TIM2->PSC = 39999U;  //prescaler, how many counter clock cycle I have to update my counter
+    TIM2->ARR = 99U; //how much counter to do in one second, 0 is included so use 99 rather than 100
+    //the formula is now on 4MHz = (39999+1)*(99+1) = 40000*100= 400w = 4MHz
     TIM2->EGR = TIM_EGR_UG;  //re-initailzie timer to startup
     //counter will be incremented by one symbolize the millisecond
     //1 millisecond is 40000/4000000 = 1/100, so each 40000 clock cycle, increse the counter by one
@@ -43,9 +30,29 @@ void Timer_start(TIM_TypeDef *timer)
     TIM2->CR1 |= TIM_CR1_CEN //Turn on the counter mode, change in the control register
     TIM2->SR1 &= ~(TIM_SR_UIF) //off the user interrupt mode, so the cpu can keep working on the clock increment
 }
+int display_length()
+{
+    return (int) log10(millisecond);
+}
+void timer_display(int data,int len)
+{
+    for(int i = 1;i <= len;i ++)
+    {
+        if(i == 3)
+        {
+            max7219_send(i,(data%10) | (0x80)); //the float digit bit has to be turned on
+        }
+        else
+        {
+            max7219_send(i,data%10);
+        }
+        data %= 10;
+    }
+
+}
 void display_clr()
 {
-    for(int i=1;i<=8;i++)
+    for(int i = 1;i <= 8;i ++)
     {
         max7219_send(i,0xF);
     }
@@ -60,5 +67,11 @@ int main()
 	while(1)
 	{
 		//todo: Polling the timer count and do lab requirements
+        if(TIME_SEC < 0.01 || TIME_SEC > 10000.0)
+        {
+            timer_display(0,3); //3 bit float number, 0.00
+        }
+        if(TIM2->)
 	}
+
 }
