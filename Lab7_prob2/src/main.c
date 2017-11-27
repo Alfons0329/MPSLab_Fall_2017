@@ -31,7 +31,7 @@ void Timer_init( TIM_TypeDef *timer)
     RCC_APB1ENR1 |= RCC_APB1ENR1_TIM2EN; //turn on the timer2
     TIM2->ARR = 0xFFFFFFFF;
     TIM2->PSC = 1048576*(/) //prescaler auto reload value after exceed this
-    TIM2->EGR =
+    TIM2->EGR = 
 }
 void Timer_start(TIM_TypeDef *timer)
 {
