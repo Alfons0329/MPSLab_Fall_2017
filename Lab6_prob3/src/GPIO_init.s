@@ -11,16 +11,12 @@
     .equ	GPIOA_ODR,		0x48000014
     .equ	GPIOA_BSRR,		0x48000018 //set bit
     .equ	GPIOA_BRR,		0x48000028 //clear bit
-    //use for
-    .equ    RCC_AHB2ENR  , 0x4002104C
     .equ    GPIOB_MODER  , 0x48000400
     .equ    GPIOB_OTYPER , 0x48000404
     .equ    GPIOB_OSPEEDR, 0x48000408
     .equ    GPIOB_PUPDR  , 0x4800040C
     .equ    GPIOB_ODR    , 0x48000414
-    //.equ    onesec, 800000
-    //.equ    interval_cnt, 200000
-    //Din, CS, CLK offset
+
     .equ 	DIN,	0b100000 	//PA5
     .equ	CS,		0b1000000	//PA6
     .equ	CLK,	0b10000000	//PA7
