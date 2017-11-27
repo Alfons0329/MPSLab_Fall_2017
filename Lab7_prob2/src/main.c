@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define TIME_SEC 12.70
-#define TARGET_SEC = TIME_SEC / 1
-#define TARGET_MSEC = TIME_SEC * 100 - ( TARGET_SEC * 10 )
+#define TIME_SEC 20.37
+#define TARGET_SEC  TIME_SEC / 1
+#define TARGET_MSEC  TIME_SEC * 100 - ( TARGET_SEC * 10 )
 extern void GPIO_init();
 extern void max7219_init();
 extern void Display();
@@ -16,7 +16,7 @@ unsigned int get_current_counter_value;
 void Timer_init( TIM_TypeDef *timer)
 {
     //todo: Initialize timer, dataset from the stm32l476xx.h
-    RCC_APB1ENR1 |= RCC_APB1ENR1_TIM2EN; //turn on the timer2
+    RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN; //turn on the timer2
     TIM2->CR1 &= 0x0000; //Turned on the counter as the count up mode
     TIM2->PSC = 39999U;  //prescaler, how many counter clock cycle I have to update my counter
     TIM2->ARR = 99U; //how much counter to do in one second, 0 is included so use 99 rather than 100
@@ -39,19 +39,15 @@ void Timer_start(TIM_TypeDef *timer)
 {
     //todo: start timer and show the time on the 7-SEG LED.
     //enable the counter
-    TIM2->CR1 |= TIM_CR1_CEN //Turn on the counter mode, change in the control register
-    TIM2->SR1 &= ~(TIM_SR_UIF) //off the user interrupt mode, so the cpu can keep working on the clock increment
+    TIM2->CR1 |= TIM_CR1_CEN; //Turn on the counter mode, change in the control register
+    TIM2->SR &= ~(TIM_SR_UIF); //off the user interrupt mode, so the cpu can keep working on the clock increment
 }
-int display_length()
-{
-    return (int) log10(millisecond);
-}
-void timer_display_reset(int data,int len)
+void timer_display(int data,int len)
 {
     unsigned int tmp_ms = millisecond, tmp_s = second;
     if( data == 0 && len == 3 )
     {
-        for(int i = 1;i <= len;i ++)
+        for(int i = 1;i <= len;i++)
         {
             if(i == 3)
             {
@@ -61,26 +57,67 @@ void timer_display_reset(int data,int len)
             {
                 max7219_send(i,data % 10);
             }
-            data %= 10;
+            data /= 10;
         }
     }
-    else
+    else if(data == 87 && len ==87) //stop the timer!!
     {
-        for(int i = 1;i <= len;i ++)
+        tmp_s = (int) TIME_SEC;
+        tmp_ms = TIME_SEC*100-tmp_s*100;
+        for(int i = 1;i <= len;i++)
         {
             if(i<3)
             {
                 max7219_send(i,tmp_ms % 10);
-                tmp_ms %= 10;
+                tmp_ms /= 10;
             }
             else if(i == 3)
             {
-                max7219_send(i,(data % 10) | (0x80)); //the float digit bit has to be turned on
+                max7219_send(i,(tmp_s % 10) | (0x80)); //the float digit bit has to be turned on
+                tmp_s /= 10;
+                if(tmp_s == 0)
+                {
+                    break;
+                }
             }
             else
             {
                 max7219_send(i,tmp_s % 10);
-                tmp_s %= 10;
+                tmp_s /= 10;
+                if(tmp_s == 0)
+                {
+                    break;
+                }
+            }
+
+        }
+    }
+    else
+    {
+        for(int i = 1;i <= len;i++)
+        {
+            if(i<3)
+            {
+                max7219_send(i,tmp_ms % 10);
+                tmp_ms /= 10;
+            }
+            else if(i == 3)
+            {
+                max7219_send(i,(tmp_s % 10) | (0x80)); //the float digit bit has to be turned on
+                tmp_s /= 10;
+                if(tmp_s == 0)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                max7219_send(i,tmp_s % 10);
+                tmp_s /= 10;
+                if(tmp_s == 0)
+                {
+                    break;
+                }
             }
 
         }
@@ -90,7 +127,7 @@ void timer_display_reset(int data,int len)
 }
 void display_clr()
 {
-    for(int i = 1;i <= 8;i ++)
+    for(int i = 1;i <= 8;i++)
     {
         max7219_send(i,0xF);
     }
@@ -100,8 +137,9 @@ int main()
 {
 	GPIO_init();
 	max7219_init();
-	Timer_init();
-	Timer_start();
+	Timer_init(TIM2);
+	Timer_start(TIM2);
+    display_clr();
     millisecond = 0;
     get_current_counter_value = 0;
 	while(1)
@@ -124,7 +162,7 @@ int main()
         When CNT is reinitialized by a trigger event (refer to the synchro control register description),
         if URS=0 and UDIS=0 in the TIMx_CR1 register.
         */
-        timer_display(6,display_length(second*100+millisecond));
+        timer_display(6,8);
         if(TIM2->SR & 0x0001) //one second is reached
         {
             second+=1;
@@ -134,14 +172,14 @@ int main()
         get_current_counter_value = TIM2->CNT; //get the current counter value since it symbolizes the millisecond
         millisecond = get_current_counter_value;
 
-        if( second >= TARGET_SEC && millisecond >= TARGET_MSEC)
+        if( second >= TARGET_SEC || millisecond >= TARGET_MSEC)
         {
-            timer_display(6,display_length(second*100+millisecond));
+            timer_display(87,87);
             while(1); //halt here
         }
         get_current_counter_value = TIM2->CNT; //get the current counter value since it symbolizes the millisecond
         millisecond = get_current_counter_value;
-        timer_display(6,display_length(second*100+millisecond));
+        timer_display(6,8);
 	}
     return 0;
 }
