@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define TIME_SEC 20.37
+#define TIME_SEC 0.07
 #define TARGET_SEC  TIME_SEC / 1
 #define TARGET_MSEC  TIME_SEC * 100 - ( TARGET_SEC * 10 )
 extern void GPIO_init();
@@ -135,7 +135,7 @@ void display_clr()
 }
 int main()
 {
-	GPIO_init();
+ 	GPIO_init();
 	max7219_init();
 	Timer_init(TIM2);
 	Timer_start(TIM2);
