@@ -82,35 +82,6 @@ char keypad_scan()
 
     while(1)
     {
-    	switch(out_sum){
-    	case 0 ... 9:
-			if(out_sum!=0 || clear!=1)
-				display(out_sum,1);
-			else
-				display_clr(8);
- 			break;
- 		case 10 ... 99:
-			display(out_sum,2);
-    		break;
-    	case 100 ... 999:
-			display(out_sum,3);
-    		break;
-    	case 1000 ... 9999:
-    		display(out_sum,4);
-    		break;
-    	case 10000 ... 99999:
-    		display(out_sum,5);
-    		break;
-    	case 100000 ... 999999:
-    		display(out_sum,6);
-    		break;
-    	case 1000000 ... 9999999:
-    		display(out_sum,7);
-    		break;
-    	case 10000000 ... 99999999:
-    		display(out_sum,8);
-    		break;
-    	}
         nothing_is_pressed=1;
         int sum;
         switch(state){
@@ -142,36 +113,6 @@ char keypad_scan()
 							}
 						}
 
-					}
-
-					switch(out_sum){
-					case 0 ... 9:
-						if(out_sum!=0 || clear!=1)
-							display(out_sum,1);
-						else
-							display_clr(8);
-						break;
-					case 10 ... 99:
-						display(out_sum,2);
-						break;
-					case 100 ... 999:
-						display(out_sum,3);
-						break;
-					case 1000 ... 9999:
-						display(out_sum,4);
-						break;
-					case 10000 ... 99999:
-						display(out_sum,5);
-						break;
-					case 100000 ... 999999:
-						display(out_sum,6);
-						break;
-					case 1000000 ... 9999999:
-						display(out_sum,7);
-						break;
-					case 10000000 ... 99999999:
-						display(out_sum,8);
-						break;
 					}
 				}
 			}

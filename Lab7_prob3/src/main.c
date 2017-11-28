@@ -42,33 +42,38 @@ void keypad_init()
 
 
 void GPIO_init_AF(){
-//TODO: Initial GPIO pin as alternate function for buzzer. You can choose to use C or assembly to finish this function.
-	/* GPIO: set PB4 as alternate function */
-	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
-	GPIOB->MODER |= GPIO_MODER_MODE4_1;
-	GPIOB->AFR[0] |= GPIO_AFRL_AFSEL4_1;	/* PB4: AF2 (TIM3_CH1) */
+	//TODO: Initial GPIO pin as alternate function for buzzer. You can choose to use C or assembly to finish this function.
+		/* GPIO: set PB4 as alternate function */
+		//RCC->AHB2ENR |= 0b1;	/* enable AHB2 clock for port A */
+		GPIOA->MODER = (GPIOA->MODER & 0xFFFFF3FF)| 0b010000000000;
+		GPIOA->AFR[0] = (GPIOA->AFR[0] & 0xFF0FFFFF) | 0x100000;	/* PA5: AF2 (TIM2_CH1) */ //AFRL
 }
 void Timer_init(){
     //TODO: Initialize timer
-	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
-	// enable TIM3 timer clock
-	TIM3->CR1 |= TIM_CR1_DIR;
-	// counter used as downcounter
-	TIM3->CR1 |= TIM_CR1_ARPE;
-	// enable auto-reload preload (buffer TIM3_ARR)
-	TIM3->ARR = (uint32_t) 100;
-	// auto-reload prescalar value
-	TIM3->CCMR1 &= 0xFFFFFCFF;
-	// select compare 2 (channel 2 is configured as output)
-	TIM3->CCMR1 |= (TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1);
-	// set output compare 2 mode to PWM mode 1
-	TIM3->CCMR1 |= TIM_CCMR1_OC2PE;
-	// enable output compare 2 preload register on TIM3_CCR2
-	TIM3->CCER |= TIM_CCER_CC2E;
-	// enable compare 2 output
-	TIM3->EGR = TIM_EGR_UG;
+	//enable TIM2 timer clock
+	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
+	//downcounter
+	TIM2->CR1 |= TIM_CR1_DIR;
+	//enable auto-reload preload
+	TIM2->CR1 |= TIM_CR1_ARPE;
+	//reload value (auto-reload presaler value)
+	TIM2->ARR = (uint32_t) 100;
 	// re-initialize the counter and generates an update of the registers
+	TIM2->EGR = TIM_EGR_UG;
+
+	// select compare 2 (channel 2 is configured as output)
+	TIM2->CCMR1 &= 0xFFFFFCFF;
+	// set output compare 2 mode to PWM mode 1
+	TIM2->CCMR1 |= (TIM_CCMR1_OC1M_0 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2);
+	TIM2->CCR1 = TIM2->ARR/2; //duty cycle=50%
+	//TIM2->CCMR1 |= (TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1);
+	// enable output compare 2 preload register on TIM2_CCR2
+	TIM2->CCMR1 |= TIM_CCMR1_OC1PE;
+	// enable compare 2 output
+	TIM2->CCER |= TIM_CCER_CC1E;
+
 }
+
 
 void PWM_channel_init(){
     //TODO: Initialize timer PWM channel
@@ -76,9 +81,9 @@ void PWM_channel_init(){
 
 void timer_config()
 {
-	TIM3->PSC = (uint32_t) (4000000 / freq / 100);
+	TIM2->PSC = (uint32_t) (4000000 / freq / 100);
 	// prescalar value
-	TIM3->CCR2 = duty_cycle;
+	TIM2->CCR1 = duty_cycle;
 	// compare 2 preload value
 }
 
@@ -106,53 +111,51 @@ void keypad_scan()
                     case 1:
                     	freq = DO;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN; //start timer
+                    	TIM2->CR1 |= TIM_CR1_CEN; //start timer
                     	break;
                     case 2:
                     	freq = RE;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN;
+                    	TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                     case 3:
                     	freq = MI;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN;
+                    	TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                     case 4:
                     	freq = FA;
                    		timer_config();
-                   		TIM3->CR1 |= TIM_CR1_CEN;
+                   		TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                		case 5:
                  		freq = SO;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN;
+                    	TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                     case 6:
                     	freq = LA;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN;
+                    	TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                     case 7:
                     	freq = SI;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN;
+                    	TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                     case 8:
                     	freq = HDO;
                     	timer_config();
-                    	TIM3->CR1 |= TIM_CR1_CEN;
+                    	TIM2->CR1 |= TIM_CR1_CEN;
                     	break;
                     case 10:
-                    	duty_cycle = duty_cycle == 90 ? duty_cycle : duty_cycle + 5;
+                    	duty_cycle = (duty_cycle == 90) ? duty_cycle : duty_cycle + 5;
                     	break;
                     case 11:
-                    	duty_cycle = duty_cycle == 10 ? duty_cycle : duty_cycle - 5;
-                    	break;
-                    case 86400:
+                    	duty_cycle = (duty_cycle == 10) ? duty_cycle : duty_cycle - 5;
                     	break;
                     default:
-                    	TIM3->CR1 &= ~TIM_CR1_CEN;
+                    	TIM2->CR1 &= ~TIM_CR1_CEN;
                     	freq = -1;
                     	break;
                     }
