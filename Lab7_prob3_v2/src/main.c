@@ -49,18 +49,20 @@ void GPIO_init_AF(){
 	GPIOB->AFR[0] |= (0b0001<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
 
 }
-void Timer_init(uint32_t presc){
+void Timer_init(){
    //TODO: Initialize timer
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
-	TIM2->CR1 &= ~(TIM_CR1_DIR | TIM_CR1_CMS);
-	TIM2->CR1 &= ~(TIM_CR1_DIR_Pos);
-	TIM2->CR1 &= ~(TIM_CR1_CMS_Pos);
+	//TIM2->CR1 &= ~(TIM_CR1_DIR | TIM_CR1_CMS);
+	//TIM2->CR1 &= ~(TIM_CR1_DIR_Pos);
+	//TIM2->CR1 &= ~(TIM_CR1_CMS_Pos);
+	TIM2->CR1 &= 0x0000; //Turned on the counter as the count up mode
 	//SET_REG(TIM2->CR1, TIM_CR1_DIR | TIM_CR1_CMS, TIM_COUNTERMODE_DOWN);// Edge-aligned mode, down counter
-	TIM2->ARR = (uint32_t)100;//Reload value
-	TIM2->PSC = (uint32_t)presc;//Prescaler
+	TIM2->ARR = (uint32_t)99;//Reload value
+	TIM2->PSC = (uint32_t)39999;//Prescaler
 	TIM2->EGR = TIM_EGR_UG;//Reinitialize the counter
-	TIM2->CR1 |= TIM_CR1_CEN;
+	//TIM2->CR1 |= TIM_CR1_CEN;
 }
+
 void PWM_channel_init(){
    //TODO: Initialize timer PWM channel
 	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
@@ -177,9 +179,8 @@ int main()
 {
 	keypad_init();
 	GPIO_init_AF();
-	Timer_init(30000);
+	Timer_init();
 	PWM_channel_init();
-	//timer_init();
 	keypad_scan();
 }
 
