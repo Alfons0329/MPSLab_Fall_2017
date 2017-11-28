@@ -113,7 +113,7 @@ int keypad_scan()
     	curr = key_val;
     	// ring while keep press same button
     	if (curr == prev)
-    		check = 86400;
+    		check = 100;
     	else
     		check = curr;
   		switch (check)
@@ -164,7 +164,7 @@ int keypad_scan()
     		case 15: //duty cycle +5
     			duty_cycle = duty_cycle == 90 ? duty_cycle : duty_cycle + 5;
     			break;
-    		case 86400: //empty loop
+    		case 100: //empty loop
     			break;
     		default: //stop timer
     			TIM2->CR1 &= ~TIM_CR1_CEN;
