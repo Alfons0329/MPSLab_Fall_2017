@@ -2,9 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define TIME_SEC 0.07
-#define TARGET_SEC  TIME_SEC / 1
-#define TARGET_MSEC  TIME_SEC * 100 - ( TARGET_SEC * 10 )
+#define TIME_SEC 2.34
+
 extern void GPIO_init();
 extern void max7219_init();
 extern void Display();
@@ -142,6 +141,8 @@ int main()
     display_clr();
     millisecond = 0;
     get_current_counter_value = 0;
+    int TARGET_SEC = TIME_SEC / 1;
+    int TARGET_MSEC = TIME_SEC * 100 - ( TARGET_SEC * 100 );
 	while(1)
 	{
 		//todo: Polling the timer count and do lab requirements
@@ -151,28 +152,7 @@ int main()
         }
         get_current_counter_value = TIM2->CNT; //get the current counter value since it symbolizes the millisecond
         millisecond = get_current_counter_value;
-        /*
-        Bit 0 UIF: Update interrupt flag
-        This bit is set by hardware on an update event. It is cleared by software.
-        0: No update occurred
-        1: Update interrupt pending. This bit is set by hardware when the registers are updated:
-        At overflow or underflow (for TIM2 to TIM4) and if UDIS=0 in the TIMx_CR1 register.
-        When CNT is reinitialized by software using the UG bit in TIMx_EGR register, if URS=0 and
-        UDIS=0 in the TIMx_CR1 register.
-        When CNT is reinitialized by a trigger event (refer to the synchro control register description),
-        if URS=0 and UDIS=0 in the TIMx_CR1 register.
-        */
-        timer_display(6,8);
-        if(TIM2->SR & 0x0001) //one second is reached
-        {
-            second+=1;
-            TIM2->SR &= ~(TIM_SR_UIF); //reset again for next counter event
-        }
-
-        get_current_counter_value = TIM2->CNT; //get the current counter value since it symbolizes the millisecond
-        millisecond = get_current_counter_value;
-
-        if( second >= TARGET_SEC || millisecond >= TARGET_MSEC)
+        if( second == TARGET_SEC && TIM2->CNT == TARGET_MSEC)
         {
             timer_display(87,87);
             while(1); //halt here
@@ -180,10 +160,28 @@ int main()
         get_current_counter_value = TIM2->CNT; //get the current counter value since it symbolizes the millisecond
         millisecond = get_current_counter_value;
         timer_display(6,8);
+        if(TIM2->SR & 0x0001) //one second is reached
+        {
+            second+=1;
+            TIM2->SR &= ~(TIM_SR_UIF); //reset again for next counter event
+        }
+        get_current_counter_value = TIM2->CNT; //get the current counter value since it symbolizes the millisecond
+        millisecond = get_current_counter_value;
+        timer_display(6,8);
 	}
     return 0;
 }
-
+/*
+       Bit 0 UIF: Update interrupt flag
+       This bit is set by hardware on an update event. It is cleared by software.
+       0: No update occurred
+       1: Update interrupt pending. This bit is set by hardware when the registers are updated:
+       At overflow or underflow (for TIM2 to TIM4) and if UDIS=0 in the TIMx_CR1 register.
+       When CNT is reinitialized by software using the UG bit in TIMx_EGR register, if URS=0 and
+       UDIS=0 in the TIMx_CR1 register.
+       When CNT is reinitialized by a trigger event (refer to the synchro control register description),
+       if URS=0 and UDIS=0 in the TIMx_CR1 register.
+       */
 /*typedef struct
 //
 {

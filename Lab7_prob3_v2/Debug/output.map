@@ -512,9 +512,9 @@ OUTPUT(Lab7_prob3_v2.elf elf32-littlearm)
  .debug_macro   0x00000dd9      0xe97 src/main.o
  .debug_macro   0x00001c70    0x1a16e src/main.o
 
-.debug_line     0x00000000      0x467
- .debug_line    0x00000000      0x3ee src/main.o
- .debug_line    0x000003ee       0x79 startup/startup_stm32.o
+.debug_line     0x00000000      0x469
+ .debug_line    0x00000000      0x3f0 src/main.o
+ .debug_line    0x000003f0       0x79 startup/startup_stm32.o
 
 .debug_str      0x00000000    0x99d39
  .debug_str     0x00000000    0x99d39 src/main.o
