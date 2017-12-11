@@ -72,19 +72,22 @@ typedef enum
 	TM_GPIO_Mode_AN = 0x03,  /*!< GPIO Pin as Analog input/output */
 } TM_GPIO_Mode_t;
 
-typedef enum {
+typedef enum
+{
 	TM_GPIO_OType_PP = 0x00, /*!< GPIO Output Type Push-Pull */
 	TM_GPIO_OType_OD = 0x01  /*!< GPIO Output Type Open-Drain */
 } TM_GPIO_OType_t;
 
-typedef enum {
+typedef enum
+{
 	TM_GPIO_Speed_Low = 0x00,    /*!< GPIO Speed Low */
 	TM_GPIO_Speed_Medium = 0x01, /*!< GPIO Speed Medium */
 	TM_GPIO_Speed_Fast = 0x02,   /*!< GPIO Speed Fast, not available on STM32F0xx devices */
 	TM_GPIO_Speed_High = 0x03    /*!< GPIO Speed High */
 } TM_GPIO_Speed_t;
 
-typedef enum {
+typedef enum
+{
 	TM_GPIO_PuPd_NOPULL = 0x00, /*!< No pull resistor */
 	TM_GPIO_PuPd_UP = 0x01,     /*!< Pull up resistor enabled */
 	TM_GPIO_PuPd_DOWN = 0x02    /*!< Pull down resistor enabled */

@@ -38,7 +38,7 @@ int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
  *    0 -> OK
  *    1 -> Error
  */
-uint8_t DS18B20_Read(OneWire_t* OneWire, float *destination)
+uint8_t DS18B20_Read(OneWire_t* OneWire, float *destination) //read the fucking temperature
 {
 	// TODO
 	return 0;

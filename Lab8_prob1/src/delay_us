@@ -1,0 +1,17 @@
+.syntax unified
+.cpu cortex-m4
+.thumb
+
+.text
+	.global delay_us
+main:
+	mov r3, 0x4
+	b delay_us
+
+delay_us:
+   //TODO: Write a delay 1sec function
+
+	sub r3, r3, #1
+	cmp r3, #0
+	bne delay_us
+	bx lr
