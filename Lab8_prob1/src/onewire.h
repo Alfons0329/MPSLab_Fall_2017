@@ -29,7 +29,7 @@ uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);
  //GPIOB PIN8 for thermometer usgae
 void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin)
 {
-
+	
 }
 
 /* Send reset through OneWireStruct
@@ -59,7 +59,7 @@ uint8_t OneWire_Reset(OneWire_t* OneWireStruct)
  *   OneWireStruct: wire to send
  *   bit: bit to send
  */
-void OneWire_WriteBit(OneWire_t* OneWireStruct, uint8_t bit)
+void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */uint8_t bit)
 {
 	// TODO
 }
@@ -89,13 +89,14 @@ uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct)
  *   OneWireStruct: wire to send
  *   byte: byte to send
  */
-void OneWire_WriteByte(OneWire_t* OneWireStruct, int data_to_be_send)
+void OneWire_WriteByte(OneWire_t* OneWireStruct, int data_to_be_wirtten)
 {
 	// TODO
-	//DATA IS SENT FROM LSB!!!! TO MSB!!! RIGHT TO LEFT 
+	//DATA IS SENT FROM LSB!!!! TO MSB!!! RIGHT TO LEFT
 	for(int i=0;i<8;i++)
 	{
-			OneWire_WriteBit(,);
+		OneWire_WriteBit(data&0x1);
+		data>>=1;
 	}
 }
 
