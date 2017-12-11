@@ -57,7 +57,7 @@ void Timer_init(){
 	//TIM2->CR1 &= ~(TIM_CR1_CMS_Pos);
 	TIM2->CR1 &= 0x0000; //Turned on the counter as the count up mode
 	//SET_REG(TIM2->CR1, TIM_CR1_DIR | TIM_CR1_CMS, TIM_COUNTERMODE_DOWN);// Edge-aligned mode, down counter
-	TIM2->ARR = (uint32_t)99;//Reload value
+	TIM2->ARR = (uint32_t)100;//Reload value
 	TIM2->PSC = (uint32_t)39999;//Prescaler
 	TIM2->EGR = TIM_EGR_UG;//Reinitialize the counter
 	//TIM2->CR1 |= TIM_CR1_CEN;
@@ -65,13 +65,27 @@ void Timer_init(){
 
 void PWM_channel_init(){
    //TODO: Initialize timer PWM channel
+	//ref: STM32 PWM
+	// https://read01.com/zh-tw/DGKMyB.html#.Wh2RU0qWY2w
+	// http://blog.csdn.net/akunainiannian/article/details/24316143
+	// http://www.zendei.com/article/12325.html
+	// preload register and shadow register
+	// https://read01.com/zh-tw/BgB8jG.html#.Wh6Qt0qWY2w
+	//Output compare 2 mode
 	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
+	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
 	TIM2->CCMR1 |= (0b0110 << TIM_CCMR1_OC2M_Pos);
 
+	//Output Compare 2 Preload Enable
 	TIM2->CCMR1 &= ~TIM_CCMR1_OC2PE;//OCxPE
+	//1: enable TIMx_CCR1 Preload
 	TIM2->CCMR1 |= (0b1 << TIM_CCMR1_OC2PE_Pos);
+	//enable auto reload pre-load
+	TIM2->CR1 |= TIM_CR1_ARPE;
 
+	//duty cycle initial 50 (CCR2/ARR)
 	TIM2->CCR2 = 50;
+	//enable output compare
 	TIM2->CCER |= TIM_CCER_CC2E;
 
 }
