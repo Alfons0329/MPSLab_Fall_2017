@@ -14,9 +14,9 @@ typedef enum
 int global_temperature;
 
 int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t precision);
-uint8_t DS18B20_Read(OneWire_t* OneWireStruct, float* destination);
-uint8_t DS18B20_SetResolution(OneWire_t* OneWireStruct, DS18B20_Resolution_t resolution);
-uint8_t DS18B20_Done(OneWire_t* OneWireStruct);
+/*uint8_t DS18B20_Read(/*OneWire_t* OneWireStruct, float* destination*/
+/*uint8_t DS18B20_SetResolution(OneWire_t* OneWireStruct, DS18B20_Resolution_t resolution);
+uint8_t DS18B20_Done(OneWire_t* OneWireStruct);*/
 /* Send ConvT through OneWire with resolution
  * param:
  *   OneWire: send through this
@@ -42,15 +42,15 @@ int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
  */
 //ONEWIRE_DELAY parameter which passed in is us (1E-6 second)
 //Let's read the fucking temperature
-uint8_t DS18B20_Read(OneWire_t* OneWire, float *destination)
+uint8_t DS18B20_Read(/*OneWire_t* OneWire, float *destination*/)
 {
 	// TODO
 	global_temperature = 0;
 	OneWire_Reset(OneWire_B);//reset all the state first, or say re-initilize the one wire system
-	OneWire_WriteByte(0xCC); //skip ROM command, since there is only 1 thermometer
+	OneWire_SkipROM();
 	OneWire_WriteByte(0x44);//tell the one wire thermometer
 	ONEWIRE_DELAY(750000); //The required time for ADC conversion 750ms=750000us
-	OneWire_WriteByte(0xCC);
+	OneWire_SkipROM();
 	OneWire_WriteByte(0xBE); //Read the scratch pad for temperature data
 	OneWire_Reset(OneWire_B);//reset all the state first, or say re-initilize the one wire system
 	//sequential read

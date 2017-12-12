@@ -10,15 +10,13 @@ typedef struct
 	GPIO_TypeDef* GPIOx;           /*!< GPIOx port to be used for I/O functions */
 	uint32_t GPIO_Pin;             /*!< GPIO Pin to be used for I/O functions */
 } OneWire_t;
-
-
-void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
+/*void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
 void OneWire_SkipROM(OneWire_t* OneWireStruct);
 uint8_t OneWire_Reset(OneWire_t* OneWireStruct);
 uint8_t OneWire_ReadByte(OneWire_t* OneWireStruct);
 void OneWire_WriteByte(OneWire_t* OneWireStruct, uint8_t byte);
 void OneWire_WriteBit(OneWire_t* OneWireStruct, uint8_t bit);
-uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);
+uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);*/
 
 /* Init OneWire Struct with GPIO information
  * param:
@@ -110,13 +108,13 @@ int OneWire_ReadBit(OneWire_t* OneWireStruct)
  *   OneWireStruct: wire to send
  *   byte: byte to send
  */
-void OneWire_WriteByte(OneWire_t* OneWireStruct, int data_to_be_wirtten)
+void OneWire_WriteByte(/*OneWire_t* OneWireStruct*/, int data_to_be_wirtten)
 {
 	//DATA IS SENT FROM LSB!!!! TO MSB!!! RIGHT TO LEFT
 	for(int i=0;i<8;i++)
 	{
 		OneWire_WriteBit(data&0x1);
-		data>>=1;
+		data >>= 1;
 	}
 }
 
@@ -132,7 +130,7 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
 	for(int i=0;i<8;i++)
 	{
 		data |= OneWire_ReadBit();
-		data>>=1;
+		data >>= 1;
 	}
 	return data; //shift and or bit manipulation to make the bit read from LSB to MSB, bit by bit
 	//and finally, all the data has been successfully parsed.
@@ -141,9 +139,9 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
 /* Send ROM Command, Skip ROM, through OneWireStruct
  * You can use OneWire_WriteByte to implement
  */
-void OneWire_SkipROM(OneWire_t* OneWireStruct)
+void OneWire_SkipROM(/*OneWire_t* OneWireStruct*/)
 {
-	// TODO
+	OneWire_WriteByte(0xCC); //skip ROM command, since there is only 1 thermometer
 }
 void ONEWIRE_INPUT() //PB8 input configuration
 {
