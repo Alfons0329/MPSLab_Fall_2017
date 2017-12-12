@@ -85,7 +85,7 @@ void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
  * param:
  *   OneWireStruct: wire to read from
  */
-int OneWire_ReadBit(OneWire_t* OneWireStruct)
+int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
 {
 	// TODO
 	int data = 0;
@@ -105,13 +105,13 @@ int OneWire_ReadBit(OneWire_t* OneWireStruct)
  *   OneWireStruct: wire to send
  *   byte: byte to send
  */
-void OneWire_WriteByte(/*OneWire_t* OneWireStruct*/, int data_to_be_wirtten)
+void OneWire_WriteByte(int data_to_be_wirtten)
 {
 	//DATA IS SENT FROM LSB!!!! TO MSB!!! RIGHT TO LEFT
 	for(int i=0;i<8;i++)
 	{
-		OneWire_WriteBit(data&0x1);
-		data >>= 1;
+		OneWire_WriteBit(data_to_be_wirtten&0x1);
+		data_to_be_wirtten >>= 1;
 	}
 }
 

@@ -37,7 +37,7 @@
     .equ	SHUT_DOWN,		0x1C //shut down -- we did't use this actually
     .equ	DISPLAY_TEST,	0x1F //display test -- we did' use this actually
 
-GPIO_init:
+GPIOAC_init:
 //TODO: Initialize three GPIO pins as output for max7219 DIN, CS and CLK
 //RCC_AHB2ENR: enable GPIOA and B and C
     push {r0,r1,r2,lr}
