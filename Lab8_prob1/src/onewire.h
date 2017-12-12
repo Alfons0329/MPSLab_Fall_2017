@@ -1,10 +1,8 @@
 #ifndef ONEWIRE_H_
 #define ONEWIRE_H_
-
+#define GPIO_PIN_8   ((uint16_t) 0x0100)
 #include "gpio.h"
-
-extern void delay_us(); //from delay_us.s
-
+#include "ref.h" //some useful function can be found here
 typedef struct
 {
 	GPIO_TypeDef* GPIOx;           /*!< GPIOx port to be used for I/O functions */
@@ -45,9 +43,9 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
 	GPIOB->ODR = 0<<8;
-	ONEWIRE_DELAY(480);
+	delay_us(480);
 	ONEWIRE_INPUT();
-	ONEWIRE_DELAY(70); //wait the so-called 15-60 for lowering the voltage
+	delay_us(70); //wait the so-called 15-60 for lowering the voltage
 	//now check if the DS18B20 has really done its job of lowering the voltage
 	while((GPIOB->IDR)>>8 == 1); //busy waiting until the volatage is lowered to 1
 	int masked_value = (GPIOB->IDR)>>8;
@@ -64,21 +62,21 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
 	//the accumulated delay should last at least 60 us
-	ONEWIRE_DELAY(2); /*pdf says the time interval b/w two write operation should
+	delay_us(2); /*pdf says the time interval b/w two write operation should
 	be at 1us*/
 	if(bit) //master write1
 	{
 		GPIOB->BRR = GPIO_PIN_8;
 		ONEWIRE_OUTPUT();
-		ONEWIRE_DELAY(5); //Release in 15 us
+		delay_us(5); //Release in 15 us
 		ONEWIRE_INPUT();//chenage to input
-		ONEWIRE_DELAY(60); //accumulate the time to fit the 60 us criteria
+		delay_us(60); //accumulate the time to fit the 60 us criteria
 	}
 	else
 	{
 		GPIOB->BRR = GPIO_PIN_8;
 		ONEWIRE_OUTPUT();
-		ONEWIRE_DELAY(70); //it says delay at least 60 us
+		delay_us(70); //it says delay at least 60 us
 	}
 }
 
@@ -91,11 +89,11 @@ int OneWire_ReadBit(OneWire_t* OneWireStruct)
 {
 	// TODO
 	int data = 0;
-	ONEWIRE_DELAY(45); //make a delay since the pdf says, each read operation should last as long as 60us
+	delay_us(45); //make a delay since the pdf says, each read operation should last as long as 60us
 	ONEWIRE_INPUT();
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
-	ONEWIRE_DELAY(1);
+	delay_us(1);
 	ONEWIRE_INPUT();
 	data = (GPIOB->IDR >> 8) & 0x1;
 	return data;
@@ -165,11 +163,5 @@ void ONEWIRE_OUTPUT() //PB8 output configuration
 	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
 	GPIOB->OTYPER  |= 0b00000000000000000000000100000000;
 }
-void ONEWIRE_DELAY(unsigned u_sec)
-{
-	for(int i=0;i<u_sec;i++)
-	{
-		delay_us();
-	}
-}
+
 #endif /* ONEWIRE_H_ */
