@@ -25,6 +25,7 @@ uint8_t DS18B20_Done(OneWire_t* OneWireStruct);
  *    0 -> OK
  *    1 -> Error
  */
+ //setting the resolution of thermometer, default is 12 bit type
 int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
 {
 	// TODO
@@ -40,7 +41,8 @@ int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
  *    1 -> Error
  */
 //ONEWIRE_DELAY parameter which passed in is us (1E-6 second)
-uint8_t DS18B20_Read(OneWire_t* OneWire, float *destination) //read the fucking temperature
+//Let's read the fucking temperature
+uint8_t DS18B20_Read(OneWire_t* OneWire, float *destination)
 {
 	// TODO
 	global_temperature = 0;
@@ -68,6 +70,7 @@ uint8_t DS18B20_Read(OneWire_t* OneWire, float *destination) //read the fucking 
  *    0 -> OK
  *    1 -> Error
  */
+ //set the default resolution or not?
 uint8_t DS18B20_SetResolution(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
 {
 	// TODO

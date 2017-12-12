@@ -29,7 +29,7 @@ uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);
  //GPIOB PIN8 for thermometer usgae
 void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin)
 {
-	
+	OneWire_Reset();
 }
 
 /* Send reset through OneWireStruct
@@ -40,17 +40,20 @@ void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_P
  *    0 -> Reset OK
  *    1 -> Reset Failed
  */
-uint8_t OneWire_Reset(OneWire_t* OneWireStruct)
+int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 {
 	// TODO
 	ONEWIRE_INPUT();
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
+	GPIOB->ODR = 0<<8;
 	ONEWIRE_DELAY(480);
 	ONEWIRE_INPUT();
-	ONEWIRE_DELAY(70);
-	ONEWIRE_DELAY(410);
-    return 0;
+	ONEWIRE_DELAY(70); //wait the so-called 15-60 for lowering the voltage
+	//now check if the DS18B20 has really done its job of lowering the voltage
+	int masked_value = GPIOB->IDR ;
+	int check_init = masked_value>>8; //shift the value for PB8 check if the volatage is really in low part
+    return (check_init==0)?1:0;
 }
 
 /* Write 1 bit through OneWireStruct
@@ -59,9 +62,27 @@ uint8_t OneWire_Reset(OneWire_t* OneWireStruct)
  *   OneWireStruct: wire to send
  *   bit: bit to send
  */
-void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */uint8_t bit)
+ //ref DS18B20 pdf 22
+void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
 	// TODO
+	//the accumulated delay should last at least 60 us
+	ONEWIRE_DELAY(3); /*pdf says the time interval b/w two write operation should
+	be at 1us*/
+	if(bit) //master write1
+	{
+		GPIOB->BRR = GPIO_PIN_8;
+		ONEWIRE_OUTPUT();
+		ONEWIRE_DELAY(5); //Release in 15 us
+		ONEWIRE_INPUT();//chenage to input
+		ONEWIRE_DELAY(60); //accumulate the time to fit the 60 us criteria
+	}
+	else
+	{
+		GPIOB->BRR = GPIO_PIN_8;
+		ONEWIRE_OUTPUT();
+		ONEWIRE_DELAY(70); //it says delay at least 60 us
+	}
 }
 
 /* Read 1 bit through OneWireStruct
@@ -69,10 +90,10 @@ void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */uint8_t bit)
  * param:
  *   OneWireStruct: wire to read from
  */
-uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct)
+int OneWire_ReadBit(OneWire_t* OneWireStruct)
 {
 	// TODO
-	uint8_t data = 0;
+	int data = 0;
 	ONEWIRE_DELAY(30); //make a delay since the pdf says, each read operation should last as long as 60us
 	ONEWIRE_INPUT();
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
@@ -91,7 +112,6 @@ uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct)
  */
 void OneWire_WriteByte(OneWire_t* OneWireStruct, int data_to_be_wirtten)
 {
-	// TODO
 	//DATA IS SENT FROM LSB!!!! TO MSB!!! RIGHT TO LEFT
 	for(int i=0;i<8;i++)
 	{
@@ -105,9 +125,17 @@ void OneWire_WriteByte(OneWire_t* OneWireStruct, int data_to_be_wirtten)
  * param:
  *   OneWireStruct: wire to read from
  */
-uint8_t OneWire_ReadByte(OneWire_t* OneWireStruct)
+ //read from LSB to MSB!!
+int OneWire_ReadByte(OneWire_t* OneWireStruct)
 {
-	// TODO
+	int data = 0;
+	for(int i=0;i<8;i++)
+	{
+		data |= OneWire_ReadBit();
+		data>>=1;
+	}
+	return data; //shift and or bit manipulation to make the bit read from LSB to MSB, bit by bit
+	//and finally, all the data has been successfully parsed.
 }
 
 /* Send ROM Command, Skip ROM, through OneWireStruct
