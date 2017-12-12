@@ -49,9 +49,9 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 	ONEWIRE_INPUT();
 	ONEWIRE_DELAY(70); //wait the so-called 15-60 for lowering the voltage
 	//now check if the DS18B20 has really done its job of lowering the voltage
-	int masked_value = GPIOB->IDR ;
-	int check_init = masked_value>>8; //shift the value for PB8 check if the volatage is really in low part
-    return (check_init==0)?1:0;
+	while((GPIOB->IDR)>>8 == 1); //busy waiting until the volatage is lowered to 1
+	int masked_value = (GPIOB->IDR)>>8;
+    return (masked_value == 0)?1:0;
 }
 
 /* Write 1 bit through OneWireStruct
@@ -63,9 +63,8 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
  //ref DS18B20 pdf 22
 void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
-	// TODO
 	//the accumulated delay should last at least 60 us
-	ONEWIRE_DELAY(3); /*pdf says the time interval b/w two write operation should
+	ONEWIRE_DELAY(2); /*pdf says the time interval b/w two write operation should
 	be at 1us*/
 	if(bit) //master write1
 	{
@@ -92,7 +91,7 @@ int OneWire_ReadBit(OneWire_t* OneWireStruct)
 {
 	// TODO
 	int data = 0;
-	ONEWIRE_DELAY(30); //make a delay since the pdf says, each read operation should last as long as 60us
+	ONEWIRE_DELAY(45); //make a delay since the pdf says, each read operation should last as long as 60us
 	ONEWIRE_INPUT();
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
@@ -130,9 +129,10 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
 	for(int i=0;i<8;i++)
 	{
 		data |= OneWire_ReadBit();
-		data >>= 1;
+		data <<= 1;
 	}
-	return data; //shift and or bit manipulation to make the bit read from LSB to MSB, bit by bit
+	return data;
+	//shift and use bitwise or to make the bit read from LSB to MSB, bit by bit
 	//and finally, all the data has been successfully parsed.
 }
 

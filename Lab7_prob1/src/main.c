@@ -24,20 +24,7 @@ unsigned int pll_cofig[5] =
     0b011000000000010000000110001,
     0b011000000000101000000110001
 };
-/*void GPIO_init()
-{
-    RCC->AHB2ENR   |= 0b00000000000000000000000000000111; //turn on papbpc
 
-    GPIOA->MODER   &= 0b11111111111111111111001111111111; //use pa5 to output for one led
-    GPIOA->MODER   |= 0b11111111111111111111011111111111;
-    GPIOA->PUPDR   &= 0b11111111111111111111001111111111;
-    GPIOA->PUPDR   |= 0b11111111111111111111011111111111;
-    GPIOA->OSPEEDR &= 0b11111111111111111111001111111111;
-    GPIOA->OSPEEDR |= 0b11111111111111111111101111111111;
-
-    GPIOC->MODER   &= 0xf3ffffff; //use pc13 for user button
-
-}*/
 void systemclk_setting(int state)
 {
     state %= 5; //state cycle
@@ -74,21 +61,7 @@ int check_the_fucking_button()
 	}
 	return 0;
 }
-/*
-static int debounce = 0;
-if( (GPIOC->IDR & 0b0010000000000000) == 0)
-{ // pressed
-    debounce = debounce >= 1 ? 1 : debounce+1 ;
-    return 0;
-}
-else if( debounce >= 1 )
-{
-    debounce = 0;
-    return 1;
-}
-return 0;
 
-*/
 int main()
 {
     GPIO_init();
