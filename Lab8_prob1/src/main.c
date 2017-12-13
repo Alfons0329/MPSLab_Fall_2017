@@ -21,7 +21,7 @@ void SystemClock_Config()
 void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
-	DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
+	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
 }
 int check_the_fucking_button()
 {
@@ -70,6 +70,7 @@ int main()
 	pre_temperature=0;
     while(1)
     {
+    	DS18B20_Read();
     	if(check_the_fucking_button())
         {
 			mode^=1; //mode exchange if button pressed
