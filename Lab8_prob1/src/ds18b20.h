@@ -58,7 +58,7 @@ uint8_t DS18B20_Read(/*OneWire_t* OneWire, float *destination*/)
 	//but I will give the system a bit more time to do, doesnt need to be so strict
 	OneWire_Reset(); //reset for next command
 	OneWire_SkipROM();//only one thermometer, so skip it
-	OneWire_WriteByte(0xBE); //Read the scratch pad for temperature data
+	OneWire_WriteByte(ONEWIRE_CMD_RSCRATCHPAD); //Read the scratch pad for temperature data
 	//sequential read
 	int cnt=0;
 	for(int i=0;i<16;i++)

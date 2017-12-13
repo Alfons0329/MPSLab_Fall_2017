@@ -1,6 +1,15 @@
 #ifndef ONEWIRE_H_
 #define ONEWIRE_H_
 #define GPIO_PIN_8   ((uint16_t) 0x0100)
+#define ONEWIRE_CMD_RSCRATCHPAD			0xBE
+#define ONEWIRE_CMD_WSCRATCHPAD			0x4E
+#define ONEWIRE_CMD_CPYSCRATCHPAD		0x48
+#define ONEWIRE_CMD_RECEEPROM			0xB8
+#define ONEWIRE_CMD_RPWRSUPPLY			0xB4
+#define ONEWIRE_CMD_SEARCHROM			0xF0
+#define ONEWIRE_CMD_READROM				0x33
+#define ONEWIRE_CMD_MATCHROM			0x55
+#define ONEWIRE_CMD_SKIPROM				0xCC
 #include "gpio.h"
 #include "ref.h" //some useful function can be found here
 typedef struct
@@ -26,7 +35,7 @@ uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);*/
 void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin)
 {
 	OneWire_Reset();
-}
+}`	`
 
 /* Send reset through OneWireStruct
  * Please implement the reset protocol
@@ -38,17 +47,15 @@ void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_P
  */
 int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 {
-	// TODO
-	ONEWIRE_INPUT();
-	GPIOB->BRR = GPIO_PIN_8; // high -> low
+	//thermeter does not init well
 	ONEWIRE_OUTPUT();
-	GPIOB->ODR = 0<<8;
+	GPIOB->BRR = GPIO_PIN_8;
 	delay_us(480);
 	ONEWIRE_INPUT();
-	delay_us(70); //wait the so-called 15-60 for lowering the voltage
-	//now check if the DS18B20 has really done its job of lowering the voltage
-	while((GPIOB->IDR)>>8 == 1); //busy waiting until the volatage is lowered to 1
+	delay_us(70);
+	delay_us(410); //delay more
 	int masked_value = (GPIOB->IDR)>>8;
+	//now check if the DS18B20 has really done its job of lowering the voltage
     return (masked_value == 0)?1:0;
 }
 
@@ -62,17 +69,17 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
 	//the accumulated delay should last at least 60 us
-	delay_us(2); /*pdf says the time interval b/w two write operation should
-	be at 1us*/
+	delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
+	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
 	if(bit) //master write1
 	{
-		GPIOB->BRR = GPIO_PIN_8;
-		ONEWIRE_OUTPUT();
-		delay_us(5); //Release in 15 us
+		GPIOB->BRR = GPIO_PIN_8; //
+		ONEWIRE_OUTPUT(); //master pulls down the DQ
+		delay_us(5); //release in 15 us
 		ONEWIRE_INPUT();//chenage to input
 		delay_us(60); //accumulate the time to fit the 60 us criteria
 	}
-	else
+	else //master write 0
 	{
 		GPIOB->BRR = GPIO_PIN_8;
 		ONEWIRE_OUTPUT();
@@ -85,16 +92,23 @@ void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
  * param:
  *   OneWireStruct: wire to read from
  */
+/*
+ Due to pull up resistor
+If I set the input for DS18B20
+則它會因為pullup resistor的關係 變成高電位
+ds18b20 如果偵測到我要輸出零 則會壓低電壓反之則會維持高電壓
+ * */
 int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
 {
 	// TODO
 	int data = 0;
-	delay_us(45); //make a delay since the pdf says, each read operation should last as long as 60us
-	ONEWIRE_INPUT();
+	delay_us(50); //make a delay since the pdf says, each read operation should last as long as 60us
+	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
 	delay_us(1);
 	ONEWIRE_INPUT();
+	delay(10);
 	data = (GPIOB->IDR >> 8) & 0x1;
 	return data;
 }
@@ -120,9 +134,12 @@ void OneWire_WriteByte(int data_to_be_wirtten)
  * param:
  *   OneWireStruct: wire to read from
  */
- //read from LSB to MSB!!
+
 int OneWire_ReadByte(OneWire_t* OneWireStruct)
 {
+	//read from LSB to MSB!!
+	//shift and use bitwise or to make the bit read from LSB to MSB, bit by bit
+	//and finally, all the data has been successfully parsed.
 	int data = 0;
 	for(int i=0;i<8;i++)
 	{
@@ -130,8 +147,6 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
 		data <<= 1;
 	}
 	return data;
-	//shift and use bitwise or to make the bit read from LSB to MSB, bit by bit
-	//and finally, all the data has been successfully parsed.
 }
 
 /* Send ROM Command, Skip ROM, through OneWireStruct
@@ -139,7 +154,7 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
  */
 void OneWire_SkipROM(/*OneWire_t* OneWireStruct*/)
 {
-	OneWire_WriteByte(0xCC); //skip ROM command, since there is only 1 thermometer
+	OneWire_WriteByte(ONEWIRE_CMD_SKIPROM); //skip ROM command, since there is only 1 thermometer
 }
 void ONEWIRE_INPUT() //PB8 input configuration
 {
@@ -149,7 +164,6 @@ void ONEWIRE_INPUT() //PB8 input configuration
 	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
 	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
 	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
-	GPIOB->OTYPER  |= 0b00000000000000000000000100000000;
 }
 
 void ONEWIRE_OUTPUT() //PB8 output configuration
@@ -161,7 +175,7 @@ void ONEWIRE_OUTPUT() //PB8 output configuration
 	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
 	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
 	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
-	GPIOB->OTYPER  |= 0b00000000000000000000000100000000;
+	GPIOB->OTYPER  |= 0b00000000000000000000000000000000;
 }
 
 #endif /* ONEWIRE_H_ */

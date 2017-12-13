@@ -6,26 +6,23 @@
 extern void GPIOAC_init();
 extern void max7219_send(unsigned char address, unsigned char data);
 extern void max7219_init();
-extern int global_temperature;
-int mode, pre_stemperature;
+global_temperature;
+int mode, pre_temperature;
 //configuration ref to: http://home.eeworld.com.cn/my/space-uid-116357-blogid-31714.html
 
 void SystemClock_Config()
 {
     //TODO: Setup system clock and SysTick timer interrupt
-	//use the processor clock
+	//use the clock from processor
 	SysTick->CTRL |= 0x00000004; //
 	SysTick->LOAD = (uint32_t)7999999; //unsigned int 32 bit counter 8000000 (2s interrupt once)
 	//system interrupt happens for every 8000000 cpu cycles, that is the peroid of 2 second
-	// SysTick->VAL = 0;
 	SysTick->CTRL |= 0x00000007; //processor clock, turn on all
 }
 void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
-	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
-	//display_clr(8);
-	display(33333,5);
+	DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
 }
 int check_the_fucking_button()
 {
@@ -55,7 +52,6 @@ int display(int data, int num_digs)
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
     int i=0,dig=0;
-    //display_clr(8); //clear the old number for trash removing
     for(i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
@@ -73,25 +69,24 @@ int main()
     GPIOAC_init();
 	max7219_init();
 	mode=0;
-	pre_stemperature=0;
+	pre_temperature=0;
     while(1)
     {
-    	display(77777,5);
-    	/*if(check_the_fucking_button())
+    	if(check_the_fucking_button())
         {
 			mode^=1; //mode exchange if button pressed
         }
-		if(mode)
+		if(!mode)
 		{
-			//display_clr(8);
+			display_clr(8);
 			display(global_temperature,2);
-			pre_stemperature=global_temperature;
+			pre_temperature=global_temperature; //update the pre_temperature
 		}
 		else
 		{
-			//display_clr(8);
-			display(66666,5);
-		}*/
+			display_clr(8);
+			display(pre_temperature,2); //show the old temperature
+		}
     }
 	return 0;
 }
