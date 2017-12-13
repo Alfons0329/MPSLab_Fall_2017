@@ -48,12 +48,13 @@ void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_P
 int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 {
 	//thermeter does not init well
-	GPIOB->BRR = GPIO_PIN_8;
+	ONEWIRE_INPUT();
+	GPIOA->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
 	delay_us(480);
 	ONEWIRE_INPUT();
 	delay_us(70);
-	delay_us(410); //delay more
+	delay_us(410);
 	int masked_value = (GPIOB->IDR)>>8;
 	//now check if the DS18B20 has really done its job of lowering the voltage
     return (masked_value == 0)?1:0;
@@ -69,30 +70,23 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
 	//the accumulated delay should last at least 60 us
-	// delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
-	// ONEWIRE_INPUT(); //rise the high voltage to make the negedge
+	delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
+	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
 	if(bit) //master write1
 	{
 		GPIOB->BRR = GPIO_PIN_8; //
 		ONEWIRE_OUTPUT(); //master pulls down the DQ
-		delay_us(10); //release in 15 us
-
 		ONEWIRE_INPUT();//chenage to input make high
 
-		delay_us(55); //accumulate the time to fit the 60 us criteria
-		ONEWIRE_INPUT(); //rise again
+//		delay_us(55); //accumulate the time to fit the 60 us criteria
 	}
 	else //master write 0
 	{
 		GPIOB->BRR = GPIO_PIN_8;
 		ONEWIRE_OUTPUT();
-		delay_us(65);
-
-		ONEWIRE_INPUT();
-
-		delay_us(5); //it says delay at least 60 us
-		ONEWIRE_INPUT();
+		delay_us(70);
 	}
+	ONEWIRE_INPUT(); //rise again
 }
 
 /* Read 1 bit through OneWireStruct
@@ -110,17 +104,14 @@ int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
 {
 	// TODO
 	int data = 0;
-	// delay_us(50); //make a delay since the pdf says, each read operation should last as long as 60us
-	// ONEWIRE_INPUT(); //rise the high voltage to make the negedge
+	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
 	delay_us(3);
 	//release line
 	ONEWIRE_INPUT();
-	delay_us(10);
-
 	data = (GPIOB->IDR >> 8) & 0x1;
-	delay_us(50); //wait 50 us to compelete 60us period
+	delay_us(60); //wait 50 us to compelete 60us period
 	return data;
 }
 
@@ -135,7 +126,7 @@ void OneWire_WriteByte(int data_to_be_wirtten)
 	//DATA IS SENT FROM LSB!!!! TO MSB!!! RIGHT TO LEFT
 	for(int i=0;i<8;i++)
 	{
-		OneWire_WriteBit(data_to_be_wirtten&0x1);
+		OneWire_WriteBit(data_to_be_wirtten & 0x1);
 		data_to_be_wirtten >>= 1;
 	}
 }
@@ -165,28 +156,18 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
  */
 void OneWire_SkipROM(/*OneWire_t* OneWireStruct*/)
 {
-	OneWire_WriteByte(ONEWIRE_CMD_SKIPROM); //skip ROM command, since there is only 1 thermometer
+	OneWire_WriteByte(0xCC); //skip ROM command, since there is only 1 thermometer
 }
 void ONEWIRE_INPUT() //PB8 input configuration
 {
 	//GPIOB 8 for one wite central wire
 	GPIOB->MODER   &= 0b11111111111111001111111111111111;
-	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
-	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
-	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
-	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
 }
 
 void ONEWIRE_OUTPUT() //PB8 output configuration
 {
 	//GPIOB 8 for one wite central wire
-	GPIOB->MODER   &= 0b11111111111111001111111111111111;
-	GPIOB->MODER   |= 0b00000000000000010000000000000000;
-	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
-	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
-	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
-	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
-	GPIOB->OTYPER  |= 0b00000000000000000000000000000000;
+	GPIOB->MODER   = 0b00000000000000010000000000000000;
 }
 
 #endif /* ONEWIRE_H_ */

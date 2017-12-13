@@ -27,14 +27,14 @@ void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
 	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
-	DS18B20_Read();
+	//DS18B20_Read();
 	//global_temperature++;
-	display(global_temperature,2);
+
 }
 int check_the_fucking_button()
 {
 	static int debounce = 0;
-	if( (GPIOC->IDR & 0b0010000000000000) == 0)
+	if( (GPIOC->IDR & 0x2000) == 0)
 	{
 	    debounce = debounce >= 1 ? 1 : debounce+1 ; //btn is pressed
 	    return 0;
@@ -69,6 +69,15 @@ int display(int data, int num_digs)
     else
         return 0; //end this function
 }
+void GPIOB_primitive_init() //save time
+{
+	GPIOB->MODER   =  0b00000000000000010000000000000000;
+	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
+	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
+	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
+	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
+	GPIOB->OTYPER  =  0b00000000000000000000000000000000;
+}
 int main()
 {
     SystemClock_Config();
@@ -78,6 +87,7 @@ int main()
 	pre_temperature=0;
 	cnt2=70;
 	display_clr(8);
+	GPIOB_primitive_init();
     while(1)
     {
 
@@ -88,13 +98,21 @@ int main()
 		if(!mode)
 		{
 
+			display(global_temperature,2);
 			pre_temperature=global_temperature; //update the pre_temperature
+			pre_temperature+=0;
 		}
 		else
 		{
-			//display(pre_temperature,2); //show the old temperature
+			display(pre_temperature,2); //show the old temperature
 		}
+		GPIOB->ODR = 0b000000000;
+		ONEWIRE_OUTPUT();
+
+		delay_us(1000000);
+		ONEWIRE_INPUT();
+		delay_us(1000000);
     }
-    pre_temperature+=0;
+
 	return 0;
 }

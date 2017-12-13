@@ -53,19 +53,22 @@ uint8_t DS18B20_Read(/*OneWire_t* OneWire, float *destination*/)
 	global_temperature = 0;
 	OneWire_Reset();//reset all the state first, or say re-initilize the one wire system
 	OneWire_SkipROM();//only one thermometer, so skip it
+	//OneWire_Reset();
 	OneWire_WriteByte(0x44);//tell the one wire thermometer I want the ADC thermal conversion
-	delay_us(750100); //The required time for ADC conversion 750ms=750000us
+	delay_us(750000); //The required time for ADC conversion 750ms=750000us
 	//but I will give the system a bit more time to do, doesnt need to be so strict
 	OneWire_Reset(); //reset for next command
 	OneWire_SkipROM();//only one thermometer, so skip it
+	//OneWire_Reset();
 	OneWire_WriteByte(ONEWIRE_CMD_RSCRATCHPAD); //Read the scratch pad for temperature data
 	//sequential read
-	int cnt=0;
+	int cnt=0, read_data=0;
 	for(int i=0;i<16;i++)
 	{
+		read_data=OneWire_ReadBit();
 		if(i>=4 && i<=10)
 		{
-			global_temperature |= OneWire_ReadBit()<<cnt;
+			global_temperature |= read_data<<cnt;
 			cnt++;
 		}
 	}
