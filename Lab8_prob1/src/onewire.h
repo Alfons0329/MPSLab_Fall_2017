@@ -77,8 +77,7 @@ void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 		GPIOB->BRR = GPIO_PIN_8; //
 		ONEWIRE_OUTPUT(); //master pulls down the DQ
 		ONEWIRE_INPUT();//chenage to input make high
-
-//		delay_us(55); //accumulate the time to fit the 60 us criteria
+		delay_us(55); //accumulate the time to fit the 60 us criteria
 	}
 	else //master write 0
 	{
