@@ -27,10 +27,7 @@ void SystemClock_Config()
 void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
-	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
 	DS18B20_Read();
-	//global_temperature++;
-
 }
 int check_the_fucking_button()
 {
@@ -59,7 +56,6 @@ int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
-
     for(int i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
@@ -83,36 +79,26 @@ int main()
 {
     SystemClock_Config();
     GPIOAC_init();
+	GPIOB_primitive_init();
 	max7219_init();
 	mode=0;
 	pre_temperature=0;
-	cnt2=70;
 	display_clr(8);
-	GPIOB_primitive_init();
     while(1)
     {
-
     	if(check_the_fucking_button())
         {
 			mode^=1; //mode exchange if button pressed
         }
 		if(!mode)
 		{
-
 			display(global_temperature,2);
 			pre_temperature=global_temperature; //update the pre_temperature
-			pre_temperature+=0;
 		}
 		else
 		{
 			display(pre_temperature,2); //show the old temperature
 		}
-		/*GPIOB->ODR = 0b000000000;
-		ONEWIRE_OUTPUT();
-
-		delay_us(1000000);
-		ONEWIRE_INPUT();
-		delay_us(1000000);*/
     }
 
 	return 0;

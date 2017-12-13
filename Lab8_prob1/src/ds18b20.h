@@ -8,29 +8,8 @@ typedef enum
 	TM_DS18B20_Resolution_11bits = 11, /*!< DS18B20 11 bits resolution */
 	TM_DS18B20_Resolution_12bits = 12  /*!< DS18B20 12 bits resolution */
 } DS18B20_Resolution_t;
-
-
-int global_temperature,cnt2;
-
+int global_temperature;
 int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t precision);
-/*uint8_t DS18B20_Read(OneWire_t* OneWireStruct, float* destination*/
-/*uint8_t DS18B20_SetResolution(OneWire_t* OneWireStruct, DS18B20_Resolution_t resolution);
-uint8_t DS18B20_Done(OneWire_t* OneWireStruct);*/
-/* Send ConvT through OneWire with resolution
- * param:
- *   OneWire: send through this
- *   resolution: temperature resolution
- * retval:
- *    0 -> OK
- *    1 -> Error
- */
- //setting the resolution of thermometer, default is 12 bit type
-int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
-{
-	//I think the default is OK
-	return 0;
-}
-
 /* Read temperature from OneWire
  * param:
  *   OneWire: send through this
@@ -40,25 +19,29 @@ int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t resolution)
  *    1 -> Error
  */
 //delay_us parameter which passed in is us (1E-6 second)
-//Let's read the fucking temperature
-/*
-Each of the operation has to go thorugh the following 3 steps
-1.initialization
-2.ROM command
-3.DS18B20 Function Command
-*/
+//Let's read the fucking temperature!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 uint8_t DS18B20_Read(/*OneWire_t* OneWire, float *destination*/)
 {
 	global_temperature = 0;
+	/*
+	Each of the operation has to go thorugh the following 3 steps
+	1.initialization
+	2.ROM command
+	3.DS18B20 Function Command
+	*/
 	OneWire_Reset();//reset all the state first, or say re-initilize the one wire system
 	OneWire_SkipROM();//only one thermometer, so skip it
-	//OneWire_Reset();
 	OneWire_WriteByte(0x44);//tell the one wire thermometer I want the ADC thermal conversion
+
 	delay_us(750000); //The required time for ADC conversion 750ms=750000us
-	//but I will give the system a bit more time to do, doesnt need to be so strict
+	/*
+	Each of the operation has to go thorugh the following 3 steps
+	1.initialization
+	2.ROM command
+	3.DS18B20 Function Command
+	*/
 	OneWire_Reset(); //reset for next command
 	OneWire_SkipROM();//only one thermometer, so skip it
-	//OneWire_Reset();
 	OneWire_WriteByte(ONEWIRE_CMD_RSCRATCHPAD); //Read the scratch pad for temperature data
 	//sequential read
 	int cnt=0, read_data=0;
@@ -71,8 +54,6 @@ uint8_t DS18B20_Read(/*OneWire_t* OneWire, float *destination*/)
 			cnt++;
 		}
 	}
-	//global_temperature=cnt2%global_temperature;
-	//cnt2++;
 	OneWire_Reset();//reset all the state first, or say re-initilize the one wire system
 	return 0;
 }
@@ -102,6 +83,4 @@ uint8_t DS18B20_Done(OneWire_t* OneWire)
 {
 	return 0;
 }
-
-
 #endif

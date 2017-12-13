@@ -17,18 +17,13 @@ typedef struct
 	GPIO_TypeDef* GPIOx;           /*!< GPIOx port to be used for I/O functions */
 	uint32_t GPIO_Pin;             /*!< GPIO Pin to be used for I/O functions */
 }	OneWire_t;
-/* Init OneWire Struct with GPIO information
- * param:
- *   OneWire: struct to be initialized
- *   GPIOx: Base of the GPIO DQ used, e.g. GPIOA
- *   GPIO_Pin: The pin GPIO DQ used, e.g. 5
- */
  //GPIOB PIN8 for thermometer usgae
-void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin)
-{
-	OneWire_Reset();
-}
-
+ /*
+  Due to pull up resistor
+ If I set the input for DS18B20
+ 則它會因為pullup resistor的關係 變成高電位
+ ds18b20 如果偵測到我要輸出零 則會壓低電壓反之則會維持高電壓
+ */
 /* Send reset through OneWireStruct
  * Please implement the reset protocol
  * param:
@@ -37,18 +32,16 @@ void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_P
  *    0 -> Reset OK
  *    1 -> Reset Failed
  */
-int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
+int OneWire_Reset()
 {
-	//thermeter does not init well
 	ONEWIRE_INPUT();
-	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
+	GPIOB->ODR = 0x0; // high -> low
 	delay_us(480);
 	ONEWIRE_INPUT();
 	delay_us(70);
 	int masked_value = ((GPIOB->IDR)>>8) & 0x1;
 	delay_us(410);
-	//now check if the DS18B20 has really done its job of lowering the voltage
     return (masked_value == 0)?1:0;
 }
 
@@ -59,25 +52,25 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
  *   bit: bit to send
  */
  //ref DS18B20 pdf 22
-void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
+void OneWire_WriteBit(int bit)
 {
-	//the accumulated delay should last at least 60 us
 	delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
 	ONEWIRE_INPUT(); //rise the high voltage to make the required negedge pulse signal
 	if(bit) //master write1
 	{
-		GPIOB->BRR = GPIO_PIN_8; //
 		ONEWIRE_OUTPUT(); //master pulls down the DQ
+		GPIOB->ODR = 0x0;
 		ONEWIRE_INPUT();//chenage to input make high
 		delay_us(55); //accumulate the time to fit the 60 us criteria
 	}
 	else //master write 0
 	{
-		GPIOB->BRR = GPIO_PIN_8;
-		ONEWIRE_OUTPUT();
-		delay_us(70);
+		ONEWIRE_OUTPUT(); //master pulls down the DQ
+		GPIOB->ODR = 0x0;
+		delay_us(70); //accumulate the time to fit the 60 us criteria
 	}
-	ONEWIRE_INPUT(); //rise again
+	ONEWIRE_INPUT(); //rise again for pulse , if does not implement this, temperature will not be updated
+	//this is also a "KIND OF" release line
 }
 
 /* Read 1 bit through OneWireStruct
@@ -85,24 +78,19 @@ void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
  * param:
  *   OneWireStruct: wire to read from
  */
-/*
- Due to pull up resistor
-If I set the input for DS18B20
-則它會因為pullup resistor的關係 變成高電位
-ds18b20 如果偵測到我要輸出零 則會壓低電壓反之則會維持高電壓
- * */
-int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
+
+int OneWire_ReadBit()
 {
 	// TODO
 	int data = 0;
 	ONEWIRE_INPUT(); //rise the high voltage to make the required required negedge pulse signal pulse signal
-	GPIOB->BRR = GPIO_PIN_8; // high -> low
-	ONEWIRE_OUTPUT();
-	delay_us(3);
+	ONEWIRE_OUTPUT();//master pulls down the DQ
+	GPIOB->ODR = 0x0;
+	delay_us(3);//required delay
 	//release line
 	ONEWIRE_INPUT();
-	data = (GPIOB->IDR >> 8) & 0x1;
-	delay_us(60); //wait 50 us to compelete 60us period
+	data = (GPIOB->IDR >> 8) & 0x1;//mask the answer
+	delay_us(60); //wait 60 us to forcily compelete 60us period
 	return data;
 }
 
@@ -121,13 +109,11 @@ void OneWire_WriteByte(int data_to_be_wirtten)
 		data_to_be_wirtten >>= 1;
 	}
 }
-
 /* A convenient API to read 1 byte through OneWireStruct
  * Please use OneWire_ReadBit to implement
  * param:
  *   OneWireStruct: wire to read from
  */
-
 int OneWire_ReadByte(OneWire_t* OneWireStruct)
 {
 	//read from LSB to MSB!!
@@ -147,7 +133,7 @@ int OneWire_ReadByte(OneWire_t* OneWireStruct)
  */
 void OneWire_SkipROM(/*OneWire_t* OneWireStruct*/)
 {
-	OneWire_WriteByte(0xCC); //skip ROM command, since there is only 1 thermometer
+	OneWire_WriteByte(ONEWIRE_CMD_SKIPROM); //skip ROM command, since there is only 1 thermometer
 }
 void ONEWIRE_INPUT() //PB8 input configuration
 {
