@@ -18,10 +18,18 @@ void SystemClock_Config()
 	//system interrupt happens for every 8000000 cpu cycles, that is the peroid of 2 second
 	SysTick->CTRL |= 0x00000007; //processor clock, turn on all
 }
+/*########################################################################
+ * UNIT TEST LOG
+ * INTERRUPT UNIT TEST PASS 2017/12/13, 19:23
+ * READY FOR THERMAL TEST DEBUGGING
+ * #######################################################################*/
 void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
 	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
+	DS18B20_Read();
+	//global_temperature++;
+	display(global_temperature,2);
 }
 int check_the_fucking_button()
 {
@@ -68,23 +76,23 @@ int main()
 	max7219_init();
 	mode=0;
 	pre_temperature=0;
+	cnt2=70;
+	display_clr(8);
     while(1)
     {
-    	DS18B20_Read();
+
     	if(check_the_fucking_button())
         {
 			mode^=1; //mode exchange if button pressed
         }
 		if(!mode)
 		{
-			display_clr(8);
-			display(global_temperature,2);
+
 			pre_temperature=global_temperature; //update the pre_temperature
 		}
 		else
 		{
-			display_clr(8);
-			display(pre_temperature,2); //show the old temperature
+			//display(pre_temperature,2); //show the old temperature
 		}
     }
     pre_temperature+=0;

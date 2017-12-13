@@ -48,8 +48,8 @@ void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_P
 int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 {
 	//thermeter does not init well
-	ONEWIRE_OUTPUT();
 	GPIOB->BRR = GPIO_PIN_8;
+	ONEWIRE_OUTPUT();
 	delay_us(480);
 	ONEWIRE_INPUT();
 	delay_us(70);
@@ -69,21 +69,29 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
 	//the accumulated delay should last at least 60 us
-	delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
-	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
+	// delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
+	// ONEWIRE_INPUT(); //rise the high voltage to make the negedge
 	if(bit) //master write1
 	{
 		GPIOB->BRR = GPIO_PIN_8; //
 		ONEWIRE_OUTPUT(); //master pulls down the DQ
-		delay_us(5); //release in 15 us
-		ONEWIRE_INPUT();//chenage to input
-		delay_us(60); //accumulate the time to fit the 60 us criteria
+		delay_us(10); //release in 15 us
+
+		ONEWIRE_INPUT();//chenage to input make high
+
+		delay_us(55); //accumulate the time to fit the 60 us criteria
+		ONEWIRE_INPUT(); //rise again
 	}
 	else //master write 0
 	{
 		GPIOB->BRR = GPIO_PIN_8;
 		ONEWIRE_OUTPUT();
-		delay_us(70); //it says delay at least 60 us
+		delay_us(65);
+
+		ONEWIRE_INPUT();
+
+		delay_us(5); //it says delay at least 60 us
+		ONEWIRE_INPUT();
 	}
 }
 
@@ -102,14 +110,17 @@ int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
 {
 	// TODO
 	int data = 0;
-	delay_us(50); //make a delay since the pdf says, each read operation should last as long as 60us
-	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
+	// delay_us(50); //make a delay since the pdf says, each read operation should last as long as 60us
+	// ONEWIRE_INPUT(); //rise the high voltage to make the negedge
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
-	delay_us(1);
+	delay_us(3);
+	//release line
 	ONEWIRE_INPUT();
 	delay_us(10);
+
 	data = (GPIOB->IDR >> 8) & 0x1;
+	delay_us(50); //wait 50 us to compelete 60us period
 	return data;
 }
 

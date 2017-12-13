@@ -11,7 +11,7 @@ typedef enum
 } DS18B20_Resolution_t;
 
 
-int global_temperature;
+int global_temperature,cnt2;
 
 int DS18B20_ConvT(OneWire_t* OneWire, DS18B20_Resolution_t precision);
 /*uint8_t DS18B20_Read(OneWire_t* OneWireStruct, float* destination*/
@@ -69,6 +69,8 @@ uint8_t DS18B20_Read(/*OneWire_t* OneWire, float *destination*/)
 			cnt++;
 		}
 	}
+	//global_temperature=cnt2%global_temperature;
+	//cnt2++;
 	OneWire_Reset();//reset all the state first, or say re-initilize the one wire system
 	return 0;
 }

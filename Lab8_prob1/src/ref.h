@@ -412,7 +412,7 @@ static inline void delay_us(int n_in){
 			"subs r0, #1\r\n"
 			"BGT LOOP_US\r\n"
 			"POP {r0}\r\n"
-			:: "r" (n));
+			:: "r" (n_in));
 
 }
 
