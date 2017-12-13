@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "ds18b20.h"
 #include "onewire.h"
-#include "ref.h"
 extern void GPIOAC_init();
 extern void max7219_send(unsigned char address, unsigned char data);
 extern void max7219_init();
@@ -27,7 +26,7 @@ void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
 	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
-	//DS18B20_Read();
+	DS18B20_Read();
 	//global_temperature++;
 
 }
@@ -106,12 +105,12 @@ int main()
 		{
 			display(pre_temperature,2); //show the old temperature
 		}
-		GPIOB->ODR = 0b000000000;
+		/*GPIOB->ODR = 0b000000000;
 		ONEWIRE_OUTPUT();
 
 		delay_us(1000000);
 		ONEWIRE_INPUT();
-		delay_us(1000000);
+		delay_us(1000000);*/
     }
 
 	return 0;

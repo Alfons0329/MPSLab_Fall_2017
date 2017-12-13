@@ -1,7 +1,6 @@
 #ifndef TM_DS18B20_H
 #define TM_DS18B20_H
 #include "onewire.h"
-#include "ref.h"
 typedef enum
 {
 	TM_DS18B20_Resolution_9bits = 9,   /*!< DS18B20 9 bits resolution */

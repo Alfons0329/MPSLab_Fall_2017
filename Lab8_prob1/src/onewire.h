@@ -49,13 +49,13 @@ int OneWire_Reset(/*OneWire_t* OneWireStruct*/)
 {
 	//thermeter does not init well
 	ONEWIRE_INPUT();
-	GPIOA->BRR = GPIO_PIN_8; // high -> low
+	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
 	delay_us(480);
 	ONEWIRE_INPUT();
 	delay_us(70);
+	int masked_value = ((GPIOB->IDR)>>8) & 0x1;
 	delay_us(410);
-	int masked_value = (GPIOB->IDR)>>8;
 	//now check if the DS18B20 has really done its job of lowering the voltage
     return (masked_value == 0)?1:0;
 }
