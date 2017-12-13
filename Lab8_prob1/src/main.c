@@ -87,5 +87,6 @@ int main()
 			display(pre_temperature,2); //show the old temperature
 		}
     }
+    pre_temperature+=0;
 	return 0;
 }
