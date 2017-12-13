@@ -6,7 +6,6 @@
 extern void GPIOAC_init();
 extern void max7219_send(unsigned char address, unsigned char data);
 extern void max7219_init();
-global_temperature;
 int mode, pre_temperature;
 //configuration ref to: http://home.eeworld.com.cn/my/space-uid-116357-blogid-31714.html
 
@@ -51,11 +50,10 @@ int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
-    int i=0,dig=0;
-    for(i=1;i<=num_digs;i++)
+
+    for(int i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
-        dig=data%10;
         data/=10; //get the next digit
     }
     if(data>99999999 || data<-9999999)

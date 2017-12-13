@@ -16,7 +16,7 @@ typedef struct
 {
 	GPIO_TypeDef* GPIOx;           /*!< GPIOx port to be used for I/O functions */
 	uint32_t GPIO_Pin;             /*!< GPIO Pin to be used for I/O functions */
-} OneWire_t;
+}	OneWire_t;
 /*void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
 void OneWire_SkipROM(OneWire_t* OneWireStruct);
 uint8_t OneWire_Reset(OneWire_t* OneWireStruct);
@@ -35,7 +35,7 @@ uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);*/
 void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin)
 {
 	OneWire_Reset();
-}`	`
+}
 
 /* Send reset through OneWireStruct
  * Please implement the reset protocol
@@ -108,7 +108,7 @@ int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
 	ONEWIRE_OUTPUT();
 	delay_us(1);
 	ONEWIRE_INPUT();
-	delay(10);
+	delay_us(10);
 	data = (GPIOB->IDR >> 8) & 0x1;
 	return data;
 }
