@@ -21,6 +21,8 @@ void SystemClock_Config()
  * UNIT TEST LOG
  * INTERRUPT UNIT TEST PASS 2017/12/13, 19:23
  * READY FOR THERMAL TEST DEBUGGING
+ * THERMOMETER DS18B20 UNIT TEST PASS 2017/12/13, 22:23
+ * LAB8 Prob1 done
  * #######################################################################*/
 void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {

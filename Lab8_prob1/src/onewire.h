@@ -17,14 +17,6 @@ typedef struct
 	GPIO_TypeDef* GPIOx;           /*!< GPIOx port to be used for I/O functions */
 	uint32_t GPIO_Pin;             /*!< GPIO Pin to be used for I/O functions */
 }	OneWire_t;
-/*void OneWire_Init(OneWire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
-void OneWire_SkipROM(OneWire_t* OneWireStruct);
-uint8_t OneWire_Reset(OneWire_t* OneWireStruct);
-uint8_t OneWire_ReadByte(OneWire_t* OneWireStruct);
-void OneWire_WriteByte(OneWire_t* OneWireStruct, uint8_t byte);
-void OneWire_WriteBit(OneWire_t* OneWireStruct, uint8_t bit);
-uint8_t OneWire_ReadBit(OneWire_t* OneWireStruct);*/
-
 /* Init OneWire Struct with GPIO information
  * param:
  *   OneWire: struct to be initialized
@@ -71,7 +63,7 @@ void OneWire_WriteBit(/*OneWire_t* OneWireStruct, */int bit)
 {
 	//the accumulated delay should last at least 60 us
 	delay_us(2); //pdf says the time interval b/w two write operation shouldbe at 1us
-	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
+	ONEWIRE_INPUT(); //rise the high voltage to make the required negedge pulse signal
 	if(bit) //master write1
 	{
 		GPIOB->BRR = GPIO_PIN_8; //
@@ -103,7 +95,7 @@ int OneWire_ReadBit(/*OneWire_t* OneWireStruct*/)
 {
 	// TODO
 	int data = 0;
-	ONEWIRE_INPUT(); //rise the high voltage to make the negedge
+	ONEWIRE_INPUT(); //rise the high voltage to make the required required negedge pulse signal pulse signal
 	GPIOB->BRR = GPIO_PIN_8; // high -> low
 	ONEWIRE_OUTPUT();
 	delay_us(3);
