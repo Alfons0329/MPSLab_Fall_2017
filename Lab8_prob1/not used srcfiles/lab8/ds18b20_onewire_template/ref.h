@@ -404,7 +404,7 @@ static inline uint32_t SysTick_Config(uint32_t ticks)
 //
 //}
 
-static inline void delay_us(int n_in){
+static inline void delay_us(int n){
 	asm("push {r0}\r\n"
 			"mov r0, r0\r\n"
 			"LOOP_US:\r\n"
@@ -412,8 +412,7 @@ static inline void delay_us(int n_in){
 			"subs r0, #1\r\n"
 			"BGT LOOP_US\r\n"
 			"POP {r0}\r\n"
-			:: "r" (n_in));
-
+			:: "r" (n));
 }
 
 static inline void delay_ms(int n){

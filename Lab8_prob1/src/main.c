@@ -2,35 +2,37 @@
 #include <stdlib.h>
 #include "ds18b20.h"
 #include "onewire.h"
-#include "ref.h"
 extern void GPIOAC_init();
 extern void max7219_send(unsigned char address, unsigned char data);
 extern void max7219_init();
-extern int global_temperature;
-int mode, pre_stemperature;
+int mode, pre_temperature;
 //configuration ref to: http://home.eeworld.com.cn/my/space-uid-116357-blogid-31714.html
 
 void SystemClock_Config()
 {
     //TODO: Setup system clock and SysTick timer interrupt
-	//use the processor clock
+	//use the clock from processor
 	SysTick->CTRL |= 0x00000004; //
 	SysTick->LOAD = (uint32_t)7999999; //unsigned int 32 bit counter 8000000 (2s interrupt once)
 	//system interrupt happens for every 8000000 cpu cycles, that is the peroid of 2 second
-	// SysTick->VAL = 0;
 	SysTick->CTRL |= 0x00000007; //processor clock, turn on all
 }
+/*########################################################################
+ * UNIT TEST LOG
+ * INTERRUPT UNIT TEST PASS 2017/12/13, 19:23
+ * READY FOR THERMAL TEST DEBUGGING
+ * THERMOMETER DS18B20 UNIT TEST PASS 2017/12/13, 22:23
+ * LAB8 Prob1 done
+ * #######################################################################*/
 void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
 {
     //TODO: Show temperature on 7-seg display
-	//DS18B20_Read(); //Interrupt happens, lets read the temperature from the one wire thermometer
-	//display_clr(8);
-	display(33333,5);
+	DS18B20_Read();
 }
 int check_the_fucking_button()
 {
 	static int debounce = 0;
-	if( (GPIOC->IDR & 0b0010000000000000) == 0)
+	if( (GPIOC->IDR & 0x2000) == 0)
 	{
 	    debounce = debounce >= 1 ? 1 : debounce+1 ; //btn is pressed
 	    return 0;
@@ -54,12 +56,9 @@ int display(int data, int num_digs)
 {
     //getting the value from LSB to MSB which is right to left
     //7 segpanel from 1 to 7 (not zero base)
-    int i=0,dig=0;
-    //display_clr(8); //clear the old number for trash removing
-    for(i=1;i<=num_digs;i++)
+    for(int i=1;i<=num_digs;i++)
     {
         max7219_send(i,data%10);
-        dig=data%10;
         data/=10; //get the next digit
     }
     if(data>99999999 || data<-9999999)
@@ -67,31 +66,40 @@ int display(int data, int num_digs)
     else
         return 0; //end this function
 }
+void GPIOB_primitive_init() //save time
+{
+	GPIOB->MODER   =  0b00000000000000010000000000000000;
+	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
+	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
+	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
+	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
+	GPIOB->OTYPER  =  0b00000000000000000000000000000000;
+}
 int main()
 {
     SystemClock_Config();
     GPIOAC_init();
+	GPIOB_primitive_init();
 	max7219_init();
 	mode=0;
-	pre_stemperature=0;
+	pre_temperature=0;
+	display_clr(8);
     while(1)
     {
-    	display(77777,5);
-    	/*if(check_the_fucking_button())
+    	if(check_the_fucking_button())
         {
 			mode^=1; //mode exchange if button pressed
         }
-		if(mode)
+		if(!mode)
 		{
-			//display_clr(8);
 			display(global_temperature,2);
-			pre_stemperature=global_temperature;
+			pre_temperature=global_temperature; //update the pre_temperature
 		}
 		else
 		{
-			//display_clr(8);
-			display(66666,5);
-		}*/
+			display(pre_temperature,2); //show the old temperature
+		}
     }
+
 	return 0;
 }
