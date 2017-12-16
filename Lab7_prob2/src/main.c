@@ -6,7 +6,6 @@
 
 extern void GPIO_init();
 extern void max7219_init();
-extern void Display();
 extern void max7219_send(unsigned char address, unsigned char data);
 extern void max7219_init();
 unsigned int millisecond;
@@ -124,7 +123,7 @@ void timer_display(int data,int len)
 
 
 }
-void display_clr()
+int display_clr()
 {
     for(int i = 1;i <= 8;i++)
     {

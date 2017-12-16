@@ -24,11 +24,20 @@ int display(int data, int num_digs)
     else
         return 0; //end this function
 }
+int display_clr(int num_digs)
+{
+	for(int i=1;i<=num_digs;i++)
+	{
+		max7219_send(i,0xF);
+	}
+	return 0;
+}
 int main()
 {
     int student_id = 416324;
     GPIO_init();
     max7219_init();
+    display_clr(8);
     display(student_id, 7);
     return 0;
 }
