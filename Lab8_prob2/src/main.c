@@ -64,9 +64,9 @@ void EXTI_Setup(){
 	//select source for EXTI0.1.2.3
 	SYSCFG->EXTICR[0] |= (SYSCFG_EXTICR1_EXTI0_PC | SYSCFG_EXTICR1_EXTI1_PC | SYSCFG_EXTICR1_EXTI2_PC | SYSCFG_EXTICR1_EXTI3_PC);
 	// setup EXTI
-	//select falling edge 0.1.2.3
-	EXTI->IMR1 |= (EXTI_IMR1_IM3 | EXTI_IMR1_IM2 | EXTI_IMR1_IM1 | EXTI_IMR1_IM0);
 	//enable interrupt 0.1.2.3
+	EXTI->IMR1 |= (EXTI_IMR1_IM3 | EXTI_IMR1_IM2 | EXTI_IMR1_IM1 | EXTI_IMR1_IM0);
+	//select falling edge 0.1.2.3
 	EXTI->FTSR1 |= (EXTI_FTSR1_FT3 | EXTI_FTSR1_FT2 | EXTI_FTSR1_FT1 | EXTI_FTSR1_FT0);
 	//clear
 	EXTI->PR1 |= (EXTI_PR1_PIF3 | EXTI_PR1_PIF2 | EXTI_PR1_PIF1 | EXTI_PR1_PIF0);
@@ -169,7 +169,8 @@ void EXTI3_IRQHandler(void){
 	EXTI->PR1 |= (EXTI_PR1_PIF3 | EXTI_PR1_PIF2 | EXTI_PR1_PIF1 | EXTI_PR1_PIF0);
 }
 
-int main(){
+int main()
+{
 	GPIO_init();
 	max7219_init();
 	keypad_init();
