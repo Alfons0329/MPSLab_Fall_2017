@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "stm32l476xx.h"
 #include "mylib.h"
 #include "gpio.h"
 //Pin configuration
