@@ -1,7 +1,13 @@
-
+#include "stm32l476xx.h"
 #ifndef _MYLIB_H_
 #define _MYLIB_H_
+/*
+This lib include some useful functions
+*/
+/*
+reference from http://stm32.kosyak.info/doc/group___exported__macro.html
 
+*/
 #define GPIO_PIN_0   ((uint16_t) 0x0001)
 #define GPIO_PIN_1   ((uint16_t) 0x0002)
 #define GPIO_PIN_2   ((uint16_t) 0x0004)
@@ -29,30 +35,6 @@
 #define MODIFY_REG(REG, CLEARMASK, SETMASK)   WRITE_REG((REG), (((READ_REG(REG)) & (~(CLEARMASK))) | (SETMASK)))
 
 float resistor = 0.0f;
-
-static inline void delay_us(int n_in)
-{
-	asm("push {r0}\r\n"
-			"mov r0, r0\r\n"
-			"LOOP_US:\r\n"
-			"nop\r\n"
-			"subs r0, #1\r\n"
-			"BGT LOOP_US\r\n"
-			"POP {r0}\r\n"
-			:: "r" (n_in));
-
-}
-
-static inline void delay_ms(int n)
-{
-	asm("push {r0}\r\n"
-			"mov r0, r0\r\n"
-			"LOOP:\r\n"
-			"subs r0, #1\r\n"
-			"BGT LOOP\r\n"
-			"POP {r0}\r\n"
-			:: "r" (n*1333));
-}
 int check_the_fucking_button()
 {
 	static int debounce = 0;

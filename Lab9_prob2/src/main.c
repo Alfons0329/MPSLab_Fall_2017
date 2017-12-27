@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "mylib.h"
-#include "gpio.h"
 //Pin configuration
 //PA PB PC
 //Use PA14 for RX and PA15 for TX where RX is the receiver and TX is the transmitter (data output)
-//Use PB for light-sensitive resistor
+//Use PB1 for light-sensitive resistor
+//Use PC13 for user button
 extern float resistor;
 uint8_t text [] = "helloworld";
 void GPIO_Init(void)
@@ -13,14 +13,18 @@ void GPIO_Init(void)
 	RCC->AHB2ENR 	|= 0x7; //Turn on GPIO AB and C;
 	//UART init use PA14 for RX and PA15 for TX ,RX is the input and TX is the outptu port for the UART
 	//the UART part
-	// USART1_RX as alternate function PA14 for RX and PA15 for TX
-	TM_GPIO_Init(GPIOA, 14, TM_GPIO_Mode_AF, TM_GPIO_OType_PP, TM_GPIO_PuPd_NOPULL, TM_GPIO_Speed_Low);
-	// USART1_TX as alternate function PA14 for RX and PA15 for TX
-	TM_GPIO_Init(GPIOA, 15, TM_GPIO_Mode_AF, TM_GPIO_OType_PP, TM_GPIO_PuPd_NOPULL, TM_GPIO_Speed_Low);
+	//USART1_RX as alternate function PA14 for RX and PA15 for TX
+	GPIOA->MODER   &= 0b00001111111111111111111111111111;
+	GPIOA->MODER   |= 0b11110000000000000000000000000000;
+	GPIOA->PUPDR   &= 0b00001111111111111111111111111111;
+	GPIOA->OSPEEDR &= 0b00001111111111111111111111111111;
+	//GPIOA->OTYPER  &= 0b11111111111111111111100111111111; reset is fine
+	//the light-sensitive resistor part
 	//light-sensitive resistor as input
-	TM_GPIO_Init(GPIOB, 1, TM_GPIO_Mode_IN, TM_GPIO_OType_PP, TM_GPIO_PuPd_NOPULL, TM_GPIO_Speed_Low); //does not matter for input
+
+	//the User button part
 	//User button init
-	TM_GPIO_Init(GPIOC, 13, TM_GPIO_Mode_IN, TM_GPIO_OType_PP, TM_GPIO_PuPd_NOPULL, TM_GPIO_Speed_Low); //does not matter for input
+	GPIOC->MODER   &= 0b11110011111111111111111111111111;
 }
 void configureADC()
 {
@@ -50,9 +54,20 @@ void USART1_Init(void)
 	// Enable UART
 	USART1->CR1 |= (USART_CR1_UE);
 }
-int USART1_Transmit(uint8_t *arr, uint32_t size)
+void USART1_Transmit(uint8_t *arr, uint32_t size)
 {
-	/* This is the data structure of UART 
+	/*
+	 Transmission Procedure
+	• Program	the	M	bits	in	USART_CR1	to	define	the	word	length.
+	• Select	the	desired	baud	rate	using	the	USART_BRR	register.
+	• Program	the	number	of	stop	bits	in	USART_CR2.
+	• Enable	the	USART
+	• Write	the	data	to	send	in	the	USART_TDR	register
+	• After	writing	the	last	data	into	the	USART_TDR	register,	wait	until
+	TC=1.	This	indicates	that	the	transmission	of	the	last	frame	is
+	complete
+	 * */
+	/* This is the data structure of UART
 	typedef struct
 	{
 	  __IO uint32_t CR1;         !< USART Control register 1,                 Address offset: 0x00
@@ -72,9 +87,9 @@ int USART1_Transmit(uint8_t *arr, uint32_t size)
 	  uint16_t  RESERVED5;       !< Reserved, 0x2A
   } USART_TypeDef;
 	*/
-	for(int i=0;<size;i++)
+	for(int i=0;i<size;i++)
 	{
-		while(!); //polling the USART device is ready
+		// while(!); //polling the USART device is ready
 		USART1->TDR = arr[i];//transmitt data register, get the data and send to USART port
 	}
 	/********************************************************************************
@@ -83,11 +98,15 @@ int USART1_Transmit(uint8_t *arr, uint32_t size)
 	complete
 	Useing polling the USART device until all is done for the procedure
 	*******************************************************************************/
-	while();
-	return ;
+	while (!READ_BIT(USART1->ISR, USART_ISR_TC));
+
 }
 int main()
 {
 	GPIO_Init();
-
+	while(1)
+	{
+		USART1_Transmit(text,(uint32_t)strlen(text));
+	}
+	return 0;
 }
