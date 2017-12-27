@@ -104,9 +104,11 @@ void USART1_Transmit(uint8_t *arr, uint32_t size)
 int main()
 {
 	GPIO_Init();
+	USART1_Init();
 	while(1)
 	{
-		USART1_Transmit(text,(uint32_t)strlen(text));
+		//USART1_Transmit(text,(uint32_t)strlen(text));
 	}
+
 	return 0;
 }
