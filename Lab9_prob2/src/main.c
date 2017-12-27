@@ -6,7 +6,6 @@
 //Use PA14 for RX and PA15 for TX where RX is the receiver and TX is the transmitter (data output)
 //Use PB1 for light-sensitive resistor
 //Use PC13 for user button
-extern float resistor;
 uint8_t text [] = "helloworld";
 void GPIO_Init(void)
 {
@@ -107,7 +106,7 @@ int main()
 	USART1_Init();
 	while(1)
 	{
-		//USART1_Transmit(text,(uint32_t)strlen(text));
+		USART1_Transmit(text,(uint32_t)strlen(text));
 	}
 
 	return 0;
