@@ -25,11 +25,11 @@
     .equ	CLK,	0b10000000	//PA7
 
     //max7219
-    .equ	DECODE,			0x19 //�ѽX����
-    .equ	INTENSITY,		0x1A //�G�ױ���
-    .equ	SCAN_LIMIT,		0x1B //�]�w���ܽd��
-    .equ	SHUT_DOWN,		0x1C //����
-    .equ	DISPLAY_TEST,	0x1F //���ܴ���
+    .equ	DECODE,			0x19 //嚙諸碼嚙踝蕭嚙踝蕭
+    .equ	INTENSITY,		0x1A //嚙瘦嚙論梧蕭嚙踝蕭
+    .equ	SCAN_LIMIT,		0x1B //嚙稽嚙緩嚙踝蕭嚙豌範嚙踝蕭
+    .equ	SHUT_DOWN,		0x1C //嚙踝蕭嚙踝蕭
+    .equ	DISPLAY_TEST,	0x1F //嚙踝蕭嚙豌湛蕭嚙踝蕭
 
     //button
     /*GPIOC for button*/
@@ -183,10 +183,6 @@ check_button: //check every cycle, and accumulate 1
     it eq
     moveq r4, #0//case 2 reset all fibonacci pointers
 
-
-
-
-
     cmp r4, #40
     it ge
     movsge r4, #40
@@ -240,13 +236,9 @@ GPIO_init:
 	ldr r1, [r0]
 	//clear pc13 to zero
 	and r1, r1, 0xf3ffffff
-
 	str r1,	[r0]
-
 	//otype is default to pp , no need to change
-
 	//usage r4 for button data input value address in the future
-
 	ldr r8, =GPIOC_IDR
   	BX LR
 
@@ -268,8 +260,8 @@ send_loop:
     mov r7, 1
     lsl r7, r6 //left shift to get the data in current digit
     str r3, [r5] //CLK -> 0
-    tst r0, r7 //同ANDS但不存結果 (update condition flags)
-    beq bit_not_set //r0要送的那位!=1
+    tst r0, r7 //��NDS雿����� (update condition flags)
+    beq bit_not_set //r0閬��雿�!=1
     str r1, [r4] //din -> 1
     b if_done
 
@@ -301,7 +293,7 @@ max7219_init:
     bl MAX7219Send
 
     ldr r0, =INTENSITY
-    ldr r1, =0xA //�G�� 21/32
+    ldr r1, =0xA //嚙瘦嚙踝蕭 21/32
     bl MAX7219Send
 
 
