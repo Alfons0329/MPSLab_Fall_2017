@@ -9,12 +9,12 @@
 uint8_t text[] = "helloworld";
 void GPIO_Init(void)
 {
-	RCC->AHB2ENR 	|= 0x7; //Turn on GPIO AB and C;
+	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
 	//UART init use PA14 for RX and PA15 for TX ,RX is the input and TX is the outptu port for the UART
 	//the UART part
 	//USART1_RX as alternate function PA14 for RX and PA15 for TX
 	GPIOA->MODER   &= 0b00001111111111111111111111111111;
-	GPIOA->MODER   |= 0b11110000000000000000000000000000;
+	GPIOA->MODER   |= 0b10100000000000000000000000000000;
 	GPIOA->PUPDR   &= 0b00001111111111111111111111111111;
 	GPIOA->OSPEEDR &= 0b00001111111111111111111111111111;
 	//GPIOA->OTYPER  &= 0b11111111111111111111100111111111; reset is fine
@@ -107,8 +107,6 @@ int main()
 	USART1_Init();
 	while(1)
 	{
-		int a = 0;
-		a++;
 		USART1_Transmit(text,(uint32_t)strlen(text));
 	}
 
