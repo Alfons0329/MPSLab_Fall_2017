@@ -7,7 +7,8 @@ Use PA10 for RX (RX for board is receiver and TX for computer is sender)
 and PA9 for TX (TX for board is sender and TX for computer is receiver)
 Use PB1 for light-sensitive resistor
 Use PC13 for user button*/
-uint8_t text[] = "0";
+//RX push pull TX open drain
+uint8_t text[] = "hello\r\n";
 void GPIO_Init(void)
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
@@ -18,7 +19,12 @@ void GPIO_Init(void)
 	GPIOA->MODER   |= 0b00000000001010000000000000000000;
 	GPIOA->PUPDR   &= 0b11111111110000111111111111111111;
 	GPIOA->OSPEEDR &= 0b11111111110000111111111111111111;
-	//GPIOA->OTYPER  &= 0b11111111111111111111100111111111; reset is fine
+	GPIOA->OSPEEDR &= 0b11111111111010111111111111111111;
+	GPIOA->OTYPER  &= 0b11111111111111111111100111111111; //reset is fine
+	GPIOA->OTYPER  |= 0b11111111111111111111110111111111;
+
+	GPIOA->AFR[1] = (GPIOA->AFR[1] & 0xFFFFF00F) | 0x00000770;
+
 	//the light-sensitive resistor part
 	//light-sensitive resistor as input
 
@@ -110,7 +116,7 @@ int main()
 	USART1_Init();
 	while(1)
 	{
-		USART1_Transmit(text,(uint32_t)strlen(text));
+		USART1_Transmit(text,(uint32_t)sizeof(text));
 	}
 
 	return 0;
