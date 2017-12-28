@@ -421,60 +421,61 @@ LOAD /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.
                 0x0000000008000584                . = ALIGN (0x4)
                 0x0000000008000584                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000      0x434 load address 0x0000000008000584
+.data           0x0000000020000000      0x454 load address 0x0000000008000584
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
- .data          0x0000000020000000        0x8 src/main.o
+ .data          0x0000000020000000       0x22 src/main.o
                 0x0000000020000000                text
  *(.data*)
+ *fill*         0x0000000020000022        0x6 
  .data.impure_data
-                0x0000000020000008      0x428 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
+                0x0000000020000028      0x428 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
  .data.__atexit_recursive_mutex
-                0x0000000020000430        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
-                0x0000000020000430                __atexit_recursive_mutex
-                0x0000000020000434                . = ALIGN (0x4)
-                0x0000000020000434                _edata = .
+                0x0000000020000450        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
+                0x0000000020000450                __atexit_recursive_mutex
+                0x0000000020000454                . = ALIGN (0x4)
+                0x0000000020000454                _edata = .
 
-.jcr            0x0000000020000434        0x0 load address 0x00000000080009b8
- .jcr           0x0000000020000434        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.jcr            0x0000000020000454        0x0 load address 0x00000000080009d8
+ .jcr           0x0000000020000454        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.igot.plt       0x0000000020000434        0x0 load address 0x00000000080009b8
- .igot.plt      0x0000000020000434        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x0000000020000434                . = ALIGN (0x4)
+.igot.plt       0x0000000020000454        0x0 load address 0x00000000080009d8
+ .igot.plt      0x0000000020000454        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x0000000020000454                . = ALIGN (0x4)
 
-.bss            0x0000000020000434       0x40 load address 0x00000000080009b8
-                0x0000000020000434                _sbss = .
-                0x0000000020000434                __bss_start__ = _sbss
+.bss            0x0000000020000454       0x40 load address 0x00000000080009d8
+                0x0000000020000454                _sbss = .
+                0x0000000020000454                __bss_start__ = _sbss
  *(.bss)
- .bss           0x0000000020000434       0x1c /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .bss           0x0000000020000454       0x1c /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
  *(.bss*)
  *(COMMON)
- COMMON         0x0000000020000450       0x21 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
-                0x0000000020000450                __lock___atexit_recursive_mutex
-                0x0000000020000454                __lock___arc4random_mutex
-                0x0000000020000458                __lock___env_recursive_mutex
-                0x000000002000045c                __lock___sinit_recursive_mutex
-                0x0000000020000460                __lock___malloc_recursive_mutex
-                0x0000000020000464                __lock___at_quick_exit_mutex
-                0x0000000020000468                __lock___dd_hash_mutex
-                0x000000002000046c                __lock___tz_mutex
-                0x0000000020000470                __lock___sfp_recursive_mutex
-                0x0000000020000474                . = ALIGN (0x4)
- *fill*         0x0000000020000471        0x3 
-                0x0000000020000474                _ebss = .
-                0x0000000020000474                __bss_end__ = _ebss
+ COMMON         0x0000000020000470       0x21 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
+                0x0000000020000470                __lock___atexit_recursive_mutex
+                0x0000000020000474                __lock___arc4random_mutex
+                0x0000000020000478                __lock___env_recursive_mutex
+                0x000000002000047c                __lock___sinit_recursive_mutex
+                0x0000000020000480                __lock___malloc_recursive_mutex
+                0x0000000020000484                __lock___at_quick_exit_mutex
+                0x0000000020000488                __lock___dd_hash_mutex
+                0x000000002000048c                __lock___tz_mutex
+                0x0000000020000490                __lock___sfp_recursive_mutex
+                0x0000000020000494                . = ALIGN (0x4)
+ *fill*         0x0000000020000491        0x3 
+                0x0000000020000494                _ebss = .
+                0x0000000020000494                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x0000000020000474      0x404 load address 0x00000000080009b8
-                0x0000000020000478                . = ALIGN (0x8)
- *fill*         0x0000000020000474        0x4 
-                0x0000000020000478                PROVIDE (end, .)
+                0x0000000020000494      0x404 load address 0x00000000080009d8
+                0x0000000020000498                . = ALIGN (0x8)
+ *fill*         0x0000000020000494        0x4 
+                0x0000000020000498                PROVIDE (end, .)
                 [!provide]                        PROVIDE (_end, .)
-                0x0000000020000478                . = (. + _Min_Heap_Size)
-                0x0000000020000878                . = (. + _Min_Stack_Size)
- *fill*         0x0000000020000478      0x400 
-                0x0000000020000878                . = ALIGN (0x8)
+                0x0000000020000498                . = (. + _Min_Heap_Size)
+                0x0000000020000898                . = (. + _Min_Stack_Size)
+ *fill*         0x0000000020000498      0x400 
+                0x0000000020000898                . = ALIGN (0x8)
 
 /DISCARD/
  libc.a(*)

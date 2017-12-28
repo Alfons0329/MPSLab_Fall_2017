@@ -8,7 +8,7 @@ and PA9 for TX (TX for board is sender and TX for computer is receiver)
 Use PB1 for light-sensitive resistor
 Use PC13 for user button*/
 //RX push pull TX open drain
-uint8_t text[] = "hello\r\n";
+uint8_t text[] = "UART FUCKINGLY WORKS HELL YEAH \r\n";
 void GPIO_Init(void)
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
@@ -52,7 +52,12 @@ void USART1_Init(void)
 	// CR3
 	MODIFY_REG(USART1->CR3, (USART_CR3_RTSE | USART_CR3_CTSE | USART_CR3_ONEBIT), 0x0); // none hwflowctl
 	//baud rate se
-	MODIFY_REG(USART1->BRR, 0xFFFF /*clear all and reset*/, 4000000L/9600L);
+	/*uint16_t brr15_4 = USART1->BRR & 0b1111111111110000;
+	brr15_4 >>= 4;
+	uint16_t brr2_0 = USART1->BRR & 0b111;
+	brr2_0 <<= 1;
+	uint16_t baud_x = brr15_4 | brr2_0;*/
+	MODIFY_REG(USART1->BRR, 0xFFFF /*clear all and reset*/, 4000000/9600);
 	/* In asynchronous mode, the following bits must be kept cleared:
 	- LINEN and CLKEN bits in the USART_CR2 register,
 	- SCEN, HDSEL and IREN bits in the USART_CR3 register.*/
@@ -97,7 +102,7 @@ void USART1_Transmit(uint8_t *arr, uint32_t size)
 	for(int i=0;i<size;i++)
 	{
 		// while(!); //polling the USART device is ready
-		while (!READ_BIT(USART1->ISR, USART_ISR_TC));
+		while (!READ_BIT(USART1->ISR, USART_ISR_TXE));
 		USART1->TDR = arr[i];//transmitt data register, get the data and send to USART port
 	}
 	/********************************************************************************
