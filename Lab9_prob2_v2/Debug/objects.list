@@ -1,0 +1,4 @@
+"src/main.o"
+"src/required.o"
+"startup/startup_stm32.o"
+"startup/sysmem.o"
