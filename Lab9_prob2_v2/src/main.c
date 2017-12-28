@@ -2,21 +2,22 @@
 #include <string.h>
 #include "mylib.h"
 //Pin configuration
-//PA PB PC
-//Use PA14 for RX and PA15 for TX where RX is the receiver and TX is the transmitter (data output)
-//Use PB1 for light-sensitive resistor
-//Use PC13 for user button
-uint8_t text[] = "helloworld";
+/*PA PB PC
+Use PA10 for RX (RX for board is receiver and TX for computer is sender)
+and PA9 for TX (TX for board is sender and TX for computer is receiver)
+Use PB1 for light-sensitive resistor
+Use PC13 for user button*/
+uint8_t text[] = "0";
 void GPIO_Init(void)
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
 	//UART init use PA14 for RX and PA15 for TX ,RX is the input and TX is the outptu port for the UART
 	//the UART part
 	//USART1_RX as alternate function PA14 for RX and PA15 for TX
-	GPIOA->MODER   &= 0b00001111111111111111111111111111;
-	GPIOA->MODER   |= 0b10100000000000000000000000000000;
-	GPIOA->PUPDR   &= 0b00001111111111111111111111111111;
-	GPIOA->OSPEEDR &= 0b00001111111111111111111111111111;
+	GPIOA->MODER   &= 0b11111111110000111111111111111111;
+	GPIOA->MODER   |= 0b00000000001010000000000000000000;
+	GPIOA->PUPDR   &= 0b11111111110000111111111111111111;
+	GPIOA->OSPEEDR &= 0b11111111110000111111111111111111;
 	//GPIOA->OTYPER  &= 0b11111111111111111111100111111111; reset is fine
 	//the light-sensitive resistor part
 	//light-sensitive resistor as input
@@ -44,7 +45,8 @@ void USART1_Init(void)
 	MODIFY_REG(USART1->CR2, USART_CR2_STOP, 0x0); // 1-bit stop
 	// CR3
 	MODIFY_REG(USART1->CR3, (USART_CR3_RTSE | USART_CR3_CTSE | USART_CR3_ONEBIT), 0x0); // none hwflowctl
-	MODIFY_REG(USART1->BRR, 0xFF, 4000000L/9600L);
+	//baud rate se
+	MODIFY_REG(USART1->BRR, 0xFFFF /*clear all and reset*/, 4000000L/9600L);
 	/* In asynchronous mode, the following bits must be kept cleared:
 	- LINEN and CLKEN bits in the USART_CR2 register,
 	- SCEN, HDSEL and IREN bits in the USART_CR3 register.*/
@@ -89,6 +91,7 @@ void USART1_Transmit(uint8_t *arr, uint32_t size)
 	for(int i=0;i<size;i++)
 	{
 		// while(!); //polling the USART device is ready
+		while (!READ_BIT(USART1->ISR, USART_ISR_TC));
 		USART1->TDR = arr[i];//transmitt data register, get the data and send to USART port
 	}
 	/********************************************************************************

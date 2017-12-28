@@ -296,7 +296,7 @@ LOAD /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.
                 0x0000000008000000                g_pfnVectors
                 0x0000000008000188                . = ALIGN (0x4)
 
-.text           0x00000000080001c0      0x498
+.text           0x00000000080001c0      0x4a0
                 0x00000000080001c0                . = ALIGN (0x4)
  *(.text)
  .text          0x00000000080001c0       0x6c /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
@@ -308,181 +308,181 @@ LOAD /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.
                 0x000000000800031c       0x70 src/main.o
                 0x000000000800031c                GPIO_Init
  .text.USART1_Init
-                0x000000000800038c       0x88 src/main.o
+                0x000000000800038c       0x84 src/main.o
                 0x000000000800038c                USART1_Init
  .text.USART1_Transmit
-                0x0000000008000414       0x4c src/main.o
-                0x0000000008000414                USART1_Transmit
- .text.main     0x0000000008000460       0x24 src/main.o
-                0x0000000008000460                main
+                0x0000000008000410       0x58 src/main.o
+                0x0000000008000410                USART1_Transmit
+ .text.main     0x0000000008000468       0x24 src/main.o
+                0x0000000008000468                main
  .text.Reset_Handler
-                0x0000000008000484       0x48 startup/startup_stm32.o
-                0x0000000008000484                Reset_Handler
+                0x000000000800048c       0x48 startup/startup_stm32.o
+                0x000000000800048c                Reset_Handler
  .text.Default_Handler
-                0x00000000080004cc        0x2 startup/startup_stm32.o
-                0x00000000080004cc                DebugMon_Handler
-                0x00000000080004cc                HardFault_Handler
-                0x00000000080004cc                SysTick_Handler
-                0x00000000080004cc                PendSV_Handler
-                0x00000000080004cc                NMI_Handler
-                0x00000000080004cc                UsageFault_Handler
-                0x00000000080004cc                Default_Handler
-                0x00000000080004cc                MemManage_Handler
-                0x00000000080004cc                SVC_Handler
-                0x00000000080004cc                BusFault_Handler
- *fill*         0x00000000080004ce        0x2 
+                0x00000000080004d4        0x2 startup/startup_stm32.o
+                0x00000000080004d4                DebugMon_Handler
+                0x00000000080004d4                HardFault_Handler
+                0x00000000080004d4                SysTick_Handler
+                0x00000000080004d4                PendSV_Handler
+                0x00000000080004d4                NMI_Handler
+                0x00000000080004d4                UsageFault_Handler
+                0x00000000080004d4                Default_Handler
+                0x00000000080004d4                MemManage_Handler
+                0x00000000080004d4                SVC_Handler
+                0x00000000080004d4                BusFault_Handler
+ *fill*         0x00000000080004d6        0x2 
  .text.__libc_init_array
-                0x00000000080004d0       0x50 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-init.o)
-                0x00000000080004d0                __libc_init_array
+                0x00000000080004d8       0x50 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-init.o)
+                0x00000000080004d8                __libc_init_array
  .text.startup.register_fini
-                0x0000000008000520       0x14 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
- .text.atexit   0x0000000008000534        0xc /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-atexit.o)
-                0x0000000008000534                atexit
+                0x0000000008000528       0x14 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
+ .text.atexit   0x000000000800053c        0xc /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-atexit.o)
+                0x000000000800053c                atexit
  .text.__libc_fini_array
-                0x0000000008000540       0x34 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-fini.o)
-                0x0000000008000540                __libc_fini_array
+                0x0000000008000548       0x34 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-fini.o)
+                0x0000000008000548                __libc_fini_array
  .text.__retarget_lock_acquire_recursive
-                0x0000000008000574        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
-                0x0000000008000574                __retarget_lock_acquire_recursive
+                0x000000000800057c        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
+                0x000000000800057c                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x0000000008000578        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
-                0x0000000008000578                __retarget_lock_release_recursive
+                0x0000000008000580        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
+                0x0000000008000580                __retarget_lock_release_recursive
  .text.__register_exitproc
-                0x000000000800057c       0xc4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__atexit.o)
-                0x000000000800057c                __register_exitproc
+                0x0000000008000584       0xc4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__atexit.o)
+                0x0000000008000584                __register_exitproc
  *(.glue_7)
- .glue_7        0x0000000008000640        0x0 linker stubs
+ .glue_7        0x0000000008000648        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x0000000008000640        0x0 linker stubs
+ .glue_7t       0x0000000008000648        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x0000000008000640        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .eh_frame      0x0000000008000648        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
  *(.init)
- .init          0x0000000008000640        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
-                0x0000000008000640                _init
- .init          0x0000000008000644        0x8 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+ .init          0x0000000008000648        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x0000000008000648                _init
+ .init          0x000000000800064c        0x8 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
  *(.fini)
- .fini          0x000000000800064c        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
-                0x000000000800064c                _fini
- .fini          0x0000000008000650        0x8 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
-                0x0000000008000658                . = ALIGN (0x4)
-                0x0000000008000658                _etext = .
+ .fini          0x0000000008000654        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x0000000008000654                _fini
+ .fini          0x0000000008000658        0x8 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+                0x0000000008000660                . = ALIGN (0x4)
+                0x0000000008000660                _etext = .
 
-.vfp11_veneer   0x0000000008000658        0x0
- .vfp11_veneer  0x0000000008000658        0x0 linker stubs
+.vfp11_veneer   0x0000000008000660        0x0
+ .vfp11_veneer  0x0000000008000660        0x0 linker stubs
 
-.v4_bx          0x0000000008000658        0x0
- .v4_bx         0x0000000008000658        0x0 linker stubs
+.v4_bx          0x0000000008000660        0x0
+ .v4_bx         0x0000000008000660        0x0 linker stubs
 
-.iplt           0x0000000008000658        0x0
- .iplt          0x0000000008000658        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.iplt           0x0000000008000660        0x0
+ .iplt          0x0000000008000660        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.rodata         0x0000000008000658        0x4
-                0x0000000008000658                . = ALIGN (0x4)
+.rodata         0x0000000008000660        0x4
+                0x0000000008000660                . = ALIGN (0x4)
  *(.rodata)
  *(.rodata*)
  .rodata._global_impure_ptr
-                0x0000000008000658        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
-                0x0000000008000658                _global_impure_ptr
-                0x000000000800065c                . = ALIGN (0x4)
+                0x0000000008000660        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
+                0x0000000008000660                _global_impure_ptr
+                0x0000000008000664                . = ALIGN (0x4)
 
-.rel.dyn        0x000000000800065c        0x0
- .rel.iplt      0x000000000800065c        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.rel.dyn        0x0000000008000664        0x0
+ .rel.iplt      0x0000000008000664        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.ARM.extab      0x000000000800065c        0x0
-                0x000000000800065c                . = ALIGN (0x4)
+.ARM.extab      0x0000000008000664        0x0
+                0x0000000008000664                . = ALIGN (0x4)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x000000000800065c                . = ALIGN (0x4)
+                0x0000000008000664                . = ALIGN (0x4)
 
-.ARM            0x000000000800065c        0x0
-                0x000000000800065c                . = ALIGN (0x4)
-                0x000000000800065c                __exidx_start = .
+.ARM            0x0000000008000664        0x0
+                0x0000000008000664                . = ALIGN (0x4)
+                0x0000000008000664                __exidx_start = .
  *(.ARM.exidx*)
-                0x000000000800065c                __exidx_end = .
-                0x000000000800065c                . = ALIGN (0x4)
+                0x0000000008000664                __exidx_end = .
+                0x0000000008000664                . = ALIGN (0x4)
 
-.preinit_array  0x000000000800065c        0x0
-                0x000000000800065c                . = ALIGN (0x4)
-                0x000000000800065c                PROVIDE (__preinit_array_start, .)
+.preinit_array  0x0000000008000664        0x0
+                0x0000000008000664                . = ALIGN (0x4)
+                0x0000000008000664                PROVIDE (__preinit_array_start, .)
  *(.preinit_array*)
-                0x000000000800065c                PROVIDE (__preinit_array_end, .)
-                0x000000000800065c                . = ALIGN (0x4)
+                0x0000000008000664                PROVIDE (__preinit_array_end, .)
+                0x0000000008000664                . = ALIGN (0x4)
 
-.init_array     0x000000000800065c        0x8
-                0x000000000800065c                . = ALIGN (0x4)
-                0x000000000800065c                PROVIDE (__init_array_start, .)
+.init_array     0x0000000008000664        0x8
+                0x0000000008000664                . = ALIGN (0x4)
+                0x0000000008000664                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  .init_array.00000
-                0x000000000800065c        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
+                0x0000000008000664        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
  *(.init_array*)
- .init_array    0x0000000008000660        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x0000000008000664                PROVIDE (__init_array_end, .)
-                0x0000000008000664                . = ALIGN (0x4)
+ .init_array    0x0000000008000668        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x000000000800066c                PROVIDE (__init_array_end, .)
+                0x000000000800066c                . = ALIGN (0x4)
 
-.fini_array     0x0000000008000664        0x4
-                0x0000000008000664                . = ALIGN (0x4)
-                0x0000000008000664                PROVIDE (__fini_array_start, .)
+.fini_array     0x000000000800066c        0x4
+                0x000000000800066c                . = ALIGN (0x4)
+                0x000000000800066c                PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x0000000008000664        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x0000000008000668                PROVIDE (__fini_array_end, .)
-                0x0000000008000668                . = ALIGN (0x4)
-                0x0000000008000668                _sidata = LOADADDR (.data)
+ .fini_array    0x000000000800066c        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x0000000008000670                PROVIDE (__fini_array_end, .)
+                0x0000000008000670                . = ALIGN (0x4)
+                0x0000000008000670                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000      0x43c load address 0x0000000008000668
+.data           0x0000000020000000      0x434 load address 0x0000000008000670
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
- .data          0x0000000020000000        0xb src/main.o
+ .data          0x0000000020000000        0x2 src/main.o
                 0x0000000020000000                text
  *(.data*)
- *fill*         0x000000002000000b        0x5 
+ *fill*         0x0000000020000002        0x6 
  .data.impure_data
-                0x0000000020000010      0x428 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
+                0x0000000020000008      0x428 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
  .data.__atexit_recursive_mutex
-                0x0000000020000438        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
-                0x0000000020000438                __atexit_recursive_mutex
-                0x000000002000043c                . = ALIGN (0x4)
-                0x000000002000043c                _edata = .
+                0x0000000020000430        0x4 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
+                0x0000000020000430                __atexit_recursive_mutex
+                0x0000000020000434                . = ALIGN (0x4)
+                0x0000000020000434                _edata = .
 
-.jcr            0x000000002000043c        0x0 load address 0x0000000008000aa4
- .jcr           0x000000002000043c        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.jcr            0x0000000020000434        0x0 load address 0x0000000008000aa4
+ .jcr           0x0000000020000434        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.igot.plt       0x000000002000043c        0x0 load address 0x0000000008000aa4
- .igot.plt      0x000000002000043c        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x000000002000043c                . = ALIGN (0x4)
+.igot.plt       0x0000000020000434        0x0 load address 0x0000000008000aa4
+ .igot.plt      0x0000000020000434        0x0 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x0000000020000434                . = ALIGN (0x4)
 
-.bss            0x000000002000043c       0x40 load address 0x0000000008000aa4
-                0x000000002000043c                _sbss = .
-                0x000000002000043c                __bss_start__ = _sbss
+.bss            0x0000000020000434       0x40 load address 0x0000000008000aa4
+                0x0000000020000434                _sbss = .
+                0x0000000020000434                __bss_start__ = _sbss
  *(.bss)
- .bss           0x000000002000043c       0x1c /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .bss           0x0000000020000434       0x1c /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
  *(.bss*)
  *(COMMON)
- COMMON         0x0000000020000458       0x21 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
-                0x0000000020000458                __lock___atexit_recursive_mutex
-                0x000000002000045c                __lock___arc4random_mutex
-                0x0000000020000460                __lock___env_recursive_mutex
-                0x0000000020000464                __lock___sinit_recursive_mutex
-                0x0000000020000468                __lock___malloc_recursive_mutex
-                0x000000002000046c                __lock___at_quick_exit_mutex
-                0x0000000020000470                __lock___dd_hash_mutex
-                0x0000000020000474                __lock___tz_mutex
-                0x0000000020000478                __lock___sfp_recursive_mutex
-                0x000000002000047c                . = ALIGN (0x4)
- *fill*         0x0000000020000479        0x3 
-                0x000000002000047c                _ebss = .
-                0x000000002000047c                __bss_end__ = _ebss
+ COMMON         0x0000000020000450       0x21 /home/alfons/Ac6/SystemWorkbench/plugins/fr.ac6.mcu.externaltools.arm-none.linux64_1.15.0.201708311556/tools/compiler/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
+                0x0000000020000450                __lock___atexit_recursive_mutex
+                0x0000000020000454                __lock___arc4random_mutex
+                0x0000000020000458                __lock___env_recursive_mutex
+                0x000000002000045c                __lock___sinit_recursive_mutex
+                0x0000000020000460                __lock___malloc_recursive_mutex
+                0x0000000020000464                __lock___at_quick_exit_mutex
+                0x0000000020000468                __lock___dd_hash_mutex
+                0x000000002000046c                __lock___tz_mutex
+                0x0000000020000470                __lock___sfp_recursive_mutex
+                0x0000000020000474                . = ALIGN (0x4)
+ *fill*         0x0000000020000471        0x3 
+                0x0000000020000474                _ebss = .
+                0x0000000020000474                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x000000002000047c      0x404 load address 0x0000000008000aa4
-                0x0000000020000480                . = ALIGN (0x8)
- *fill*         0x000000002000047c        0x4 
-                0x0000000020000480                PROVIDE (end, .)
+                0x0000000020000474      0x404 load address 0x0000000008000aa4
+                0x0000000020000478                . = ALIGN (0x8)
+ *fill*         0x0000000020000474        0x4 
+                0x0000000020000478                PROVIDE (end, .)
                 [!provide]                        PROVIDE (_end, .)
-                0x0000000020000480                . = (. + _Min_Heap_Size)
-                0x0000000020000880                . = (. + _Min_Stack_Size)
- *fill*         0x0000000020000480      0x400 
-                0x0000000020000880                . = ALIGN (0x8)
+                0x0000000020000478                . = (. + _Min_Heap_Size)
+                0x0000000020000878                . = (. + _Min_Stack_Size)
+ *fill*         0x0000000020000478      0x400 
+                0x0000000020000878                . = ALIGN (0x8)
 
 /DISCARD/
  libc.a(*)
@@ -576,9 +576,9 @@ OUTPUT(Lab9_prob2.elf elf32-littlearm)
  .debug_macro   0x00000000000029f1    0x1a16e src/main.o
  .debug_macro   0x000000000001cb5f       0x9a src/main.o
 
-.debug_line     0x0000000000000000      0x58f
- .debug_line    0x0000000000000000      0x516 src/main.o
- .debug_line    0x0000000000000516       0x79 startup/startup_stm32.o
+.debug_line     0x0000000000000000      0x597
+ .debug_line    0x0000000000000000      0x51e src/main.o
+ .debug_line    0x000000000000051e       0x79 startup/startup_stm32.o
 
 .debug_str      0x0000000000000000    0x9df8e
  .debug_str     0x0000000000000000    0x9df8e src/main.o
