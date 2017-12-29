@@ -11,7 +11,9 @@ Use PC13 for user button
 **************************************************************************/
 //RX push pull TX open drain
 uint8_t text[] = "UART FUCKINGLY WORKS HELL YEAH \r\n";
+uint8_t buf[50];
 extern float resistor_value;
+extern void fpu_enable();
 void GPIO_Init(void)
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
@@ -39,14 +41,19 @@ void GPIO_Init(void)
 
 int main()
 {
+	fpu_enable();
 	GPIO_Init();
 	USART1_Init();
+	configureADC();
+	startADC();
 	while(1)
 	{
 		if(check_the_fucking_button())
 		{
-			USART1_Transmit(text,(uint32_t)sizeof(text));
+
 		}
+		sprintf(buf,"Resistor value %f \r\n",resistor_value);
+		USART1_Transmit(buf,(uint32_t)sizeof(buf));
 	}
 
 	return 0;
