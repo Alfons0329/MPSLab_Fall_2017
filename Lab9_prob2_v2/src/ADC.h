@@ -96,7 +96,7 @@ void configureADC()
     ADC1->CFGR &= ~ADC_CFGR_CONT; // Disable continuous conversion
     ADC1->CFGR &= ~ADC_CFGR_ALIGN; // Right align
                    //10987654321098765432109876543210
-    ADC1->SQR1 |=  0b00000000000000000000000001000000; //We use only one ADC channel but problem is, which channel ??
+    ADC1->SQR1 |=  0b00000000000000000000001111000000; //We use only one ADC channel but problem is, which channel ??
     //the higher sampling cycle can ensure the more detalied data but takes more process time, set12.5 will be fine, all takes 25 cycles
     ADC1->SMPR1 |= 0b00000000000000000000000000000010;
     //ADC conversion time may reference to manual p518
