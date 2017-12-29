@@ -48,12 +48,14 @@ int main()
 	startADC();
 	while(1)
 	{
+		get_light_resistor();
 		if(check_the_fucking_button())
 		{
-
+			sprintf(buf,"Resistor value %f \r\n",resistor_value);
+			USART1_Transmit(buf,(uint32_t)sizeof(buf));
 		}
-		sprintf(buf,"Resistor value %f \r\n",resistor_value);
-		USART1_Transmit(buf,(uint32_t)sizeof(buf));
+
+
 	}
 
 	return 0;

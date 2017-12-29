@@ -117,6 +117,7 @@ void startADC()
 
 void get_light_resistor()
 {
+    ADC1->CR |= ADC_CR_ADSTART;
     while(!READ_BIT(ADC1->ISR, ADC_ISR_EOC)); //Polling until the ADC conversion of light resistor is done
     resistor_value =  ADC1->DR;
 }
