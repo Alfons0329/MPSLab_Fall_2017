@@ -4,6 +4,7 @@
 float resistor_value = 0.0f;
 /************************************************************************************
 ADC Reference to manual p501
+ADC register reference to manual p580
 ADC Data structure is here
 
 typedef struct
@@ -56,19 +57,42 @@ typedef struct
   __IO uint32_t CDR;          !< ADC common group regular data register         Address offset: ADC1 base address + 0x30C
 } ADC_Common_TypeDef;
 
-
+stm32l476xx.h ---> Line 1477 has the configuration of ADC
 ***********************************************************************************/
 void configureADC()
 {
 	// TODO
     RCC->AHB2ENR |= RCC_AHB2ENR_ADCEN; //Turn on the adc function
     GPIOB->ASCR |= 1; //turn on the analog controller in PB0
+    /* ############################################################################
+     *  Set the ADC clock first by using ADC common register Reset value: 0x0000 0000
+     *  The ADC common register can be found at manual p608
+     *  We set the clock source as the sysclk , which is default 4MHz
+     *
+     *
+     *
+     *
+     *
+     *
+     * ###########################################################################*/
+
+    ADC123_COMMON->CCR &= 1; //The only accept case is all capital, dont know why
+    ADC1->CFGR &= ~ADC_CFGR_RES; // 12-bit resolution
+    ADC1->CFGR &= ~ADC_CFGR_CONT; // disable continuous conversion
+    ADC1->CFGR &= ~ADC_CFGR_ALIGN; // right align
+    ADC123_COMMON->CSR &= 1;//set the system clock for ADC
+
+
     ADC1->CR &= ~ADC_CR_DEEPPWD; // turn off power
-    ADC1->CR |= ADC_CR_ADVREGEN; // enable adc voltage regulator
+    ADC1->CR |= ADC_CR_ADVREGEN; //
+    ADC1->IER |= ADC_IER_EOCIE; //when conversion ends, do the interrupt (the end of conversion interrupt)
+
 }
+//start the ADC and do the resistor conversion
 void startADC()
 {
 	// TODO
+
 }
 
 #endif
