@@ -88,28 +88,36 @@ void configureADC()
     /************************ADC main settings starts here********************************************/
     ADC1->CR &= ~ADC_CR_DEEPPWD; //Turn off the deep-power mode before the configuration
     ADC1->CR |= ADC_CR_ADVREGEN; //Turn on the voltage regulator
-    while(!READ_BIT(ADC1->CR,ADC_CR_ADVREGEN)); //Polling until the ADCVERGEN is pulled up ot 1
+    while(!READ_BIT(ADC1->CR, ADC_CR_ADVREGEN)); //Polling until the ADCVERGEN is pulled up ot 1
 
     ADC1->CR |= 0x80000000; //Tell the ADC to do the calibration.
-    while((ADC->CR & 0x80000000) >> 31); //Polling until the calibration is done
+    while((ADC1->CR & 0x80000000) >> 31); //Polling until the calibration is done
     ADC1->CFGR &= ~ADC_CFGR_RES; // 12-bit resolution
     ADC1->CFGR &= ~ADC_CFGR_CONT; // Disable continuous conversion
     ADC1->CFGR &= ~ADC_CFGR_ALIGN; // Right align
-                  //10987654321098765432109876543210
-    ADC1->SQR1 |= 0b00000000000000000000000001000000; //We use only one ADC channel  
-    ADC1->SQR2
-    ADC123_COMMON->CSR &= 1;//Set the system clock for ADC
-
-
+                   //10987654321098765432109876543210
+    ADC1->SQR1 |=  0b00000000000000000000000001000000; //We use only one ADC channel but problem is, which channel ??
+    //the higher sampling cycle can ensure the more detalied data but takes more process time, set12.5 will be fine, all takes 25 cycles
+    ADC1->SMPR1 |= 0b00000000000000000000000000010000;
+    //ADC conversion time may reference to manual p518
+    ADC1->SMPR1 |= 0b1;
     ADC1->IER |= ADC_IER_EOCIE; //When conversion ends, do the interrupt (the end of conversion interrupt)
     /************************ADC main settings ends here********************************************/
 
 }
 //Start the ADC and do the resistor conversion
+//ADC Clock is 4MHz,
 void startADC()
 {
 	// TODO
+    ADC1->CR |= ADC_CR_ADEN; //Turn on the ADC, write to enable the adc
+    while(!READ_BIT(ADC1->ISR, ADC_ISR_ADRDY)); //Wait until ADC is ready for conversion
 
 }
 
+void get_light_resistor()
+{
+    while(!READ_BIT(ADC1->ISR, ADC_ISR_EOC)); //Polling until the ADC conversion of light resistor is done
+    resistor_value =  ADC1->DR;
+}
 #endif
