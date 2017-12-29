@@ -6,11 +6,12 @@
 PA PB PC
 Use PA10 for RX (RX for board is receiver and TX for computer is sender)
 and PA9 for TX (TX for board is sender and TX for computer is receiver)
-Use PB1 for light-sensitive resistor
+Use PB0 for light-sensitive resistor
 Use PC13 for user button
 **************************************************************************/
 //RX push pull TX open drain
 uint8_t text[] = "UART FUCKINGLY WORKS HELL YEAH \r\n";
+extern float resistor_value;
 void GPIO_Init(void)
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
@@ -27,22 +28,25 @@ void GPIO_Init(void)
 
 	GPIOA->AFR[1] = (GPIOA->AFR[1] & 0xFFFFF00F) | 0x00000770;
 
-	//the light-sensitive resistor part
-	//light-sensitive resistor as input
+	//The light-sensitive resistor part
+	//Light-sensitive resistor as ANALOG input for ADC, we now use pb0 for the purpose
 	GPIOB->MODER	&= 0b11111111111111111111111111111100;
-	//the User button part
+	GPIOB->MODER	|= 0b11111111111111111111111111111111;
+	//The user button part
 	//User button init
 	GPIOC->MODER   	&= 0b11110011111111111111111111111111;
 }
 
 int main()
 {
-
 	GPIO_Init();
 	USART1_Init();
 	while(1)
 	{
-		USART1_Transmit(text,(uint32_t)sizeof(text));
+		if(check_the_fucking_button())
+		{
+			USART1_Transmit(text,(uint32_t)sizeof(text));
+		}
 	}
 
 	return 0;
