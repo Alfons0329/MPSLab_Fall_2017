@@ -98,9 +98,8 @@ void configureADC()
                    //10987654321098765432109876543210
     ADC1->SQR1 |=  0b00000000000000000000000001000000; //We use only one ADC channel but problem is, which channel ??
     //the higher sampling cycle can ensure the more detalied data but takes more process time, set12.5 will be fine, all takes 25 cycles
-    ADC1->SMPR1 |= 0b00000000000000000000000000010000;
+    ADC1->SMPR1 |= 0b00000000000000000000000000000010;
     //ADC conversion time may reference to manual p518
-    ADC1->SMPR1 |= 0b1;
     ADC1->IER |= ADC_IER_EOCIE; //When conversion ends, do the interrupt (the end of conversion interrupt)
     /************************ADC main settings ends here********************************************/
 
@@ -112,13 +111,12 @@ void startADC()
 	// TODO
     ADC1->CR |= ADC_CR_ADEN; //Turn on the ADC, write to enable the adc
     while(!READ_BIT(ADC1->ISR, ADC_ISR_ADRDY)); //Wait until ADC is ready for conversion
-
 }
 
 void get_light_resistor()
 {
     ADC1->CR |= ADC_CR_ADSTART;
     while(!READ_BIT(ADC1->ISR, ADC_ISR_EOC)); //Polling until the ADC conversion of light resistor is done
-    resistor_value =  ADC1->DR;
+    resistor_value = ADC1->DR;
 }
 #endif

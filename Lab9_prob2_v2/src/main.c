@@ -14,7 +14,7 @@ uint8_t text[] = "UART FUCKINGLY WORKS HELL YEAH \r\n";
 uint8_t buf[50];
 extern float resistor_value;
 extern void fpu_enable();
-void GPIO_Init(void)
+void GPIO_Init()
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
 	//UART init use PA14 for RX and PA15 for TX ,RX is the input and TX is the outptu port for the UART
