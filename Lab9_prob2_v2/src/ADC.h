@@ -64,19 +64,26 @@ void configureADC()
 	// TODO
     RCC->AHB2ENR |= RCC_AHB2ENR_ADCEN; //Turn on the adc function
     GPIOB->ASCR |= 1; //turn on the analog controller in PB0
+    /************************ADC clock config starts here********************************/
     /* ############################################################################
      *  Set the ADC clock first by using ADC common register Reset value: 0x0000 0000
      *  The ADC common register can be found at manual p608
      *  We set the clock source as the sysclk , which is default 4MHz
-     *
-     *
-     *
-     *
-     *
-     *
+     *  From LSB to MSB
+     *  Bits
+     *  4:0 Dual adc or not, we dont set dual adc, so keep reset value 00000 for independent mode
+     *  11:8 Delay b/w 2 sampling phases, setting for 5 clock cycle will be fine which is 0100
+     *  13 No DMA, reset value is fine
+     *  15:14 No DMA, reset value is fine
+     *  17:16 IMPORTANT!!!!!!!!!! Must config the Clock correctly!!!!!!!!!!! use HCLK hardware system clock/1 will be fine, set to 01
+     *  21:18 No division, reset value is fine
+     *  22 Not used, reset value is fine
+     *  23 Not used, reset value is fine
+     *  24 Not used, reset value is fine
+     *  Else is the reserved value, should be kept in the reset state.
      * ###########################################################################*/
-
-    ADC123_COMMON->CCR &= 1; //The only accept case is all capital, dont know why
+    ADC123_COMMON->CCR |= 0b00000000000000000000000000000000;
+    /************************ADC clock config ends here********************************/
     ADC1->CFGR &= ~ADC_CFGR_RES; // 12-bit resolution
     ADC1->CFGR &= ~ADC_CFGR_CONT; // disable continuous conversion
     ADC1->CFGR &= ~ADC_CFGR_ALIGN; // right align
