@@ -19,8 +19,14 @@ void USART1_Init(void)
 	//f CK can be f LSE , f HSI , f PCLK , f SYS .,we can just use the clock from STM32, which is 4MHz
 	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
 	/*************************UART CR1 setting***********************************
-	CR1 clear the bits of M(Data length/8bits is default) PS() PCE() TE RE, then set the bits of TE RE where TE enables the function of transmittion and
+	CR1 may reference to p1346 of the manual
+	CR1 clear the bits of M(Data length/8bits is default) PS() PCE(Parity check) TE RE, then set the bits of TE RE where TE enables the function of transmittion and
 	RE enables the function of reception
+	In short, M bits=0-->Data frame to be 8 bits (this is suitable for ASCII Character transmittion)
+	PS bit=0-->Evan parity  (this is the deault status for the UART transmittion in the picocom terminal ,or maybe in the most serial terminal?)
+	PCE bit=0-->Parity checking disable (this is the deault status for the UART transmittion in the picocom terminal ,or maybe in the most serial terminal?)
+	TE bit=1-->Transmitting enable
+	RE but=1--> Receiving enable
 	*****************************************************************************/
 	MODIFY_REG(USART1->CR1, USART_CR1_M | USART_CR1_PS | USART_CR1_PCE | USART_CR1_TE | USART_CR1_RE |
 	USART_CR1_OVER8, USART_CR1_TE | USART_CR1_RE);
