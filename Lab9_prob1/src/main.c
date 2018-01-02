@@ -15,8 +15,12 @@ uint8_t text[] = "UART FUCKINGLY WORKS HELL YEAH \r\n";
 uint8_t buf[50];
 char msg[10];
 int pos_l=0;
-extern float resistor_value;
-extern void fpu_enable();
+char cmd[128];
+int	mode;	/* 0: unread
+		 * 1: finished reading
+		 * 2: light mode
+		 */
+
 void GPIO_Init()
 {
 	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN; //Turn on GPIO AB and C;
@@ -42,61 +46,62 @@ void GPIO_Init()
 	GPIOC->MODER   	&= 0b11110011111111111111111111111111;
 }
 
-int readline() {
-	char c;
-	int pos = 0;
-	do {
-		UART_Receive(&c);
-		if (c == '\r') {
-			USART1_Transmit((uint8_t *) "\r\n", 2);
-			c = '\0';
-		}
-		else {
-			USART1_Transmit((uint8_t *) &c, 1);
-		}
-		if (c == '\x7F') {
-			pos = pos > 0 ? pos - 1 : 0;
-		}
-		else {
-			msg[pos] = c;
-			pos++;
-		}
-	} while (c != '\0');
-	return pos;
+void INT_setup (void)
+{
+	/* set up the NVIC priorities */
+	NVIC_SetPriority (USART1_IRQn, 0);
+	NVIC_SetPriority (SysTick_IRQn, 1);
+	NVIC_SetPriority (ADC1_2_IRQn, 2);
+
+	/* enable the NVIC IRQ for uart */
+	uart_IRQE ();
 }
 
-int stridx (int pos)
+void USART1_IRQHandler (void)
 {
-	return pos / 0x40 * 16 + pos % 0x40;
-}
+	int	i;
+	char	s[2];
 
-void pos_inc (void)
-{
-	++pos_l;
-	if (pos_l > 0x0f && pos_l < 0x40)
-		pos_l = 0x40;
-	else if (pos_l > 0x4f)
-		pos_l = 0;
-}
-
-void write_str_to_LCD (const char *s)
-{
-	if (stridx(pos_l) == strlen(s)) {
-		LCD_write (0x01, 0);			/* clear screen */
-		pos_l = 0;				/* reset the position */
-	} else {
-		LCD_write (0x80 + pos_l, 0);		/* set up the DD RAM address */
-		LCD_write (s[stridx (pos_l)], 1);		/* write a character from the string */
-		pos_inc ();
+	switch (mode) {
+	case 0:
+		s[0] = USART1->RDR;
+		s[1] = 0;
+		if (s[0] == '\177') {
+			if (strlen (cmd) == 0)
+				break;
+			cmd[strlen (cmd) - 1] = 0;
+			uart_write ("\r");
+			for (i = 0; i < strlen (cmd) + 3; ++i)
+				uart_write (" ");
+			uart_write ("\r> ");
+			uart_write (cmd);
+			break;
+		}
+		uart_write (s);
+		strcat (cmd, s);
+		if (s[0] == '\n')
+			mode = 1;
+		break;
+	case 1:
+		break;
+	case 2:
+		s[0] = USART1->RDR;
+		if (s[0] == 'q') {
+			mode = 0;
+			SysTick_stop ();
+			ADC_stop ();
+		}
+		break;
 	}
 }
 
+
 int main()
 {
-	//fpu_enable();
 	GPIO_Init();
 	USART1_Init();
 	LCD_init();
+	INT_setup();
 	//configureADC();
 	//startADC();
 	while(1)

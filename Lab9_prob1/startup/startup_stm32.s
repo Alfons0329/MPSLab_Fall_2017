@@ -161,7 +161,7 @@ g_pfnVectors:
 	.word	0
 	.word	0
 	.word	0
-	.word	0
+	.word	USART1_IRQHandler
 	.word	0
 	.word	0
 	.word	0

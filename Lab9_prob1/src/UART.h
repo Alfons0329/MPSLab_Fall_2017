@@ -82,10 +82,32 @@ void USART1_Transmit(uint8_t *arr, uint32_t size)
 	while (!READ_BIT(USART1->ISR, USART_ISR_TC));
 
 }
-
-int UART_Receive(char *c) {
-	while (!READ_BIT(USART1->ISR, USART_ISR_RXNE));
-	*c = USART1->RDR;
-	return *c;
+void uart_write (const char *s)
+{
+	while (*s != 0) {
+		while (!(USART1->ISR & USART_ISR_TXE));
+		USART1->TDR = (*s & 0xff);
+		++s;
+	}
+	while (!(USART1->ISR & USART_ISR_TC));
 }
+
+void uart_read (char *s, int nbyte)
+{
+	int	i;
+	for (i = 0; i < nbyte; ++i) {
+		while (!(USART1->ISR & USART_ISR_RXNE));
+		s[i] = USART1->RDR;
+		s[i + 1] = 0;
+		uart_write (s + i);
+		if (s[i] == '\n')
+			break;
+	}
+}
+
+void uart_IRQE (void)
+{
+	NVIC_EnableIRQ (USART1_IRQn);
+}
+
 #endif
