@@ -14,7 +14,7 @@ Use PC13 for user button
 uint8_t text[] = "UART FUCKINGLY WORKS HELL YEAH \r\n";
 uint8_t buf[50];
 char msg[10];
-int pos_l=0;
+int pos=0;
 char cmd[128];
 int	mode;	/* 0: unread
 		 * 1: finished reading
@@ -46,7 +46,7 @@ void GPIO_Init()
 	GPIOC->MODER   	&= 0b11110011111111111111111111111111;
 }
 
-void INT_setup (void)
+void INT_setup()
 {
 	/* set up the NVIC priorities */
 	NVIC_SetPriority (USART1_IRQn, 0);
@@ -57,7 +57,7 @@ void INT_setup (void)
 	uart_IRQE ();
 }
 
-void USART1_IRQHandler (void)
+void USART1_IRQHandler(void)
 {
 	int	i;
 	char	s[2];
@@ -94,6 +94,33 @@ void USART1_IRQHandler (void)
 		break;
 	}
 }
+
+void write_str_to_LCD(const char *s)
+{
+	if (stridx (pos) == strlen(s)) {
+		LCD_write (0x01, 0);			/* clear screen */
+		pos = 0;				/* reset the position */
+	} else {
+		LCD_write (0x80 + pos, 0);		/* set up the DD RAM address */
+		LCD_write (s[stridx (pos)], 1);		/* write a character from the string */
+		pos_inc ();
+	}
+}
+
+int stridx(int pos)
+{
+	return pos / 0x40 * 16 + pos % 0x40;
+}
+
+void pos_inc()
+{
+	++pos;
+	if (pos > 0x0f && pos < 0x40)
+		pos = 0x40;
+	else if (pos > 0x4f)
+		pos = 0;
+}
+
 
 
 int main()
