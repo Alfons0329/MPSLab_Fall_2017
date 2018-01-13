@@ -46,14 +46,18 @@ void GPIO_init_AF(){
 //TODO: Initial GPIO pin as alternate function for buzzer. You can choose to use C or assembly to finish this function.
 	//PB3 TIM2_CH2
 	GPIOB->AFR[0] &= ~GPIO_AFRL_AFSEL3;//AFR[0] LOW
-	GPIOB->AFR[0] |= (0b0001<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
+	GPIOB->AFR[0] |= (0b1<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
 	//PA5 TIM2_CH1
 	GPIOA->AFR[0] &= ~GPIO_AFRL_AFSEL5;//AFR[0] LOW
-	GPIOA->AFR[0] |= (0b0001<<GPIO_AFRL_AFSEL5_Pos);//PA5
+	GPIOA->AFR[0] |= (0b1<<GPIO_AFRL_AFSEL5_Pos);//PA5
 	//PA2 TIM2_CH3
-	GPIOA->AFR[0] &= ~GPIO_AFRL_AFSEL2;//AFR[0] LOW
-	GPIOA->AFR[0] |= (0b0001<<GPIO_AFRL_AFSEL2_Pos);//PA2
+	//GPIOA->AFR[0] &= ~GPIO_AFRL_AFSEL2;//AFR[0] LOW
+	//GPIOA->AFR[0] |= (0b1<<GPIO_AFRL_AFSEL2_Pos);//PA2
+	//PB10 TIM2_CH3
+	GPIOB->AFR[1] &= ~GPIO_AFRH_AFSEL10;//AFR[0] LOW
+	GPIOB->AFR[1] |= (0b1<<GPIO_AFRH_AFSEL10_Pos);//PB3 Alternate function mode
 }
+
 void Timer_init(){
    //TODO: Initialize timer
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
@@ -69,6 +73,7 @@ void Timer_init(){
 }
 
 void PWM_channel_init(){
+	//reference book p.1038
    //TODO: Initialize timer PWM channel
 	//ref: STM32 PWM
 	// https://read01.com/zh-tw/DGKMyB.html#.Wh2RU0qWY2w
@@ -76,27 +81,48 @@ void PWM_channel_init(){
 	// http://www.zendei.com/article/12325.html
 	// preload register and shadow register
 	// https://read01.com/zh-tw/BgB8jG.html#.Wh6Qt0qWY2w
+
+	//TIM2_CH1
 	//Output compare 2 mode
-	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC1M;
 	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
+	TIM2->CCMR1 |= (0b0110 << TIM_CCMR1_OC1M_Pos);
+	//TIM2_CH2
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
 	TIM2->CCMR1 |= (0b0110 << TIM_CCMR1_OC2M_Pos);
 
+	//TIM2_CH3
+	TIM2->CCMR2 &= ~TIM_CCMR2_OC3M;
+	TIM2->CCMR2 |= (0b0110 << TIM_CCMR2_OC3M_Pos);
+
+	//TIM2_CH1 & TIM2_CH2
+	//Output Compare 2 Preload Enable
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC1PE;//OCxPE
+	//1: enable TIMx_CCR1 Preload
+	TIM2->CCMR1 |= (0b1 << TIM_CCMR1_OC1PE_Pos);
 	//Output Compare 2 Preload Enable
 	TIM2->CCMR1 &= ~TIM_CCMR1_OC2PE;//OCxPE
 	//1: enable TIMx_CCR1 Preload
 	TIM2->CCMR1 |= (0b1 << TIM_CCMR1_OC2PE_Pos);
+
+	//TIM2_CH3
+	//Output Compare 2 Preload Enable
+	TIM2->CCMR2 &= ~TIM_CCMR2_OC3PE;//OCxPE
+	//1: enable TIMx_CCR1 Preload
+	TIM2->CCMR2 |= (0b1 << TIM_CCMR2_OC3PE_Pos);
+
 	//enable auto reload pre-load
 	TIM2->CR1 |= TIM_CR1_ARPE;
-
-	//TIM2_CH2: duty cycle initial 50 (CCR2/ARR)
-	TIM2->CCR2 = 50;
-	//enable output compare
-	TIM2->CCER |= TIM_CCER_CC2E;
 
 	//TIM2_CH1: duty cycle initial 50 (CCR1/ARR)
 	TIM2->CCR1 = 50;
 	//enable output compare
 	TIM2->CCER |= TIM_CCER_CC1E;
+
+	//TIM2_CH2: duty cycle initial 50 (CCR2/ARR)
+	TIM2->CCR2 = 50;
+	//enable output compare
+	TIM2->CCER |= TIM_CCER_CC2E;
 
 	//TIM2_CH3: duty cycle initial 50 (CCR3/ARR)
 	TIM2->CCR3 = 50;
