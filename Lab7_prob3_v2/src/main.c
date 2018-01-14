@@ -1,5 +1,6 @@
 #include "stm32l476xx.h"
-
+#define MAX_CNT 200
+#define DELTA_COEF 1
 //freq
 #define DO 261.6
 #define RE 293.7
@@ -55,7 +56,7 @@ void Timer_init(){
 	//TIM2->CR1 &= ~(TIM_CR1_CMS_Pos);
 	TIM2->CR1 &= 0x0000; //Turned on the counter as the count up mode
 	//SET_REG(TIM2->CR1, TIM_CR1_DIR | TIM_CR1_CMS, TIM_COUNTERMODE_DOWN);// Edge-aligned mode, down counter
-	TIM2->ARR = (uint32_t)255;//Reload value
+	TIM2->ARR = (uint32_t)MAX_CNT;//Reload value
 	TIM2->PSC = (uint32_t)39999;//Prescaler
 	TIM2->EGR = TIM_EGR_UG;//Reinitialize the counter
 	//TIM2->CR1 |= TIM_CR1_CEN;
@@ -195,6 +196,7 @@ int main()
 	Timer_init();
 	PWM_channel_init();
 	duty_cycle = 0;
+	int cnt_way = 0;
 	while(1)
 	{
 
@@ -204,11 +206,31 @@ int main()
 			set_timer();
 
 		}*/
+
+		if(duty_cycle <= 0)
+		{
+			cnt_way = 0;
+			duty_cycle = 0;
+		}
+		else if(duty_cycle >= MAX_CNT)
+		{
+			cnt_way = 1;
+			duty_cycle = MAX_CNT;
+		}
+
+		if(!cnt_way)
+		{
+			duty_cycle+=DELTA_COEF;
+		}
+		else
+		{
+			duty_cycle-=DELTA_COEF;
+		}
+
 		PWM_channel_init();
 		set_timer();
 		TIM2->CR1 |= TIM_CR1_CEN;
 
-		duty_cycle = (duty_cycle > 255) ? duty_cycle-1 : duty_cycle+1;
 	}
 	//keypad_scan();
 }

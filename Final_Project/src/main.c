@@ -6,8 +6,12 @@
 #define KEYPAD_COL_MAX 4
 #define SECOND_SLICE 99
 #define CYC_COUNT_UP 39999
+
+#define RED_START 0
+#define GREEN_START 85
+#define BLUE_START 170
 //Global and static data declaration
-int duty_cycle_R = 50; // PA5 + AF1 which is corressponding to TIM2_CH1 REG
+int duty_cycle_R = 50; // PB3 + AF1 which is corressponding to TIM2_CH1 REG
 int duty_cycle_G = 50; // PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
 int duty_cycle_B = 50; // PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
 int keypad_value[4][4] ={{0,1,2,3},
@@ -148,11 +152,21 @@ void PWM_channel_init()
 
 void set_timer()
 {
-	int prescaler = (4000000 / freq / 100);
+	// int prescaler = (4000000 / freq / 100);
 	//TIM2->PSC = (uint32_t) prescaler;
+	//TIM2_CH2
 	//prescaler value
-	TIM2->CCR2 = duty_cycle_;
-	// compare 2 preload value
+	TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
+
+	//TIM5_CH2
+	//prescaler value
+	TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
+
+	//TIM3_CH1
+	//prescaler value
+	TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
+
+
 }
 
 void keypad_scan() //Mapping the color changing logic
@@ -165,9 +179,38 @@ int main()
 	keypad_init();
 	GPIO_init_AF();
 	Timer_init();
+	duty_cycle_R = RED_START;
+	duty_cycle_G = GREEN_START;
+	duty_cycle_B = BLUE_START;
 	while(1)
 	{
+		/*if(duty_cycle_r <= 0)
+		{
+			cnt_way = 0;
+			duty_cycle = 0;
+		}
+		else if(duty_cycle >= )
+		{
+			cnt_way = 1;
+			duty_cycle = SECOND_SLICE;
+		}
+
+		if(!cnt_way)
+		{
+			duty_cycle+=DELTA_COEF;
+		}
+		else
+		{
+			duty_cycle-=DELTA_COEF;
+		}*/
+		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 0 : duty_cycle_R+1;
+		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? 0 : duty_cycle_G+1;
+		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? 0 : duty_cycle_B+1;
 		PWM_channel_init();
+		set_timer();
+		TIM2->CR1 |= TIM_CR1_CEN;
+		TIM5->CR1 |= TIM_CR1_CEN;
+		TIM3->CR1 |= TIM_CR1_CEN;
 	}
 	return 0;
 }
