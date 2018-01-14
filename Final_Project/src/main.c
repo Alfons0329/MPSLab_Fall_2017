@@ -5,7 +5,7 @@
 #define KEYPAD_COL_MAX 4
 #define SECOND_SLICE 99
 #define CYC_COUNT_UP 39999
-
+//Global and static data declaration
 int duty_cycle_R = 50; // PA5 + AF1 which is corressponding to TIM2_CH1
 int duty_cycle_G = 50; // PA1 + AF2 which is corressponding to TIM5_CH2
 int duty_cycle_B = 50; // PA6 + AF2 which is corressponding to TIM3_CH1
@@ -72,11 +72,18 @@ void Timer_init() //Use 3
 
 void Timer_channel_init() //Use 3 timer but one channel for each to do
 {
-
 }
 
 void GPIO_init_AF() //GPIO Alternate Function Init
 {
+	// PA5 + AF1 which is corressponding to TIM2_CH1
+	// PA1 + AF2 which is corressponding to TIM5_CH2
+	// PA6 + AF2 which is corressponding to TIM3_CH1
+				       //10987654321098765432109876543210
+	GPIOA->MODER   	&= 0b11111111111111111100001111110011; //pc 3 2 1 0 as input of keypad
+	GPIOA->MODER   	|= 0b00000000000000000001010000000100;
+	//PortA Pin		   //10987654321098765432109876543210
+	GPIOA->AFR[0]	=  0b00000010000100000000000000100000;
 
 }
 void keypad_scan() //Mapping the color changing logic
