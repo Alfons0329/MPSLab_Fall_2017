@@ -1,4 +1,5 @@
 #include "stm32l476xx.h"
+#include "mylib.h"
 #include <stdio.h>
 //Use cable color to imply what the fucking color it represents
 #define KEYPAD_ROW_MAX 4
@@ -42,17 +43,21 @@ void keypad_init()//keypad along with GPIO Init together
 
 void GPIO_init_AF() //GPIO Alternate Function Init
 {
-	// PA5 + AF1 which is corressponding to TIM2_CH1
-	// PA1 + AF2 which is corressponding to TIM5_CH2
-	// PA6 + AF2 which is corressponding to TIM3_CH1
-	//10987654321098765432109876543210
+	// PB3 + AF1 which is corressponding to TIM2_CH2 RED
+	// PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
+	// PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
+					   //10987654321098765432109876543210
 	GPIOA->MODER   	&= 0b11111111111111111100001111110011;
 	GPIOA->MODER   	|= 0b00000000000000000001010000000100;
 	//PortA Pin		   //10987654321098765432109876543210
 	GPIOA->AFR[0]	=  0b00000010000100000000000000100000;
+
+	//PB3 TIM2_CH2
+	GPIOB->AFR[0] 	&= ~GPIO_AFRL_AFSEL3;//AFR[0] LOW
+	GPIOB->AFR[0] 	|= (0b0001<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
 }
 
-void Timer_init() //Use 3
+/*void Timer_init() //Use 3
 {
 	// PA5 + AF1 which is corressponding to TIM2_CH1
 	// PA1 + AF2 which is corressponding to TIM5_CH2
@@ -79,23 +84,75 @@ void Timer_init() //Use 3
 	TIM5->ARR = (uint32_t)SECOND_SLICE;//Reload value
 	TIM5->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	// TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
+}*/
+void PWM_channel_init()
+{
+	/***********************setting for the TIM2_CH1 RED**************************/
+	// PB3 + AF1 which is corressponding to TIM2_CH2 RED
+	//Output compare 2 mode
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
+	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
+	TIM2->CCMR1 |= (0b0110 << TIM_CCMR1_OC2M_Pos);
+
+	//Output Compare 2 Preload Enable
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2PE;//OCxPE
+	//1: enable TIMx_CCR1 Preload
+	TIM2->CCMR1 |= (0b1 << TIM_CCMR1_OC2PE_Pos);
+	//enable auto reload pre-load
+	TIM2->CR1 |= TIM_CR1_ARPE;
+
+	//duty cycle initial 50 (CCR2/ARR)
+	TIM2->CCR2 = duty_cycle;
+	//enable output compare
+	TIM2->CCER |= TIM_CCER_CC2E;
+
+	/***********************setting for the TIM5_CH2 GREEN**************************/
+	// PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
+	//Output compare 2 mode
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
+	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
+	TIM2->CCMR1 |= (0b0110 << TIM_CCMR1_OC2M_Pos);
+
+	//Output Compare 2 Preload Enable
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2PE;//OCxPE
+	//1: enable TIMx_CCR1 Preload
+	TIM2->CCMR1 |= (0b1 << TIM_CCMR1_OC2PE_Pos);
+	//enable auto reload pre-load
+	TIM2->CR1 |= TIM_CR1_ARPE;
+
+	//duty cycle initial 50 (CCR2/ARR)
+	TIM2->CCR2 = duty_cycle;
+	//enable output compare
+	TIM2->CCER |= TIM_CCER_CC2E;
+
+	/***********************setting for the TIM3_CH1 BLUE**************************/
+	// PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
+	//Output compare 2 mode
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
+	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
+	TIM2->CCMR1 |= (0b0110 << TIM_CCMR1_OC2M_Pos);
+
+	//Output Compare 2 Preload Enable
+	TIM2->CCMR1 &= ~TIM_CCMR1_OC2PE;//OCxPE
+	//1: enable TIMx_CCR1 Preload
+	TIM2->CCMR1 |= (0b1 << TIM_CCMR1_OC2PE_Pos);
+	//enable auto reload pre-load
+	TIM2->CR1 |= TIM_CR1_ARPE;
+
+	//duty cycle initial 50 (CCR2/ARR)
+	TIM2->CCR2 = duty_cycle;
+	//enable output compare
+	TIM2->CCER |= TIM_CCER_CC2E;
+
 }
 
-void PWM_channel_init() //Use 3 timer but one channel for each to do
+void set_timer()
 {
-	// PA5 + AF1 which is corressponding to TIM2_CH1
-	// PA1 + AF2 which is corressponding to TIM5_CH2
-	// PA6 + AF2 which is corressponding to TIM3_CH1
-	//setting for timer 2 channel 1
-	// TIM2->CR1 &= 0x0000; //disable the counter first
-
-	TIM2->CR1 &= (0b0 << TIM_CR1_CEN_Pos); //off timer
-	TIM2->ARR = (uint32_t)SECOND_SLICE;//Reload value
-	TIM2->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
-	TIM2->CCR1 = duty_cycle_R;
-	TIM2->CR1 |= (0b1 << TIM_CR1_CEN_Pos); //on timer
-	//setting for timer 3 channel 2
-	//setting for timer 5 channel 1
+	int prescaler = (4000000 / freq / 100);
+	//TIM2->PSC = (uint32_t) prescaler;
+	// prescaler value
+	TIM2->CCR2 = duty_cycle;
+	// compare 2 preload value
 }
 
 void keypad_scan() //Mapping the color changing logic
@@ -104,6 +161,7 @@ void keypad_scan() //Mapping the color changing logic
 }
 int main()
 {
+	//use the time delay mode to make the interleaving and the color changing scheme
 	keypad_init();
 	GPIO_init_AF();
 	Timer_init();

@@ -41,7 +41,7 @@ void keypad_init()
 
 
 void GPIO_init_AF(){
-//TODO: Initial GPIO pin as alternate function for buzzer. You can choose to use C or assembly to finish this function.
+	//TODO: Initial GPIO pin as alternate function for buzzer. You can choose to use C or assembly to finish this function.
 	//PB3 TIM2_CH2
 	GPIOB->AFR[0] &= ~GPIO_AFRL_AFSEL3;//AFR[0] LOW
 	GPIOB->AFR[0] |= (0b0001<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
@@ -61,7 +61,8 @@ void Timer_init(){
 	//TIM2->CR1 |= TIM_CR1_CEN;
 }
 
-void PWM_channel_init(){
+void PWM_channel_init()
+{
    //TODO: Initialize timer PWM channel
 	//ref: STM32 PWM
 	// https://read01.com/zh-tw/DGKMyB.html#.Wh2RU0qWY2w
