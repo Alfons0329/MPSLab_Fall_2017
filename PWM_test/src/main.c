@@ -46,12 +46,12 @@ void GPIO_init_AF(){
 //TODO: Initial GPIO pin as alternate function for buzzer. You can choose to use C or assembly to finish this function.
 	//PB3 TIM2_CH2
 	GPIOB->MODER   &= 0b11111111111111111111111100111111;
-	GPIOB->MODER   |= 0b00000000000000000000000010000000;
+	GPIOB->MODER   |= 0b00000000000000000000000001000000; //change log
 	GPIOB->AFR[0] &= ~GPIO_AFRL_AFSEL3_0;//AFR[0] LOW
 	GPIOB->AFR[0] |= GPIO_AFRL_AFSEL3_0;//PB3 Alternate function mode
 	//PA5 TIM2_CH1
-	GPIOA->MODER   &= 0b11111111111111111111001111001111;
-	GPIOA->MODER   |= 0b00000000000000000000100000100000;
+	GPIOA->MODER   &= 0b11111111111111111111001100000000;
+	GPIOA->MODER   |= 0b00000000000000000000010001010101; //change log pa2 pa3
 	GPIOA->AFR[0] &= ~GPIO_AFRL_AFSEL5_0;//AFR[0] LOW
 	GPIOA->AFR[0] |= GPIO_AFRL_AFSEL5_0;//PA5
 	//PA2 TIM2_CH3
@@ -77,7 +77,7 @@ void Timer_init(){
 }
 
 void PWM_channel_init(){
-	//reference book p.1038
+	//reference book p.1038 p.905
    //TODO: Initialize timer PWM channel
 	//ref: STM32 PWM
 	// https://read01.com/zh-tw/DGKMyB.html#.Wh2RU0qWY2w
@@ -241,7 +241,8 @@ void PWM()
 	duty_cycle_R = 50;
 	duty_cycle_G = 50;
 	duty_cycle_B = 50;
-	while(1){
+	while(1)
+	{
 		set_timer();
 		TIM2->CR1 |= TIM_CR1_CEN;
 	}
@@ -258,14 +259,22 @@ void PWM()
 		}
 	}*/
 }
-
+void GPIO_port_test()
+{
+	while(1)
+	{
+		GPIOB->ODR = 0b0000000000001000;
+		GPIOA->ODR = 0b0000000000101111;
+	}
+}
 int main()
 {
 	keypad_init();
 	GPIO_init_AF();
 	Timer_init();
 	PWM_channel_init();
-	PWM();
+	GPIO_port_test();
+	//PWM();
 	//keypad_scan();
 }
 

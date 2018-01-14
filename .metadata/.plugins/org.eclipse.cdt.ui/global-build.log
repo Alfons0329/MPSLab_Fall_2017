@@ -1,0 +1,50 @@
+11:33:07 **** Clean-only build of configuration Debug for project Lab9_prob1 ****
+make clean 
+rm -rf *
+ 
+11:33:08 **** Build of configuration Debug for project Lab9_prob1 ****
+make all 
+Building file: ../startup/startup_stm32.s
+Invoking: MCU GCC Assembler
+/home/alfons/Desktop/Programming/MPSLab_Fall_2017/Lab9_prob1/Debug
+arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -g -o "startup/startup_stm32.o" "../startup/startup_stm32.s"
+Finished building: ../startup/startup_stm32.s
+ 
+Building file: ../startup/sysmem.c
+Invoking: MCU GCC Compiler
+/home/alfons/Desktop/Programming/MPSLab_Fall_2017/Lab9_prob1/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32 -DSTM32L4 -DSTM32L476RGTx -DNUCLEO_L476RG -DDEBUG -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"startup/sysmem.d" -MT"startup/sysmem.o" -o "startup/sysmem.o" "../startup/sysmem.c"
+Finished building: ../startup/sysmem.c
+ 
+Building file: ../src/main.c
+Invoking: MCU GCC Compiler
+/home/alfons/Desktop/Programming/MPSLab_Fall_2017/Lab9_prob1/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32 -DSTM32L4 -DSTM32L476RGTx -DNUCLEO_L476RG -DDEBUG -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+In file included from ../src/stm32l476xx.h:184:0,
+                 from ../src/mylib.h:1,
+                 from ../src/lcd.h:3,
+                 from ../src/main.c:3:
+../src/core_cm4.h: In function 'NVIC_SystemReset':
+../src/core_cm4.h:1792:3: warning: implicit declaration of function '__DSB' [-Wimplicit-function-declaration]
+   __DSB();                                                          /* Ensure all outstanding memory accesses included
+   ^~~~~
+../src/core_cm4.h:1801:5: warning: implicit declaration of function '__NOP' [-Wimplicit-function-declaration]
+     __NOP();
+     ^~~~~
+Finished building: ../src/main.c
+ 
+Building target: Lab9_prob1.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"/home/alfons/Desktop/Programming/MPSLab_Fall_2017/Lab9_prob1/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "Lab9_prob1.elf" @"objects.list"   -lm
+Finished building target: Lab9_prob1.elf
+ 
+make --no-print-directory post-build
+Generating binary and Printing size information:
+arm-none-eabi-objcopy -O binary "Lab9_prob1.elf" "Lab9_prob1.bin"
+arm-none-eabi-size "Lab9_prob1.elf"
+   text	   data	    bss	    dec	    hex	filename
+   2996	   1080	   1284	   5360	   14f0	Lab9_prob1.elf
+ 
+11:33:15 **** Incremental Build of configuration Debug for project Lab9_prob1 ****
+make all 
+make: Nothing to be done for 'all'.

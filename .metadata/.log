@@ -1,0 +1,221 @@
+!SESSION 2018-01-02 11:30:40.508 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_131
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_AU
+Framework arguments:  -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-02 11:31:56.758
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-02 11:31:56.772
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY fr.ac6.mcu.ide 1 1 2018-01-02 11:31:59.610
+!MESSAGE Started RMI Server, listening on port 21112
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-02 11:32:55.289
+!MESSAGE Indexed 'Lab9_prob1' (2 sources, 49 headers) in 1.12 sec: 2,459 declarations; 4,974 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.launchbar.core 2 0 2018-01-02 11:33:14.953
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2018-01-02 11:33:14.954
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY fr.ac6.mcu.debug 4 5012 2018-01-02 11:33:28.402
+!MESSAGE Error in final launch sequence
+!STACK 1
+org.eclipse.core.runtime.CoreException: Failed to execute MI command:
+-target-select remote localhost:3333
+
+Error message from debugger back end:
+localhost:3333: Connection timed out.
+	at org.eclipse.cdt.dsf.concurrent.Query.get(Query.java:111)
+	at fr.ac6.mcu.debug.launching.MCUGDBJtagDSFLaunchConfigurationDelegate.launchDebugSession(MCUGDBJtagDSFLaunchConfigurationDelegate.java:248)
+	at org.eclipse.cdt.dsf.gdb.launching.GdbLaunchDelegate.launchDebugger(GdbLaunchDelegate.java:101)
+	at org.eclipse.cdt.dsf.gdb.launching.GdbLaunchDelegate.launch(GdbLaunchDelegate.java:90)
+	at fr.ac6.mcu.debug.launching.MCUGDBJtagDSFLaunchConfigurationDelegate.launch(MCUGDBJtagDSFLaunchConfigurationDelegate.java:306)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:885)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:739)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1039)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$8.run(DebugUIPlugin.java:1256)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Caused by: java.lang.Exception: localhost:3333: Connection timed out.
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.processMIOutput(AbstractMIControl.java:941)
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.run(AbstractMIControl.java:770)
+!SUBENTRY 1 org.eclipse.cdt.dsf.gdb 4 10004 2018-01-02 11:33:28.403
+!MESSAGE Failed to execute MI command:
+-target-select remote localhost:3333
+
+Error message from debugger back end:
+localhost:3333: Connection timed out.
+!STACK 0
+java.lang.Exception: localhost:3333: Connection timed out.
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.processMIOutput(AbstractMIControl.java:941)
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.run(AbstractMIControl.java:770)
+!SESSION 2018-01-03 19:11:12.752 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_131
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_AU
+Framework arguments:  -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:11:25.953
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:11:25.955
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY fr.ac6.mcu.ide 1 1 2018-01-03 19:11:27.644
+!MESSAGE Started RMI Server, listening on port 21112
+!SESSION 2018-01-03 19:12:00.713 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_131
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_AU
+Framework arguments:  -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:12:06.438
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:12:06.441
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY fr.ac6.mcu.ide 1 1 2018-01-03 19:12:07.994
+!MESSAGE Started RMI Server, listening on port 21112
+!SESSION 2018-01-03 19:13:51.675 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_131
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_AU
+Framework arguments:  -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:14:02.196
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:14:02.202
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY fr.ac6.mcu.ide 1 1 2018-01-03 19:14:02.704
+!MESSAGE Started RMI Server, listening on port 21112
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:32.368
+!MESSAGE Indexed 'Lab4_prob3' (1 sources, 0 headers) in 0.722 sec: 7 declarations; 12 references; 2 unresolved inclusions; 0 syntax errors; 4 unresolved names (17%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:36.035
+!MESSAGE Indexed 'Lab9_prob1' (2 sources, 49 headers) in 3.54 sec: 2,459 declarations; 4,974 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:36.891
+!MESSAGE Indexed 'Lab6_prob1' (2 sources, 39 headers) in 0.85 sec: 2,897 declarations; 4,517 references; 14 unresolved inclusions; 33 syntax errors; 82 unresolved names (1.1%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:37.497
+!MESSAGE Indexed 'Lab7_prob2' (2 sources, 46 headers) in 0.598 sec: 3,183 declarations; 4,903 references; 0 unresolved inclusions; 4 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:37.691
+!MESSAGE Indexed 'Lab3_prob1' (1 sources, 33 headers) in 0.101 sec: 1,052 declarations; 1,891 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:37.772
+!MESSAGE Indexed 'Lab4_prob2' (1 sources, 37 headers) in 0.077 sec: 1,096 declarations; 1,803 references; 0 unresolved inclusions; 3 syntax errors; 38 unresolved names (1.3%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:38.197
+!MESSAGE Indexed 'Lab5_prob3' (1 sources, 37 headers) in 0.076 sec: 1,099 declarations; 1,857 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:38.586
+!MESSAGE Indexed 'GroupA_1' (1 sources, 33 headers) in 0.07 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:38.653
+!MESSAGE Indexed 'GroupB_4' (1 sources, 33 headers) in 0.065 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:38.726
+!MESSAGE Indexed 'Lab2_prob4_3' (1 sources, 33 headers) in 0.067 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:38.797
+!MESSAGE Indexed 'Lab2_prob1' (1 sources, 33 headers) in 0.067 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:39.287
+!MESSAGE Indexed 'Lab7_prob1' (2 sources, 39 headers) in 0.485 sec: 2,093 declarations; 3,892 references; 0 unresolved inclusions; 1 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:39.796
+!MESSAGE Indexed 'Lab8_prob2' (2 sources, 51 headers) in 0.507 sec: 3,054 declarations; 5,508 references; 0 unresolved inclusions; 1 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:39.866
+!MESSAGE Indexed 'Lab4_prob1' (1 sources, 33 headers) in 0.067 sec: 1,054 declarations; 1,869 references; 0 unresolved inclusions; 3 syntax errors; 2 unresolved names (0.068%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:39.937
+!MESSAGE Indexed 'Lab5_prob2' (1 sources, 33 headers) in 0.067 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:40.551
+!MESSAGE Indexed 'Lab6_prob3' (2 sources, 48 headers) in 0.609 sec: 2,735 declarations; 4,650 references; 0 unresolved inclusions; 2 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:40.611
+!MESSAGE Indexed 'Lab2_prob4_2' (1 sources, 36 headers) in 0.055 sec: 1,075 declarations; 1,855 references; 0 unresolved inclusions; 3 syntax errors; 1 unresolved names (0.034%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:40.670
+!MESSAGE Indexed 'Lab2_prob2' (1 sources, 33 headers) in 0.056 sec: 1,056 declarations; 1,870 references; 0 unresolved inclusions; 1 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:40.783
+!MESSAGE Indexed 'Lab8_prob1' (2 sources, 44 headers) in 0.107 sec: 1,952 declarations; 3,058 references; 0 unresolved inclusions; 1 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:41.337
+!MESSAGE Indexed 'Lab7_prob3_v2' (2 sources, 39 headers) in 0.55 sec: 2,102 declarations; 4,144 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:41.457
+!MESSAGE Indexed 'Lab5_prob1' (1 sources, 33 headers) in 0.119 sec: 1,055 declarations; 1,873 references; 0 unresolved inclusions; 1 syntax errors; 3 unresolved names (0.1%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:41.525
+!MESSAGE Indexed 'Lab4_prob3_ver2' (1 sources, 33 headers) in 0.064 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:42.065
+!MESSAGE Indexed 'Lab6_prob2' (2 sources, 47 headers) in 0.535 sec: 2,726 declarations; 4,587 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.027%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:42.140
+!MESSAGE Indexed 'GroupA_3' (1 sources, 33 headers) in 0.073 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:42.190
+!MESSAGE Indexed 'GroupB_2' (1 sources, 33 headers) in 0.049 sec: 1,056 declarations; 1,872 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:42.256
+!MESSAGE Indexed 'Lab2_prob4_1' (1 sources, 33 headers) in 0.062 sec: 1,056 declarations; 1,878 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:42.318
+!MESSAGE Indexed 'Lab2_prob3' (1 sources, 33 headers) in 0.061 sec: 1,056 declarations; 1,870 references; 0 unresolved inclusions; 1 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-01-03 19:15:42.415
+!MESSAGE Indexed 'Lab7_prob3' (4 sources, 49 headers) in 0.096 sec: 1,874 declarations; 3,006 references; 5 unresolved inclusions; 4 syntax errors; 153 unresolved names (3%)
+!SESSION 2018-01-03 19:18:18.897 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_131
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_AU
+Framework arguments:  -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -data /home/alfons/Desktop/Programming/MPSLab_Fall_2017 -os linux -ws gtk -arch x86_64 -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:18:23.842
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:18:23.845
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY fr.ac6.mcu.ide 1 1 2018-01-03 19:18:24.407
+!MESSAGE Started RMI Server, listening on port 21112
+!SESSION 2018-01-03 19:18:42.517 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_131
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_AU
+Framework arguments:  -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -data file:/home/alfons/Desktop/Programming/MPSLab_Fall_2017/ -os linux -ws gtk -arch x86_64 -pluginCustomization configuration/st_pref.ini -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:18:47.444
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY org.eclipse.equinox.registry 4 1 2018-01-03 19:18:47.449
+!MESSAGE Executable extension definition for "resolver" not found.
+
+!ENTRY fr.ac6.mcu.ide 1 1 2018-01-03 19:18:47.963
+!MESSAGE Started RMI Server, listening on port 21112
