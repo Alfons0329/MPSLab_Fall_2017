@@ -193,15 +193,20 @@ int main()
 	GPIO_init_AF();
 	Timer_init();
 	PWM_channel_init();
+	duty_cycle = 0;
 	while(1)
 	{
-		for(duty_cycle=0;duty_cycle<256;duty_cycle+=20)
+
+		/*for(duty_cycle=0;duty_cycle<256;duty_cycle+=20)
 		{
 			PWM_channel_init();
 			set_timer();
-			TIM2->CR1 |= TIM_CR1_CEN;
-		}
-		//duty_cycle = 255;
+
+		}*/
+		PWM_channel_init();
+		set_timer();
+		TIM2->CR1 |= TIM_CR1_CEN;
+		duty_cycle = (duty_cycle > 255) ? 0 : duty_cycle+1;
 	}
 	//keypad_scan();
 }
