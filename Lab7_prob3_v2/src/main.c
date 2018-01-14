@@ -18,7 +18,7 @@ int keypad_value[4][4] ={	{1,2,3,0},
 							{7,8,9,0},
 							{14,0,15,0}};
 int freq = -1;
-int duty_cycle = 255;
+int duty_cycle;
 
 //extern void GPIO_init();
 void keypad_init()
@@ -82,7 +82,7 @@ void PWM_channel_init(){
 	TIM2->CR1 |= TIM_CR1_ARPE;
 
 	//duty cycle initial 50 (CCR2/ARR)
-	TIM2->CCR2 = 50;
+	TIM2->CCR2 = duty_cycle;
 	//enable output compare
 	TIM2->CCER |= TIM_CCER_CC2E;
 
@@ -195,13 +195,13 @@ int main()
 	PWM_channel_init();
 	while(1)
 	{
-		for(;duty_cycle>=0;duty_cycle--)
+		for(duty_cycle=0;duty_cycle<256;duty_cycle+=20)
 		{
 			PWM_channel_init();
 			set_timer();
 			TIM2->CR1 |= TIM_CR1_CEN;
 		}
-		duty_cycle = 255;
+		//duty_cycle = 255;
 	}
 	//keypad_scan();
 }
