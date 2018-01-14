@@ -79,13 +79,13 @@ void Timer_init() //Use 3
 
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM3->ARR = (uint32_t)SECOND_SLICE;//Reload value
+	TIM3->ARR = (uint32_t)SECOND_SLICE * 1.5;//Reload value
 	TIM3->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM3->EGR = TIM_EGR_UG;//Reinitialize the counter
 
 	//setting for timer 5
 	TIM5->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM5->ARR = (uint32_t)SECOND_SLICE;//Reload value
+	TIM5->ARR = (uint32_t)SECOND_SLICE * 2;//Reload value
 	TIM5->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }
@@ -185,6 +185,7 @@ int main()
 	while(1)
 	{
 
+		PWM_channel_init();
 		/*if(duty_cycle_r <= 0)
 		{
 			cnt_way = 0;
@@ -205,14 +206,14 @@ int main()
 			duty_cycle-=DELTA_COEF;
 		}*/
 		// GPIOA->ODR = 0b0000000001000010;
-		PWM_channel_init();
-		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 0 : duty_cycle_R + 10;
+
+		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 10 : duty_cycle_R + 10;
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
 
-		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? 0 : duty_cycle_G + 10;
+		duty_cycle_G = (duty_cycle_G > SECOND_SLICE * 2) ? 10 : duty_cycle_G + 10;
 		TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
 
-		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? 0 : duty_cycle_B + 10;
+		duty_cycle_B = (duty_cycle_B > SECOND_SLICE * 3) ? 10 : duty_cycle_B + 10;
 		TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
 
 		//set_timer();
