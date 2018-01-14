@@ -4,7 +4,7 @@
 //Use cable color to imply what the fucking color it represents
 #define KEYPAD_ROW_MAX 4
 #define KEYPAD_COL_MAX 4
-#define SECOND_SLICE 99
+#define SECOND_SLICE 255
 #define CYC_COUNT_UP 39999
 
 #define RED_START 0
@@ -53,7 +53,7 @@ void GPIO_init_AF() //GPIO Alternate Function Init
 	// PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
 					   //10987654321098765432109876543210
 	GPIOA->MODER   	&= 0b11111111111111111100001111110011;
-	GPIOA->MODER   	|= 0b00000000000000000001010000000100;
+	GPIOA->MODER   	|= 0b00000000000000000010100000001000;
 	//PortA Pin		   //10987654321098765432109876543210
 	GPIOA->AFR[0]	=  0b00000010000100000000000000100000;
 
@@ -184,6 +184,7 @@ int main()
 	duty_cycle_B = BLUE_START;
 	while(1)
 	{
+		delay_ms(10);
 		/*if(duty_cycle_r <= 0)
 		{
 			cnt_way = 0;
@@ -203,9 +204,10 @@ int main()
 		{
 			duty_cycle-=DELTA_COEF;
 		}*/
-		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 0 : duty_cycle_R+1;
-		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? 0 : duty_cycle_G+1;
-		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? 0 : duty_cycle_B+1;
+		// GPIOA->ODR = 0b0000000001000010;
+		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 0 : duty_cycle_R+5;
+		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? 0 : duty_cycle_G+10;
+		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? 0 : duty_cycle_B+20;
 		PWM_channel_init();
 		set_timer();
 		TIM2->CR1 |= TIM_CR1_CEN;
