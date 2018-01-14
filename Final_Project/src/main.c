@@ -106,7 +106,7 @@ void PWM_channel_init()
 	TIM2->CR1 |= TIM_CR1_ARPE;
 
 	//duty cycle initial 50 (CCR2/ARR)
-	TIM2->CCR2 = duty_cycle_R;
+	//TIM2->CCR2 = duty_cycle_R;
 	//enable output compare
 	TIM2->CCER |= TIM_CCER_CC2E;
 
@@ -125,7 +125,7 @@ void PWM_channel_init()
 	TIM5->CR1 |= TIM_CR1_ARPE;
 
 	//duty cycle initial 50 (CCR2/ARR)
-	TIM5->CCR2 = duty_cycle_G;
+	//TIM5->CCR2 = duty_cycle_G;
 	//enable output compare
 	TIM5->CCER |= TIM_CCER_CC2E;
 
@@ -144,7 +144,7 @@ void PWM_channel_init()
 	TIM3->CR1 |= TIM_CR1_ARPE;
 
 	//duty cycle initial 50 (CCR2/ARR)
-	TIM3->CCR1 = duty_cycle_B;
+	//TIM3->CCR1 = duty_cycle_B;
 	//enable output compare
 	TIM3->CCER |= TIM_CCER_CC1E;
 
@@ -184,7 +184,7 @@ int main()
 	duty_cycle_B = BLUE_START;
 	while(1)
 	{
-		delay_ms(10);
+
 		/*if(duty_cycle_r <= 0)
 		{
 			cnt_way = 0;
@@ -205,11 +205,17 @@ int main()
 			duty_cycle-=DELTA_COEF;
 		}*/
 		// GPIOA->ODR = 0b0000000001000010;
-		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 0 : duty_cycle_R+5;
-		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? 0 : duty_cycle_G+10;
-		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? 0 : duty_cycle_B+20;
 		PWM_channel_init();
-		set_timer();
+		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 0 : duty_cycle_R + 10;
+		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
+
+		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? 0 : duty_cycle_G + 10;
+		TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
+
+		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? 0 : duty_cycle_B + 10;
+		TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
+
+		//set_timer();
 		TIM2->CR1 |= TIM_CR1_CEN;
 		TIM5->CR1 |= TIM_CR1_CEN;
 		TIM3->CR1 |= TIM_CR1_CEN;
