@@ -207,7 +207,8 @@ int main()
 		PWM_channel_init();
 		set_timer();
 		TIM2->CR1 |= TIM_CR1_CEN;
-		duty_cycle = (duty_cycle > 255) ? 0 : duty_cycle+1;
+
+		duty_cycle = (duty_cycle > 255) ? duty_cycle-1 : duty_cycle+1;
 	}
 	//keypad_scan();
 }
