@@ -89,9 +89,10 @@ void PWM_channel_init() //Use 3 timer but one channel for each to do
 	//setting for timer 2 channel 1
 	// TIM2->CR1 &= 0x0000; //disable the counter first
 
-	TIM2->CR1 &= (0b0 << TIM_CR1_CEN_Pos);; //off timer
+	TIM2->CR1 &= (0b0 << TIM_CR1_CEN_Pos); //off timer
+	TIM2->ARR = (uint32_t)SECOND_SLICE;//Reload value
+	TIM2->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM2->CCR1 = duty_cycle_R;
-
 	TIM2->CR1 |= (0b1 << TIM_CR1_CEN_Pos); //on timer
 	//setting for timer 3 channel 2
 	//setting for timer 5 channel 1

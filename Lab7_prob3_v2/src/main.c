@@ -18,7 +18,7 @@ int keypad_value[4][4] ={	{1,2,3,0},
 							{7,8,9,0},
 							{14,0,15,0}};
 int freq = -1;
-int duty_cycle = 50;
+int duty_cycle = 255;
 
 //extern void GPIO_init();
 void keypad_init()
@@ -55,7 +55,7 @@ void Timer_init(){
 	//TIM2->CR1 &= ~(TIM_CR1_CMS_Pos);
 	TIM2->CR1 &= 0x0000; //Turned on the counter as the count up mode
 	//SET_REG(TIM2->CR1, TIM_CR1_DIR | TIM_CR1_CMS, TIM_COUNTERMODE_DOWN);// Edge-aligned mode, down counter
-	TIM2->ARR = (uint32_t)100;//Reload value
+	TIM2->ARR = (uint32_t)255;//Reload value
 	TIM2->PSC = (uint32_t)39999;//Prescaler
 	TIM2->EGR = TIM_EGR_UG;//Reinitialize the counter
 	//TIM2->CR1 |= TIM_CR1_CEN;
@@ -91,13 +91,13 @@ void PWM_channel_init(){
 void set_timer()
 {
 	int prescaler = (4000000 / freq / 100);
-	TIM2->PSC = (uint32_t) prescaler;
+	//TIM2->PSC = (uint32_t) prescaler;
 	// prescaler value
 	TIM2->CCR2 = duty_cycle;
 	// compare 2 preload value
 }
 
-int keypad_scan()
+/*int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
     int keypad_row=0,keypad_col=0;
@@ -109,8 +109,8 @@ int keypad_scan()
         {
     		for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++) //read input data from 1st col
             {
-    			/*use pc 3210 for X output row
-                  use pb 3210 for Y input col*/
+    			//use pc 3210 for X output row
+                //use pb 3210 for Y input col
                 GPIOC->ODR&=0; //clear the output value
                 GPIOC->ODR|=(1<<keypad_row);//shift the value to send data for that row, data set
                 int masked_value=GPIOB->IDR&0xf0, is_pressed=(masked_value>>(keypad_col+4))&1;
@@ -185,7 +185,7 @@ int keypad_scan()
     	}
     }
     return key_val;
-}
+}*/
 
 int main()
 {
@@ -193,6 +193,15 @@ int main()
 	GPIO_init_AF();
 	Timer_init();
 	PWM_channel_init();
-	keypad_scan();
+	while(1)
+	{
+		for(;duty_cycle>=0;duty_cycle--)
+		{
+			PWM_channel_init();
+			set_timer();
+			TIM2->CR1 |= TIM_CR1_CEN;
+		}
+		duty_cycle = 255;
+	}
+	//keypad_scan();
 }
-
