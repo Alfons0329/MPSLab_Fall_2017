@@ -46,7 +46,7 @@ void GPIO_init_AF() //GPIO Alternate Function Init
 	// PA1 + AF2 which is corressponding to TIM5_CH2
 	// PA6 + AF2 which is corressponding to TIM3_CH1
 	//10987654321098765432109876543210
-	GPIOA->MODER   	&= 0b11111111111111111100001111110011; //pc 3 2 1 0 as input of keypad
+	GPIOA->MODER   	&= 0b11111111111111111100001111110011;
 	GPIOA->MODER   	|= 0b00000000000000000001010000000100;
 	//PortA Pin		   //10987654321098765432109876543210
 	GPIOA->AFR[0]	=  0b00000010000100000000000000100000;
@@ -64,9 +64,10 @@ void Timer_init() //Use 3
 	TIM2->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM2->CCMR1 |= (0b00 << TIM_CCMR1_CC1S_Pos); //channel 1 as the output
 	TIM2->CCMR1 |= (0b110 << TIM_CCMR1_OC1M_Pos); //channel 1 as the PWM mode
-	TIM2->CCER |= (0b1 << TIM_CCER_CC1E_Pos) //channel 1 as the compare output enable for PWM
-	TIM2->ARR = (uint32_t)SECOND_SLICE;//Reload value
-	TIM2->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
+	TIM2->CCER |= (0b1 << TIM_CCER_CC1E_Pos); //channel 1 as the compare output enable for PWM
+	TIM2->ARR = (uint32_t)99;//Reload value
+	TIM2->PSC = (uint32_t)39999;//Prescaler
+	TIM2->EGR |= (0b1 << TIM_EGR_UG_Pos); 	//update the counter again p1035
 	// TIM2->EGR = TIM_EGR_UG;//Reinitialize the counter
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
@@ -86,10 +87,12 @@ void PWM_channel_init() //Use 3 timer but one channel for each to do
 	// PA1 + AF2 which is corressponding to TIM5_CH2
 	// PA6 + AF2 which is corressponding to TIM3_CH1
 	//setting for timer 2 channel 1
-	TIM2->CR1 &= 0x0000; //disable the counter first
+	// TIM2->CR1 &= 0x0000; //disable the counter first
+
+	TIM2->CR1 &= (0b0 << TIM_CR1_CEN_Pos);; //off timer
 	TIM2->CCR1 = duty_cycle_R;
-	TIM2->EGR |= (0b1 << TIM_EGR_UG_Pos); 	//update the counter again p1035
-	TIM2->CR1 |= (0b1 << TIM_CR1_CEN_Pos);
+
+	TIM2->CR1 |= (0b1 << TIM_CR1_CEN_Pos); //on timer
 	//setting for timer 3 channel 2
 	//setting for timer 5 channel 1
 }
