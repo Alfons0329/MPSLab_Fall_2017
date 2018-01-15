@@ -237,10 +237,10 @@ int main()
 		}*/
 		// GPIOA->ODR = 0b0000000001000010;
 
-		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+10-SECOND_SLICE) : (duty_cycle_R+10);
+		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
 
-		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+20-SECOND_SLICE) : (duty_cycle_G+20);
+		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
 		TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
 
 		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
