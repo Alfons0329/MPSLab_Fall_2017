@@ -39,7 +39,7 @@ void keypad_init()//keypad along with GPIO Init together
 {
 
 	RCC->AHB2ENR   |= 0b00000000000000000000000000000111; //open port A,B,C
-				       //10987654321098765432109876543210
+				      //10987654321098765432109876543210
 	GPIOC->MODER   &= 0b11111111111111111111111100000000; //pc 3 2 1 0 as input of keypad
 	GPIOC->MODER   |= 0b00000000000000000000000001010101;
 	GPIOC->PUPDR   &= 0b11111111111111111111111100000000;
@@ -172,7 +172,7 @@ void set_timer()
 
 	//TIM3_CH1
 	//prescaler value
-	TIM3->CCR1 = key_valcycle_B; // compare 2 preload value
+	TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
 
 }
 
@@ -189,11 +189,11 @@ int keypad_scan()
             //use pb 3210 for Y input col
         	GPIOC->ODR &= 0; //clear the output value
             GPIOC->ODR |= (1<<keypad_row);//shift the value to send data for that row, data set
-            int masked_value=GPIOB->IDR&0xf, is_pressed=(masked_value>>keypad_col)&1;
+            int masked_value=GPIOB->IDR&0xf0;
+			int is_pressed=(masked_value>>(keypad_col+4))&1;
             if(is_pressed) //key is pressed
             {
                 key_val = keypad_value[keypad_row][keypad_col];
-                display(keypad_value[keypad_row][keypad_col],(key_val >= 10 ? 2 : 1));
             }
             else
             {
@@ -213,7 +213,7 @@ void chromatic_scheme(int key_val)
 		check = 100;
 	else
 		check = curr;
-		
+
 	switch (check)
 	{
 		case 0:
@@ -253,7 +253,7 @@ void chromatic_scheme(int key_val)
 		}
 		case 7:
 		{
-			cur_state = CYCLE_MODE;
+			cur_state = CONTROL_MODE;
 			break;
 		}
 		case 8:
@@ -297,7 +297,7 @@ void chromatic_scheme(int key_val)
 		case 14: //RB
 		{
 			duty_cycle_R = SECOND_SLICE * 1.5;
-			duty_cycle_G = ;
+			duty_cycle_G = 0;
 			duty_cycle_B = SECOND_SLICE;
 		}
 		case 15:
@@ -305,7 +305,30 @@ void chromatic_scheme(int key_val)
 			//waiting for the code from Alice
 			break;
 		}
-		default break:
+		case 100: //maintain the default state for nop-like operation
+		{
+			if(cur_state == CYCLE_MODE)
+			{
+				duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
+				TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
+
+				duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
+				TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
+
+				duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
+				TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
+
+				TIM2->CR1 |= TIM_CR1_CEN;
+				TIM5->CR1 |= TIM_CR1_CEN;
+				TIM3->CR1 |= TIM_CR1_CEN;
+			}
+			else if(cur_state == CONTROL_MODE)
+			{
+				//nop
+			}
+			break;
+		}
+		default: break;
 	}
 }
 
@@ -318,10 +341,11 @@ int main()
 	duty_cycle_R = RED_START;
 	duty_cycle_G = GREEN_START;
 	duty_cycle_B = BLUE_START;
+	cur_state = CYCLE_MODE;
 	while(1)
 	{
-
 		PWM_channel_init();
+		chromatic_scheme(keypad_scan());
 		/*if(duty_cycle_r <= 0)
 		{
 			cnt_way = 0;
@@ -343,19 +367,8 @@ int main()
 		// GPIOA->ODR = 0b0000000001000010;
 
 
-		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
-		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
-
-		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
-		TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
-
-		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
-		TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
-
 		//set_timer();
-		TIM2->CR1 |= TIM_CR1_CEN;
-		TIM5->CR1 |= TIM_CR1_CEN;
-		TIM3->CR1 |= TIM_CR1_CEN;
+
 	}
 	return 0;
 }
