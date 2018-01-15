@@ -84,13 +84,13 @@ void Timer_init() //Use 3
 
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM3->ARR = (uint32_t)SECOND_SLICE *2;//Reload value
+	TIM3->ARR = (uint32_t)SECOND_SLICE *1.5;//Reload value
 	TIM3->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM3->EGR = TIM_EGR_UG;//Reinitialize the counter
 
 	//setting for timer 5
 	TIM5->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM5->ARR = (uint32_t)SECOND_SLICE *4;//Reload value
+	TIM5->ARR = (uint32_t)SECOND_SLICE *2;//Reload value
 	TIM5->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }

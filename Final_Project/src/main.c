@@ -9,7 +9,7 @@
 #define CYC_COUNT_UP 39999
 #define CTRL_COUNT_UP 9
 
-#define DELTA_VALUE 10
+#define DELTA_VALUE 30
 #define RED_START 10
 #define GREEN_START 91
 #define BLUE_START 172
@@ -27,6 +27,8 @@ int keypad_value[4][4] = {{0,1,2,3},
 						  {12,13,14,15}};
 //FSM data structure is here
 int prev=-1, curr=-1, check;
+int on = 0;
+int off_state, off_R, off_G, off_B;
 /******************************Reference data is here*************************
 //reference book p.1038 p.905
 //ref: STM32 PWM
@@ -228,142 +230,184 @@ void chromatic_scheme(int key_val)
 	else
 		check = curr;
 
-	switch (check)
-	{
-		case 0:
-		{
-			duty_cycle_R += DELTA_VALUE;
-			break;
-		}
-		case 1:
-		{
-			duty_cycle_G += DELTA_VALUE;
-			break;
-		}
-		case 2:
-		{
-			duty_cycle_B += DELTA_VALUE;
-			break;
-		}
-		case 3:
-		{
-			cur_state = CYCLE_MODE;
-			duty_cycle_R = RED_START;
-			duty_cycle_G = GREEN_START;
-			duty_cycle_B = BLUE_START;
+	if (check==15){
+		if(on){
+			on = 0;
+			//remember setting
+			off_state = cur_state;
+			off_R = duty_cycle_R;
+			off_G = duty_cycle_G;
+			off_B = duty_cycle_B;
+			//light off
+			duty_cycle_R = 0;
+			duty_cycle_G = 0;
+			duty_cycle_B = 0;
+			set_timer();
 			stop_timer();
-			Timer_init(CYC_COUNT_UP);
-			break;
+		}else {
+			on = 1;
+			cur_state = off_state;
+			duty_cycle_R = off_R;
+			duty_cycle_G = off_G;
+			duty_cycle_B = off_B;
+			set_timer();
+			start_timer();
 		}
-		case 4:
-		{
-			duty_cycle_R -= DELTA_VALUE;
-			break;
-		}
-		case 5:
-		{
-			duty_cycle_G -= DELTA_VALUE;
-			break;
-		}
-		case 6:
-		{
-			duty_cycle_B -= DELTA_VALUE;
-			break;
-		}
-		case 7:
-		{
-			cur_state = CONTROL_MODE;
-			duty_cycle_R = 50;
-			duty_cycle_G = 50;
-			duty_cycle_B = 50;
-			stop_timer();
-			Timer_init(CTRL_COUNT_UP);
-			break;
-		}
-		case 8:
-		{
-			duty_cycle_R = SECOND_SLICE;
-			duty_cycle_G = 0;
-			duty_cycle_B = 0;
-			break;
-		}
-		case 9:
-		{
-			duty_cycle_R = 0;
-			duty_cycle_G = SECOND_SLICE*2;
-			duty_cycle_B = 0;
-			break;
-		}
-		case 10:
-		{
-			duty_cycle_R = 0;
-			duty_cycle_G = 0;
-			duty_cycle_B = SECOND_SLICE*4;
-			break;
-		}
-		case 11:
-		{
-			//waiting for the code from Alice
-			break;
-		}
-		case 12: //RG
-		{
-			duty_cycle_R = SECOND_SLICE * 1.2;
-			duty_cycle_G = SECOND_SLICE;
-			duty_cycle_B = 0;
-			break;
-		}
-		case 13: //GB
-		{
-			duty_cycle_R = 0;
-			duty_cycle_G = SECOND_SLICE * 1.2; // try the coef
-			duty_cycle_B = SECOND_SLICE;
-			break;
-		}
-		case 14: //RB
-		{
-			duty_cycle_R = SECOND_SLICE * 1.5;
-			duty_cycle_G = 0;
-			duty_cycle_B = SECOND_SLICE;
-			break;
-		}
-		case 15:
-		{
-			//waiting for the code from Alice
-			break;
-		}
-		case 100: //maintain the default state for nop-like operation
-		{
-			if(cur_state == CYCLE_MODE)
+	} else {
+		if(on){
+			switch (check)
 			{
-				duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
-				duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
-				duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
-				set_timer();
-				start_timer();
+				case 0:
+				{
+					if(duty_cycle_R < SECOND_SLICE)
+						duty_cycle_R += DELTA_VALUE;
+					else
+						duty_cycle_R = SECOND_SLICE;
+					break;
+				}
+				case 1:
+				{
+					if(duty_cycle_G < SECOND_SLICE)
+						duty_cycle_G += DELTA_VALUE;
+					else
+						duty_cycle_G = SECOND_SLICE;
+					break;
+				}
+				case 2:
+				{
+					if(duty_cycle_B < SECOND_SLICE)
+						duty_cycle_B += DELTA_VALUE;
+					else
+						duty_cycle_B = SECOND_SLICE;
+					break;
+				}
+				case 3:
+				{
+					cur_state = CYCLE_MODE;
+					//duty_cycle_R = RED_START;
+					//duty_cycle_G = GREEN_START;
+					//duty_cycle_B = BLUE_START;
+					stop_timer();
+					Timer_init(CYC_COUNT_UP);
+					break;
+				}
+				case 4:
+				{
+					if(duty_cycle_R > DELTA_VALUE)
+						duty_cycle_R -= DELTA_VALUE;
+					else
+						duty_cycle_R = 0;
+					break;
+				}
+				case 5:
+				{
+					if(duty_cycle_G > DELTA_VALUE)
+						duty_cycle_G -= DELTA_VALUE;
+					else
+						duty_cycle_G = 0;
+					break;
+				}
+				case 6:
+				{
+					if(duty_cycle_B > DELTA_VALUE)
+						duty_cycle_B -= DELTA_VALUE;
+					else
+						duty_cycle_B = 0;
+					break;
+				}
+				case 7:
+				{
+					cur_state = CONTROL_MODE;
+					//duty_cycle_R = 50;
+					//duty_cycle_G = 50;
+					//duty_cycle_B = 50;
+					stop_timer();
+					Timer_init(CTRL_COUNT_UP);
+					break;
+				}
+				case 8:
+				{
+					duty_cycle_R = SECOND_SLICE;
+					duty_cycle_G = 0;
+					duty_cycle_B = 0;
+					break;
+				}
+				case 9:
+				{
+					duty_cycle_R = 0;
+					duty_cycle_G = SECOND_SLICE*2;
+					duty_cycle_B = 0;
+					break;
+				}
+				case 10:
+				{
+					duty_cycle_R = 0;
+					duty_cycle_G = 0;
+					duty_cycle_B = SECOND_SLICE*4;
+					break;
+				}
+				case 11:
+				{
+					//waiting for the code from Alice
+					break;
+				}
+				case 12: //RG
+				{
+					duty_cycle_R = SECOND_SLICE * 1.2;
+					duty_cycle_G = SECOND_SLICE;
+					duty_cycle_B = 0;
+					break;
+				}
+				case 13: //GB
+				{
+					duty_cycle_R = 0;
+					duty_cycle_G = SECOND_SLICE * 1.2; // try the coef
+					duty_cycle_B = SECOND_SLICE;
+					break;
+				}
+				case 14: //RB
+				{
+					duty_cycle_R = SECOND_SLICE * 1.5;
+					duty_cycle_G = 0;
+					duty_cycle_B = SECOND_SLICE;
+					break;
+				}
+				case 100: //maintain the default state for nop-like operation
+				{
+					if(cur_state == CYCLE_MODE)
+					{
+						duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
+						duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
+						duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
+						set_timer();
+						start_timer();
+					}
+					else if(cur_state == CONTROL_MODE)
+					{
+						//nop
+						set_timer();
+						start_timer();
+					}
+					break;
+				}
+				default:
+				{
+					if(cur_state == CYCLE_MODE)
+					{
+						duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
+						duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
+						duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
+						set_timer();
+						start_timer();
+					}
+					else if(cur_state == CONTROL_MODE)
+					{
+						set_timer();
+						start_timer();
+					}
+					break;
+				}
 			}
-			else if(cur_state == CONTROL_MODE)
-			{
-				//nop
-				start_timer();
-			}
-			break;
-		}
-		default:
-		{
-			if(cur_state == CYCLE_MODE)
-			{
-				duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
-				duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
-				duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
-				set_timer();
-				start_timer();
-			}
-			else if(cur_state == CONTROL_MODE)
-			{
-				start_timer();
-			}
-			break;
 		}
 	}
 }
