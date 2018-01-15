@@ -7,9 +7,9 @@
 #define SECOND_SLICE 255
 #define CYC_COUNT_UP 39999
 
-#define RED_START 0
-#define GREEN_START 85
-#define BLUE_START 170
+#define RED_START 10
+#define GREEN_START 91
+#define BLUE_START 172
 //Global and static data declaration
 int cur_state = 0; //default state0 for color changing and 1 for self-control color scheme
 int duty_cycle_R = 50; // PB3 + AF1 which is corressponding to TIM2_CH1 REG
@@ -170,7 +170,7 @@ void set_timer()
 
 
 }
-
+/*
 int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
@@ -180,8 +180,8 @@ int keypad_scan()
     {
         for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++) //read input data from 1st col
         {
-            /*use pc 3210 for X output row
-            use pb 3210 for Y input col*/
+            //use pc 3210 for X output row
+            //use pb 3210 for Y input col
         	GPIOC->ODR &= 0; //clear the output value
             GPIOC->ODR |= (1<<keypad_row);//shift the value to send data for that row, data set
             int masked_value=GPIOB->IDR&0xf, is_pressed=(masked_value>>keypad_col)&1;
@@ -202,6 +202,7 @@ void chromatic_scheme()
 {
 
 }
+*/
 int main()
 {
 	//use the time delay mode to make the interleaving and the color changing scheme
@@ -236,13 +237,13 @@ int main()
 		}*/
 		// GPIOA->ODR = 0b0000000001000010;
 
-		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? 10 : duty_cycle_R + 10;
+		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+10-SECOND_SLICE) : (duty_cycle_R+10);
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
 
-		duty_cycle_G = (duty_cycle_G > SECOND_SLICE * 2) ? 10 : duty_cycle_G + 10;
+		duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+20-SECOND_SLICE) : (duty_cycle_G+20);
 		TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
 
-		duty_cycle_B = (duty_cycle_B > SECOND_SLICE * 3) ? 10 : duty_cycle_B + 10;
+		duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
 		TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
 
 		//set_timer();
