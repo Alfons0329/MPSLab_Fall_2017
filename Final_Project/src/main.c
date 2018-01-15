@@ -4,12 +4,17 @@
 //Use cable color to imply what the fucking color it represents
 #define KEYPAD_ROW_MAX 4
 #define KEYPAD_COL_MAX 4
+
 #define SECOND_SLICE 255
 #define CYC_COUNT_UP 39999
 
+#define DELTA_VALUE 10
 #define RED_START 10
 #define GREEN_START 91
 #define BLUE_START 172
+
+#define CYCLE_MODE 0
+#define CONTROL_MODE 1
 //Global and static data declaration
 int cur_state = 0; //default state0 for color changing and 1 for self-control color scheme
 int duty_cycle_R = 50; // PB3 + AF1 which is corressponding to TIM2_CH1 REG
@@ -19,7 +24,8 @@ int keypad_value[4][4] = {{0,1,2,3},
 						  {4,5,6,7},
 						  {8,9,10,11},
 						  {12,13,14,15}};
-
+//FSM data structure is here
+int prev, curr, check;
 /******************************Reference data is here*************************
 //reference book p.1038 p.905
 //ref: STM32 PWM
@@ -166,18 +172,18 @@ void set_timer()
 
 	//TIM3_CH1
 	//prescaler value
-	TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
-
+	TIM3->CCR1 = key_valcycle_B; // compare 2 preload value
 
 }
-/*
+
 int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
-    int keypad_row=0,keypad_col=0;
-    for(keypad_row=0;keypad_row<keypad_row_max;keypad_row++) //output data from 1st row
+    int keypad_row=0, keypad_col=0, key_val;;
+
+    for(keypad_row=0;keypad_row<KEYPAD_ROW_MAX;keypad_row++) //output data from 1st row
     {
-        for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++) //read input data from 1st col
+        for(keypad_col=0;keypad_col<KEYPAD_COL_MAX;keypad_col++) //read input data from 1st col
         {
             //use pc 3210 for X output row
             //use pb 3210 for Y input col
@@ -197,10 +203,112 @@ int keypad_scan()
     }
     return key_val; //return -1 if keypad is not pressed, in such condition the color should maintain the current state
 }
-void chromatic_scheme()
+//RGB 1 1.5 2
+void chromatic_scheme(int key_val)
 {
+	prev = curr;
+	curr = key_val;
+	// ring while keep press same button
+	if (curr == prev)
+		check = 100;
+	else
+		check = curr;
+		
+	switch (check)
+	{
+		case 0:
+		{
+			duty_cycle_R += DELTA_VALUE;
+			break;
+		}
+		case 1:
+		{
+			duty_cycle_G += DELTA_VALUE;
+			break;
+		}
+		case 2:
+		{
+			duty_cycle_B += DELTA_VALUE;
+			break;
+		}
+		case 3:
+		{
+			cur_state = CYCLE_MODE;
+			break;
+		}
+		case 4:
+		{
+			duty_cycle_R -= DELTA_VALUE;
+			break;
+		}
+		case 5:
+		{
+			duty_cycle_G -= DELTA_VALUE;
+			break;
+		}
+		case 6:
+		{
+			duty_cycle_B -= DELTA_VALUE;
+			break;
+		}
+		case 7:
+		{
+			cur_state = CYCLE_MODE;
+			break;
+		}
+		case 8:
+		{
+			duty_cycle_R = SECOND_SLICE;
+			duty_cycle_G = 0;
+			duty_cycle_B = 0;
+			break;
+		}
+		case 9:
+		{
+			duty_cycle_R = 0;
+			duty_cycle_G = SECOND_SLICE;
+			duty_cycle_B = 0;
+			break;
+		}
+		case 10:
+		{
+			duty_cycle_R = 0;
+			duty_cycle_G = 0;
+			duty_cycle_B = SECOND_SLICE;
+			break;
+		}
+		case 11:
+		{
+			//waiting for the code from Alice
+			break;
+		}
+		case 12: //RG
+		{
+			duty_cycle_R = SECOND_SLICE * 1.2;
+			duty_cycle_G = SECOND_SLICE;
+			duty_cycle_B = 0;
+		}
+		case 13: //GB
+		{
+			duty_cycle_R = 0;
+			duty_cycle_G = SECOND_SLICE * 1.2; // try the coef
+			duty_cycle_B = SECOND_SLICE;
+		}
+		case 14: //RB
+		{
+			duty_cycle_R = SECOND_SLICE * 1.5;
+			duty_cycle_G = ;
+			duty_cycle_B = SECOND_SLICE;
+		}
+		case 15:
+		{
+			//waiting for the code from Alice
+			break;
+		}
+		default break:
+	}
 }
-*/
+
 int main()
 {
 	//use the time delay mode to make the interleaving and the color changing scheme
@@ -233,6 +341,7 @@ int main()
 			duty_cycle-=DELTA_COEF;
 		}*/
 		// GPIOA->ODR = 0b0000000001000010;
+
 
 		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
