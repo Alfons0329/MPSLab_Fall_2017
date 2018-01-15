@@ -7,6 +7,7 @@
 
 #define SECOND_SLICE 255
 #define CYC_COUNT_UP 39999
+#define CTRL_COUNT_UP 9
 
 #define DELTA_VALUE 10
 #define RED_START 10
@@ -17,15 +18,15 @@
 #define CONTROL_MODE 1
 //Global and static data declaration
 int cur_state = 0; //default state0 for color changing and 1 for self-control color scheme
-int duty_cycle_R = 50; // PB3 + AF1 which is corressponding to TIM2_CH1 REG
-int duty_cycle_G = 50; // PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
-int duty_cycle_B = 50; // PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
+int duty_cycle_R = 50; // PB3 + AF1 which is corresponding to TIM2_CH1 REG
+int duty_cycle_G = 50; // PA1 + AF2 which is corresponding to TIM5_CH2 GREEN
+int duty_cycle_B = 50; // PA6 + AF2 which is corresponding to TIM3_CH1 BLUE
 int keypad_value[4][4] = {{0,1,2,3},
 						  {4,5,6,7},
 						  {8,9,10,11},
 						  {12,13,14,15}};
 //FSM data structure is here
-int prev, curr, check;
+int prev=-1, curr=-1, check;
 /******************************Reference data is here*************************
 //reference book p.1038 p.905
 //ref: STM32 PWM
@@ -70,7 +71,7 @@ void GPIO_init_AF() //GPIO Alternate Function Init
 	GPIOB->AFR[0] 	|= (0b0001<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
 }
 
-void Timer_init() //Use 3
+void Timer_init(int cnt) //Use 3
 {
 	// PA3 + AF1 which is corressponding to TIM2_CH1
 	// PA1 + AF2 which is corressponding to TIM5_CH2
@@ -82,19 +83,19 @@ void Timer_init() //Use 3
 	//setting for timer 2
 	TIM2->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM2->ARR = (uint32_t)SECOND_SLICE;//Reload value
-	TIM2->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
+	TIM2->PSC = (uint32_t)cnt;//Prescaler
 	TIM2->EGR = TIM_EGR_UG; 	//update the counter again p1035
 
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM3->ARR = (uint32_t)SECOND_SLICE * 1.5;//Reload value
-	TIM3->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
+	TIM3->PSC = (uint32_t)cnt;//Prescaler
 	TIM3->EGR = TIM_EGR_UG;//Reinitialize the counter
 
 	//setting for timer 5
 	TIM5->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM5->ARR = (uint32_t)SECOND_SLICE * 2;//Reload value
-	TIM5->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
+	TIM5->PSC = (uint32_t)cnt;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }
 void PWM_channel_init()
@@ -173,13 +174,26 @@ void set_timer()
 	//TIM3_CH1
 	//prescaler value
 	TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
+}
 
+void stop_timer()
+{
+	TIM2->CR1 &= ~TIM_CR1_CEN;
+	TIM5->CR1 &= ~TIM_CR1_CEN;
+	TIM3->CR1 &= ~TIM_CR1_CEN;
+}
+
+void start_timer()
+{
+	TIM2->CR1 |= TIM_CR1_CEN;
+	TIM5->CR1 |= TIM_CR1_CEN;
+	TIM3->CR1 |= TIM_CR1_CEN;
 }
 
 int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
-    int keypad_row=0, keypad_col=0, key_val;;
+    int keypad_row=0, keypad_col=0, key_val;
 
     for(keypad_row=0;keypad_row<KEYPAD_ROW_MAX;keypad_row++) //output data from 1st row
     {
@@ -208,7 +222,6 @@ void chromatic_scheme(int key_val)
 {
 	prev = curr;
 	curr = key_val;
-	// ring while keep press same button
 	if (curr == prev)
 		check = 100;
 	else
@@ -234,6 +247,11 @@ void chromatic_scheme(int key_val)
 		case 3:
 		{
 			cur_state = CYCLE_MODE;
+			duty_cycle_R = RED_START;
+			duty_cycle_G = GREEN_START;
+			duty_cycle_B = BLUE_START;
+			stop_timer();
+			Timer_init(CYC_COUNT_UP);
 			break;
 		}
 		case 4:
@@ -254,6 +272,11 @@ void chromatic_scheme(int key_val)
 		case 7:
 		{
 			cur_state = CONTROL_MODE;
+			duty_cycle_R = 50;
+			duty_cycle_G = 50;
+			duty_cycle_B = 50;
+			stop_timer();
+			Timer_init(CTRL_COUNT_UP);
 			break;
 		}
 		case 8:
@@ -266,7 +289,7 @@ void chromatic_scheme(int key_val)
 		case 9:
 		{
 			duty_cycle_R = 0;
-			duty_cycle_G = SECOND_SLICE;
+			duty_cycle_G = SECOND_SLICE*2;
 			duty_cycle_B = 0;
 			break;
 		}
@@ -274,7 +297,7 @@ void chromatic_scheme(int key_val)
 		{
 			duty_cycle_R = 0;
 			duty_cycle_G = 0;
-			duty_cycle_B = SECOND_SLICE;
+			duty_cycle_B = SECOND_SLICE*4;
 			break;
 		}
 		case 11:
@@ -310,25 +333,33 @@ void chromatic_scheme(int key_val)
 			if(cur_state == CYCLE_MODE)
 			{
 				duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
-				TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
-
 				duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
-				TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
-
 				duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
-				TIM3->CCR1 = duty_cycle_B; // compare 2 preload value
-
-				TIM2->CR1 |= TIM_CR1_CEN;
-				TIM5->CR1 |= TIM_CR1_CEN;
-				TIM3->CR1 |= TIM_CR1_CEN;
+				set_timer();
+				start_timer();
 			}
 			else if(cur_state == CONTROL_MODE)
 			{
 				//nop
+				start_timer();
 			}
 			break;
 		}
-		default: break;
+		default:{
+			if(cur_state == CYCLE_MODE)
+			{
+				duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
+				duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
+				duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
+				set_timer();
+				start_timer();
+			}
+			else if(cur_state == CONTROL_MODE)
+			{
+				start_timer();
+			}
+			break;
+		}
 	}
 }
 
@@ -337,7 +368,7 @@ int main()
 	//use the time delay mode to make the interleaving and the color changing scheme
 	keypad_init();
 	GPIO_init_AF();
-	Timer_init();
+	Timer_init(CYC_COUNT_UP);
 	duty_cycle_R = RED_START;
 	duty_cycle_G = GREEN_START;
 	duty_cycle_B = BLUE_START;
@@ -346,29 +377,6 @@ int main()
 	{
 		PWM_channel_init();
 		chromatic_scheme(keypad_scan());
-		/*if(duty_cycle_r <= 0)
-		{
-			cnt_way = 0;
-			duty_cycle = 0;
-		}
-		else if(duty_cycle >= )
-		{
-			cnt_way = 1;
-			duty_cycle = SECOND_SLICE;
-		}
-		if(!cnt_way)
-		{
-			duty_cycle+=DELTA_COEF;
-		}
-		else
-		{
-			duty_cycle-=DELTA_COEF;
-		}*/
-		// GPIOA->ODR = 0b0000000001000010;
-
-
-		//set_timer();
-
 	}
 	return 0;
 }
