@@ -82,13 +82,13 @@ void Timer_init() //Use 3
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM3->ARR = (uint32_t)SECOND_SLICE;//Reload value
-	TIM3->PSC = (uint32_t)CYC_COUNT_UP*1.5;//Prescaler
+	TIM3->PSC = (uint32_t)CYC_COUNT_UP*2;//Prescaler
 	TIM3->EGR = TIM_EGR_UG;//Reinitialize the counter
 
 	//setting for timer 5
 	TIM5->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM5->ARR = (uint32_t)SECOND_SLICE;//Reload value
-	TIM5->PSC = (uint32_t)CYC_COUNT_UP*2;//Prescaler
+	TIM5->PSC = (uint32_t)CYC_COUNT_UP*4;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }
 void PWM_channel_init()
@@ -207,17 +207,62 @@ int main()
 	keypad_init();
 	GPIO_init_AF();
 	Timer_init();
-	duty_cycle_R = 200;
+	duty_cycle_R = 50;
 	duty_cycle_G = 0;
-	duty_cycle_B = 2;
+	duty_cycle_B = 0;
 	PWM_channel_init();
 	while(1)
 	{
-		if (duty_cycle_R < SECOND_SLICE){
-			duty_cycle_R +=10;
-			duty_cycle_G +=(10/1.5);
-			duty_cycle_B +=(10/2);
+		//lighter
+		if (duty_cycle_R >= duty_cycle_G && duty_cycle_R >= duty_cycle_B){
+			if (duty_cycle_R < SECOND_SLICE){
+				if (!duty_cycle_R)
+					duty_cycle_R +=(10*2.3);
+				if (!duty_cycle_G)
+					duty_cycle_G +=(10*0.6);
+				if (!duty_cycle_B)
+					duty_cycle_B +=(10*0.2);
+			}
+		} else if (duty_cycle_G >= duty_cycle_R && duty_cycle_G >= duty_cycle_B){
+			if (duty_cycle_G < SECOND_SLICE){
+				if (!duty_cycle_R)
+					duty_cycle_R +=(10*2.3);
+				if (!duty_cycle_G)
+					duty_cycle_G +=(10*0.6);
+				if (!duty_cycle_B)
+					duty_cycle_B +=(10*0.2);
+			}
+		} else if (duty_cycle_B >= duty_cycle_R && duty_cycle_B >= duty_cycle_G){
+			if (duty_cycle_B < SECOND_SLICE){
+				if (!duty_cycle_R)
+					duty_cycle_R +=(10*2.3);
+				if (!duty_cycle_G)
+					duty_cycle_G +=(10*0.6);
+				if (!duty_cycle_B)
+					duty_cycle_B +=(10*0.2);
+			}
 		}
+		//darker
+		/*if (duty_cycle_R >= duty_cycle_G && duty_cycle_R >= duty_cycle_B){
+			if (duty_cycle_R < SECOND_SLICE){
+				duty_cycle_R +=(10*2.3);
+				duty_cycle_G +=(10*0.6);
+				duty_cycle_B +=(10*0.2);
+			}
+		} else if (duty_cycle_G >= duty_cycle_R && duty_cycle_G >= duty_cycle_B){
+			if (duty_cycle_G < SECOND_SLICE){
+				duty_cycle_R +=(10*2.3);
+				duty_cycle_G +=(10*0.6);
+				duty_cycle_B +=(10*0.2);
+			}
+		} else if (duty_cycle_B >= duty_cycle_R && duty_cycle_B >= duty_cycle_G){
+			if (duty_cycle_B < SECOND_SLICE){
+				duty_cycle_R +=(10*2.3);
+				duty_cycle_G +=(10*0.6);
+				duty_cycle_B +=(10*0.2);
+			}
+		}*/
+
 
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
 		TIM5->CCR2 = duty_cycle_G; // compare 2 preload value
@@ -227,7 +272,7 @@ int main()
 		TIM2->CR1 |= TIM_CR1_CEN;
 		TIM5->CR1 |= TIM_CR1_CEN;
 		TIM3->CR1 |= TIM_CR1_CEN;
-		delay_ms(30000);
+		delay_ms(300000);
 	}
 	return 0;
 }
