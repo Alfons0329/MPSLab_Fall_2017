@@ -207,16 +207,16 @@ int main()
 	keypad_init();
 	GPIO_init_AF();
 	Timer_init();
-	duty_cycle_R = 190;
+	duty_cycle_R = 200;
 	duty_cycle_G = 0;
-	duty_cycle_B = 90;
+	duty_cycle_B = 2;
 	PWM_channel_init();
 	while(1)
 	{
 		if (duty_cycle_R < SECOND_SLICE){
 			duty_cycle_R +=10;
-			duty_cycle_G +=10;
-			duty_cycle_B +=10;
+			duty_cycle_G +=(10/1.5);
+			duty_cycle_B +=(10/2);
 		}
 
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value
@@ -227,7 +227,7 @@ int main()
 		TIM2->CR1 |= TIM_CR1_CEN;
 		TIM5->CR1 |= TIM_CR1_CEN;
 		TIM3->CR1 |= TIM_CR1_CEN;
-		delay_ms(3000);
+		delay_ms(30000);
 	}
 	return 0;
 }
