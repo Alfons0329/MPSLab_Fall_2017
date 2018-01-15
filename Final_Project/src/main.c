@@ -256,31 +256,45 @@ void chromatic_scheme(int key_val)
 		}
 		case 9:
 		{
-
+			duty_cycle_R = 0;
+			duty_cycle_G = SECOND_SLICE;
+			duty_cycle_B = 0;
+			break;
 		}
 		case 10:
 		{
-
+			duty_cycle_R = 0;
+			duty_cycle_G = 0;
+			duty_cycle_B = SECOND_SLICE;
+			break;
 		}
 		case 11:
 		{
-
+			//waiting for the code from Alice
+			break;
 		}
-		case 12:
+		case 12: //RG
 		{
-
+			duty_cycle_R = SECOND_SLICE * 1.2;
+			duty_cycle_G = SECOND_SLICE;
+			duty_cycle_B = 0;
 		}
-		case 13:
+		case 13: //GB
 		{
-
+			duty_cycle_R = 0;
+			duty_cycle_G = SECOND_SLICE * 1.2; // try the coef
+			duty_cycle_B = SECOND_SLICE;
 		}
-		case 14:
+		case 14: //RB
 		{
-
+			duty_cycle_R = SECOND_SLICE * 1.5;
+			duty_cycle_G = ;
+			duty_cycle_B = SECOND_SLICE;
 		}
 		case 15:
 		{
-
+			//waiting for the code from Alice
+			break;
 		}
 		default break:
 	}
