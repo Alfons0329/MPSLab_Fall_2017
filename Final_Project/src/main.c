@@ -193,7 +193,7 @@ void start_timer()
 int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
-    int keypad_row=0, keypad_col=0, key_val;
+    int keypad_row=0, keypad_col=0, key_val=-1;
 
     for(keypad_row=0;keypad_row<KEYPAD_ROW_MAX;keypad_row++) //output data from 1st row
     {
@@ -310,18 +310,21 @@ void chromatic_scheme(int key_val)
 			duty_cycle_R = SECOND_SLICE * 1.2;
 			duty_cycle_G = SECOND_SLICE;
 			duty_cycle_B = 0;
+			break;
 		}
 		case 13: //GB
 		{
 			duty_cycle_R = 0;
 			duty_cycle_G = SECOND_SLICE * 1.2; // try the coef
 			duty_cycle_B = SECOND_SLICE;
+			break;
 		}
 		case 14: //RB
 		{
 			duty_cycle_R = SECOND_SLICE * 1.5;
 			duty_cycle_G = 0;
 			duty_cycle_B = SECOND_SLICE;
+			break;
 		}
 		case 15:
 		{
@@ -366,7 +369,7 @@ void chromatic_scheme(int key_val)
 int main()
 {
 	//use the time delay mode to make the interleaving and the color changing scheme
-	keypad_init();
+ 	keypad_init();
 	GPIO_init_AF();
 	Timer_init(CYC_COUNT_UP);
 	duty_cycle_R = RED_START;

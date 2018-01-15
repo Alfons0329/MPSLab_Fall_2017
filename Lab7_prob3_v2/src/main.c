@@ -200,6 +200,7 @@ int main()
 	while(1)
 	{
 
+		keypad_scan();
 		/*for(duty_cycle=0;duty_cycle<256;duty_cycle+=20)
 		{
 			PWM_channel_init();
@@ -207,7 +208,7 @@ int main()
 
 		}*/
 
-		if(duty_cycle <= 0)
+		/*if(duty_cycle <= 0)
 		{
 			cnt_way = 0;
 			duty_cycle = 0;
@@ -229,7 +230,7 @@ int main()
 
 		PWM_channel_init();
 		set_timer();
-		TIM2->CR1 |= TIM_CR1_CEN;
+		TIM2->CR1 |= TIM_CR1_CEN;*/
 
 	}
 	//keypad_scan();
