@@ -24,7 +24,8 @@ int keypad_value[4][4] = {{0,1,2,3},
 						  {4,5,6,7},
 						  {8,9,10,11},
 						  {12,13,14,15}};
-
+//FSM data structure is here
+int prev, curr, check;
 /******************************Reference data is here*************************
 //reference book p.1038 p.905
 //ref: STM32 PWM
@@ -205,7 +206,15 @@ int keypad_scan()
 //RGB 1 1.5 2
 void chromatic_scheme(int key_val)
 {
-	switch (key_val)
+	prev = curr;
+	curr = key_val;
+	// ring while keep press same button
+	if (curr == prev)
+		check = 100;
+	else
+		check = curr;
+		
+	switch (check)
 	{
 		case 0:
 		{
@@ -332,6 +341,7 @@ int main()
 			duty_cycle-=DELTA_COEF;
 		}*/
 		// GPIOA->ODR = 0b0000000001000010;
+
 
 		duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
 		TIM2->CCR2 = duty_cycle_R; // compare 2 preload value

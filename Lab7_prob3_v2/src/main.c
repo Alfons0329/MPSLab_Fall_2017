@@ -99,7 +99,7 @@ void set_timer()
 	// compare 2 preload value
 }
 
-/*int keypad_scan()
+int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
     int keypad_row=0,keypad_col=0;
@@ -187,7 +187,7 @@ void set_timer()
     	}
     }
     return key_val;
-}*/
+}
 
 int main()
 {
