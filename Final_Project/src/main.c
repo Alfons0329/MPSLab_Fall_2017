@@ -208,6 +208,7 @@ int keypad_scan()
             if(is_pressed) //key is pressed
             {
                 key_val = keypad_value[keypad_row][keypad_col];
+                return key_val; //directly back
             }
             else
             {
