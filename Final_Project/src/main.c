@@ -349,7 +349,8 @@ void chromatic_scheme(int key_val)
 			}
 			break;
 		}
-		default:{
+		default:
+		{
 			if(cur_state == CYCLE_MODE)
 			{
 				duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
