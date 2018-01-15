@@ -11,13 +11,15 @@
 #define GREEN_START 85
 #define BLUE_START 170
 //Global and static data declaration
+int cur_state = 0; //default state0 for color changing and 1 for self-control color scheme
 int duty_cycle_R = 50; // PB3 + AF1 which is corressponding to TIM2_CH1 REG
 int duty_cycle_G = 50; // PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
 int duty_cycle_B = 50; // PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
-int keypad_value[4][4] ={{0,1,2,3},
-						 {4,5,6,7},
-						 {8,9,10,11},
-						 {12,13,14,15}};
+int keypad_value[4][4] = {{0,1,2,3},
+						  {4,5,6,7},
+						  {8,9,10,11},
+						  {12,13,14,15}};
+
 /******************************Reference data is here*************************
 //reference book p.1038 p.905
 //ref: STM32 PWM
@@ -169,7 +171,34 @@ void set_timer()
 
 }
 
-void keypad_scan() //Mapping the color changing logic
+int keypad_scan()
+{
+    //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
+    int keypad_row=0,keypad_col=0;
+
+    for(keypad_row=0;keypad_row<keypad_row_max;keypad_row++) //output data from 1st row
+    {
+        for(keypad_col=0;keypad_col<keypad_col_max;keypad_col++) //read input data from 1st col
+        {
+            /*use pc 3210 for X output row
+            use pb 3210 for Y input col*/
+        	GPIOC->ODR &= 0; //clear the output value
+            GPIOC->ODR |= (1<<keypad_row);//shift the value to send data for that row, data set
+            int masked_value=GPIOB->IDR&0xf, is_pressed=(masked_value>>keypad_col)&1;
+            if(is_pressed) //key is pressed
+            {
+                key_val = keypad_value[keypad_row][keypad_col];
+                display(keypad_value[keypad_row][keypad_col],(key_val >= 10 ? 2 : 1));
+            }
+            else
+            {
+            	key_val = -1; //if not pressed, just clear the screen
+            }
+        }
+    }
+    return key_val; //return -1 if keypad is not pressed, in such condition the color should maintain the current state
+}
+void chromatic_scheme()
 {
 
 }
