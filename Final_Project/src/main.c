@@ -464,6 +464,8 @@ void chromatic_scheme(int key_val)
 						duty_cycle_R = (global_temperature - 20) * 17;
 						duty_cycle_G = 0;
 						duty_cycle_B = SECOND_SLICE - (( global_temperature - 20 ) * 17);
+						set_timer();
+						start_timer();
 					}
 					break;
 				}
@@ -483,6 +485,8 @@ void chromatic_scheme(int key_val)
 						duty_cycle_R = (global_temperature - 20) * 17;
 						duty_cycle_G = 0;
 						duty_cycle_B = SECOND_SLICE - (( global_temperature - 20 ) * 17);
+						set_timer();
+						start_timer();
 					}
 					break;
 				}
@@ -494,7 +498,8 @@ void chromatic_scheme(int key_val)
 int main()
 {
 	//use the time delay mode to make the interleaving and the color changing scheme
- 	keypad_init();
+	SystemClock_Config();
+	keypad_init();
 	GPIO_init_AF();
 	Timer_init();
 	duty_cycle_R = RED_START;
