@@ -5,7 +5,7 @@
 #define KEYPAD_ROW_MAX 4
 #define KEYPAD_COL_MAX 4
 #define SECOND_SLICE 255
-#define CYC_COUNT_UP 39999
+#define CYC_COUNT_UP 255
 
 #define RED_START 10
 #define GREEN_START 91
@@ -84,13 +84,13 @@ void Timer_init() //Use 3
 
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM3->ARR = (uint32_t)SECOND_SLICE *1.5;//Reload value
+	TIM3->ARR = (uint32_t)SECOND_SLICE;//Reload value
 	TIM3->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM3->EGR = TIM_EGR_UG;//Reinitialize the counter
 
 	//setting for timer 5
 	TIM5->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM5->ARR = (uint32_t)SECOND_SLICE *2;//Reload value
+	TIM5->ARR = (uint32_t)SECOND_SLICE;//Reload value
 	TIM5->PSC = (uint32_t)CYC_COUNT_UP;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }
@@ -233,7 +233,7 @@ int main()
 		}
 
 		if (state_G){
-			if (duty_cycle_G > SECOND_SLICE*2){
+			if (duty_cycle_G > SECOND_SLICE){
 				state_G = 0;
 			} else {
 				duty_cycle_G += 40;
@@ -247,7 +247,7 @@ int main()
 		}
 
 		if (state_B){
-			if (duty_cycle_B > SECOND_SLICE*1.5){
+			if (duty_cycle_B > SECOND_SLICE){
 				state_B = 0;
 			} else {
 				duty_cycle_B += 50;
@@ -275,6 +275,7 @@ int main()
 		TIM2->CR1 |= TIM_CR1_CEN;
 		TIM5->CR1 |= TIM_CR1_CEN;
 		TIM3->CR1 |= TIM_CR1_CEN;
+		delay_ms(300000);
 	}
 	return 0;
 }

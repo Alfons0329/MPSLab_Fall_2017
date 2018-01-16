@@ -6,8 +6,7 @@
 #define KEYPAD_COL_MAX 4
 
 #define SECOND_SLICE 255
-#define CYC_COUNT_UP 39999
-#define CTRL_COUNT_UP 9
+#define COUNT_UP 255
 
 #define DELTA_VALUE 30
 #define RED_START 10
@@ -16,8 +15,11 @@
 
 #define CYCLE_MODE 0
 #define CONTROL_MODE 1
+
+#define SPEED_LIMIT 30000
+#define SLOWEST_SPEED 240000
 //Global and static data declaration
-int cur_state = 0; //default state0 for color changing and 1 for self-control color scheme
+int cur_state = 0; //default state 0 for color changing and 1 for self-control color scheme
 int duty_cycle_R = 50; // PB3 + AF1 which is corresponding to TIM2_CH1 REG
 int duty_cycle_G = 50; // PA1 + AF2 which is corresponding to TIM5_CH2 GREEN
 int duty_cycle_B = 50; // PA6 + AF2 which is corresponding to TIM3_CH1 BLUE
@@ -28,15 +30,22 @@ int keypad_value[4][4] = {{0,1,2,3},
 //FSM data structure is here
 int prev=-1, curr=-1, check;
 int on = 0;
+//remember off state
 int off_state, off_R, off_G, off_B;
+//cycle mode control
+int state_R = 1;
+int state_G = 1;
+int state_B = 1;
+//control cycle speed
+int speed = 150000;
 /******************************Reference data is here*************************
-//reference book p.1038 p.905
-//ref: STM32 PWM
-// https://read01.com/zh-tw/DGKMyB.html#.Wh2RU0qWY2w
-// http://blog.csdn.net/akunainiannian/article/details/24316143
-// http://www.zendei.com/article/12325.html
-// preload register and shadow register
-// https://read01.com/zh-tw/BgB8jG.html#.Wh6Qt0qWY2w
+ * reference book p.1038 p.905
+ * ref: STM32 PWM
+ * https://read01.com/zh-tw/DGKMyB.html#.Wh2RU0qWY2w
+ * http://blog.csdn.net/akunainiannian/article/details/24316143
+ * http://www.zendei.com/article/12325.html
+ * preload register and shadow register
+ * https://read01.com/zh-tw/BgB8jG.html#.Wh6Qt0qWY2w
 *****************************************************************************/
 void keypad_init()//keypad along with GPIO Init together
 {
@@ -59,9 +68,11 @@ void keypad_init()//keypad along with GPIO Init together
 
 void GPIO_init_AF() //GPIO Alternate Function Init
 {
-	// PB3 + AF1 which is corressponding to TIM2_CH2 RED
-	// PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
-	// PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
+	/***************pin and alternate function***************
+	 * PB3 + AF1 which is corresponding to TIM2_CH2 RED
+	 * PA1 + AF2 which is corresponding to TIM5_CH2 GREEN
+	 * PA6 + AF2 which is corresponding to TIM3_CH1 BLUE
+	 ********************************************************/
 					   //10987654321098765432109876543210
 	GPIOA->MODER   	&= 0b11111111111111111100001111110011;
 	GPIOA->MODER   	|= 0b00000000000000000010100000001000;
@@ -73,11 +84,11 @@ void GPIO_init_AF() //GPIO Alternate Function Init
 	GPIOB->AFR[0] 	|= (0b0001<<GPIO_AFRL_AFSEL3_Pos);//PB3 Alternate function mode
 }
 
-void Timer_init(int cnt) //Use 3
+void Timer_init() //Use 3
 {
-	// PA3 + AF1 which is corressponding to TIM2_CH1
-	// PA1 + AF2 which is corressponding to TIM5_CH2
-	// PA6 + AF2 which is corressponding to TIM3_CH1
+	// PA3 + AF1 which is corresponding to TIM2_CH1
+	// PA1 + AF2 which is corresponding to TIM5_CH2
+	// PA6 + AF2 which is corresponding to TIM3_CH1
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM5EN;
@@ -85,25 +96,26 @@ void Timer_init(int cnt) //Use 3
 	//setting for timer 2
 	TIM2->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
 	TIM2->ARR = (uint32_t)SECOND_SLICE;//Reload value
-	TIM2->PSC = (uint32_t)cnt;//Prescaler
+	TIM2->PSC = (uint32_t)COUNT_UP;//Prescaler
 	TIM2->EGR = TIM_EGR_UG; 	//update the counter again p1035
 
 	//setting for timer 3
 	TIM3->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM3->ARR = (uint32_t)SECOND_SLICE * 1.5;//Reload value
-	TIM3->PSC = (uint32_t)cnt;//Prescaler
+	TIM3->ARR = (uint32_t)SECOND_SLICE;//Reload value
+	TIM3->PSC = (uint32_t)COUNT_UP;//Prescaler
 	TIM3->EGR = TIM_EGR_UG;//Reinitialize the counter
 
 	//setting for timer 5
 	TIM5->CR1 &= 0x0000; //p1027 Turned on the counter as the count up mode
-	TIM5->ARR = (uint32_t)SECOND_SLICE * 2;//Reload value
-	TIM5->PSC = (uint32_t)cnt;//Prescaler
+	TIM5->ARR = (uint32_t)SECOND_SLICE;//Reload value
+	TIM5->PSC = (uint32_t)COUNT_UP;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }
+
 void PWM_channel_init()
 {
 	/***********************setting for the TIM2_CH2 RED**************************/
-	// PB3 + AF1 which is corressponding to TIM2_CH2 RED
+	// PB3 + AF1 which is corresponding to TIM2_CH2 RED
 	//Output compare 2 mode
 	TIM2->CCMR1 &= ~TIM_CCMR1_OC2M;
 	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
@@ -122,7 +134,7 @@ void PWM_channel_init()
 	TIM2->CCER |= TIM_CCER_CC2E;
 
 	/***********************setting for the TIM5_CH2 GREEN**************************/
-	// PA1 + AF2 which is corressponding to TIM5_CH2 GREEN
+	// PA1 + AF2 which is corresponding to TIM5_CH2 GREEN
 	//Output compare 2 mode
 	TIM5->CCMR1 &= ~TIM_CCMR1_OC2M;
 	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
@@ -141,7 +153,7 @@ void PWM_channel_init()
 	TIM5->CCER |= TIM_CCER_CC2E;
 
 	/***********************setting for the TIM3_CH1 BLUE**************************/
-	// PA6 + AF2 which is corressponding to TIM3_CH1 BLUE
+	// PA6 + AF2 which is corresponding to TIM3_CH1 BLUE
 	//Output compare 2 mode
 	TIM3->CCMR1 &= ~TIM_CCMR1_OC1M;
 	//110: PWM mode 1: TIMx_CNT<TIMx_CCR2-->active, or inactive
@@ -192,6 +204,54 @@ void start_timer()
 	TIM3->CR1 |= TIM_CR1_CEN;
 }
 
+void cycle_mode(int delay_time){
+	PWM_channel_init();
+	if (state_R){
+		if (duty_cycle_R > SECOND_SLICE){
+			state_R = 0;
+		} else {
+			duty_cycle_R += 20;
+		}
+	} else {
+		if (duty_cycle_R < 20){
+			state_R = 1;
+		} else {
+			duty_cycle_R -= 20;
+		}
+	}
+
+	if (state_G){
+		if (duty_cycle_G > SECOND_SLICE){
+			state_G = 0;
+	} else {
+		duty_cycle_G += 40;
+		}
+	} else {
+		if (duty_cycle_G < 40){
+			state_G = 1;
+		} else {
+			duty_cycle_G -= 40;
+		}
+	}
+
+	if (state_B){
+		if (duty_cycle_B > SECOND_SLICE){
+			state_B = 0;
+		} else {
+			duty_cycle_B += 50;
+		}
+	} else {
+		if (duty_cycle_B < 50){
+			state_B = 1;
+		} else {
+			duty_cycle_B -= 50;
+		}
+	}
+	set_timer();
+	start_timer();
+	delay_ms(delay_time);
+}
+
 int keypad_scan()
 {
     //if pressed , keypad return the value of that key, otherwise, return 255 for no pressed (unsigned char)
@@ -220,6 +280,7 @@ int keypad_scan()
     }
     return key_val; //return -1 if keypad is not pressed, in such condition the color should maintain the current state
 }
+
 //RGB 1 1.5 2
 void chromatic_scheme(int key_val)
 {
@@ -229,7 +290,7 @@ void chromatic_scheme(int key_val)
 		check = 100;
 	else
 		check = curr;
-
+	//check on/off then check other button
 	if (check==15){
 		if(on){
 			on = 0;
@@ -283,12 +344,15 @@ void chromatic_scheme(int key_val)
 				}
 				case 3:
 				{
-					cur_state = CYCLE_MODE;
-					//duty_cycle_R = RED_START;
-					//duty_cycle_G = GREEN_START;
-					//duty_cycle_B = BLUE_START;
-					stop_timer();
-					Timer_init(CYC_COUNT_UP);
+					if (cur_state==CONTROL_MODE)
+						cur_state = CYCLE_MODE;
+					else{
+						if(speed>SPEED_LIMIT){
+							speed -= 30000;
+						} else {
+							speed = SLOWEST_SPEED;
+						}
+					}
 					break;
 				}
 				case 4:
@@ -318,11 +382,6 @@ void chromatic_scheme(int key_val)
 				case 7:
 				{
 					cur_state = CONTROL_MODE;
-					//duty_cycle_R = 50;
-					//duty_cycle_G = 50;
-					//duty_cycle_B = 50;
-					stop_timer();
-					Timer_init(CTRL_COUNT_UP);
 					break;
 				}
 				case 8:
@@ -335,7 +394,7 @@ void chromatic_scheme(int key_val)
 				case 9:
 				{
 					duty_cycle_R = 0;
-					duty_cycle_G = SECOND_SLICE*2;
+					duty_cycle_G = SECOND_SLICE;
 					duty_cycle_B = 0;
 					break;
 				}
@@ -343,17 +402,17 @@ void chromatic_scheme(int key_val)
 				{
 					duty_cycle_R = 0;
 					duty_cycle_G = 0;
-					duty_cycle_B = SECOND_SLICE*4;
+					duty_cycle_B = SECOND_SLICE;
 					break;
 				}
 				case 11:
 				{
-					//waiting for the code from Alice
+					// temperature
 					break;
 				}
 				case 12: //RG
 				{
-					duty_cycle_R = SECOND_SLICE * 1.2;
+					duty_cycle_R = SECOND_SLICE;
 					duty_cycle_G = SECOND_SLICE;
 					duty_cycle_B = 0;
 					break;
@@ -361,13 +420,13 @@ void chromatic_scheme(int key_val)
 				case 13: //GB
 				{
 					duty_cycle_R = 0;
-					duty_cycle_G = SECOND_SLICE * 1.2; // try the coef
+					duty_cycle_G = SECOND_SLICE; // try the coef
 					duty_cycle_B = SECOND_SLICE;
 					break;
 				}
 				case 14: //RB
 				{
-					duty_cycle_R = SECOND_SLICE * 1.5;
+					duty_cycle_R = SECOND_SLICE;
 					duty_cycle_G = 0;
 					duty_cycle_B = SECOND_SLICE;
 					break;
@@ -376,15 +435,10 @@ void chromatic_scheme(int key_val)
 				{
 					if(cur_state == CYCLE_MODE)
 					{
-						duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
-						duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
-						duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
-						set_timer();
-						start_timer();
+						cycle_mode(speed);
 					}
 					else if(cur_state == CONTROL_MODE)
 					{
-						//nop
 						set_timer();
 						start_timer();
 					}
@@ -394,11 +448,7 @@ void chromatic_scheme(int key_val)
 				{
 					if(cur_state == CYCLE_MODE)
 					{
-						duty_cycle_R = (duty_cycle_R > SECOND_SLICE) ? (duty_cycle_R+30-SECOND_SLICE) : (duty_cycle_R+30);
-						duty_cycle_G = (duty_cycle_G > SECOND_SLICE) ? (duty_cycle_G+30-SECOND_SLICE) : (duty_cycle_G+30);
-						duty_cycle_B = (duty_cycle_B > SECOND_SLICE) ? (duty_cycle_B+30-SECOND_SLICE) : (duty_cycle_B+30);
-						set_timer();
-						start_timer();
+						cycle_mode(speed);
 					}
 					else if(cur_state == CONTROL_MODE)
 					{
@@ -417,7 +467,7 @@ int main()
 	//use the time delay mode to make the interleaving and the color changing scheme
  	keypad_init();
 	GPIO_init_AF();
-	Timer_init(CYC_COUNT_UP);
+	Timer_init();
 	duty_cycle_R = RED_START;
 	duty_cycle_G = GREEN_START;
 	duty_cycle_B = BLUE_START;
