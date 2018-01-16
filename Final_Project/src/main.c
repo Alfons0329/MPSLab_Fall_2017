@@ -461,9 +461,9 @@ void chromatic_scheme(int key_val)
 					}
 					else if(cur_state == TEMP_MODE) //temp 20~35
 					{
-						duty_cycle_R = (global_temperature - 20) * 17;
+						duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
 						duty_cycle_G = 0;
-						duty_cycle_B = SECOND_SLICE - (( global_temperature - 20 ) * 17);
+						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);
 						set_timer();
 						start_timer();
 					}
@@ -482,9 +482,9 @@ void chromatic_scheme(int key_val)
 					}
 					else if(cur_state == TEMP_MODE)
 					{
-						duty_cycle_R = (global_temperature - 20) * 17;
+						duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
 						duty_cycle_G = 0;
-						duty_cycle_B = SECOND_SLICE - (( global_temperature - 20 ) * 17);
+						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);
 						set_timer();
 						start_timer();
 					}
