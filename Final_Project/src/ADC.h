@@ -63,7 +63,7 @@ void configureADC()
 {
 	// TODO
     RCC->AHB2ENR |= RCC_AHB2ENR_ADCEN; //Turn on the adc function
-    GPIOB->ASCR |= 1; //turn on the analog controller in PB0
+    GPIOB->ASCR |= 0b1; //turn on the analog controller in PB0
     /************************ADC clock config starts here********************************/
     /* ############################################################################
      *  Set the ADC clock first by using ADC common register Reset value: 0x0000 0000

@@ -1,7 +1,6 @@
 #include "stm32l476xx.h"
 #include "mylib.h"
-#include "ds18b20.h"
-#include "onewire.h"
+#include "ADC.h"
 #include <stdio.h>
 //Use cable color to imply what the fucking color it represents
 #define KEYPAD_ROW_MAX 4
@@ -15,9 +14,11 @@
 #define GREEN_START 91
 #define BLUE_START 172
 
+#define REF_LIGHT 1550
+
 #define CYCLE_MODE 0
 #define CONTROL_MODE 1
-#define TEMP_MODE 2
+#define LIGHT_MODE 2
 #define SPEED_LIMIT 30000
 #define SLOWEST_SPEED 240000
 //Global and static data declaration
@@ -40,6 +41,8 @@ int state_G = 1;
 int state_B = 1;
 //control cycle speed
 int speed = 150000;
+//light mode
+int light;
 /******************************Reference data is here*************************
  * reference book p.1038 p.905
  * ref: STM32 PWM
@@ -49,20 +52,6 @@ int speed = 150000;
  * preload register and shadow register
  * https://read01.com/zh-tw/BgB8jG.html#.Wh6Qt0qWY2w
 *****************************************************************************/
-void SystemClock_Config()
-{
-    //TODO: Setup system clock and SysTick timer interrupt
-	//use the clock from processor
-	SysTick->CTRL |= 0x00000004; //
-	SysTick->LOAD = (uint32_t)7999999; //unsigned int 32 bit counter 8000000 (2s interrupt once)
-	//system interrupt happens for every 8000000 cpu cycles, that is the peroid of 2 second
-	SysTick->CTRL |= 0x00000007; //processor clock, turn on all
-}
-void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
-{
-    //TODO: Show temperature on 7-seg display
-	DS18B20_Read();
-}
 void keypad_init()//keypad along with GPIO Init together
 {
 
@@ -81,18 +70,6 @@ void keypad_init()//keypad along with GPIO Init together
 	GPIOB->PUPDR   |= 0b00000000000000001010101000000000;
 
 
-}
-
-void GPIOB_primitive_init() //save time
-{
-			          //10987654321098765432109876543210
-	GPIOB->MODER   &= 0b11111111111111001111111111111111;
-	GPIOB->MODER   |= 0b00000000000000010000000000000000;
-	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
-	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
-	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
-	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
-	GPIOB->OTYPER  |= 0b11111111111111001111111111111111;
 }
 
 void GPIO_init_AF() //GPIO Alternate Function Init
@@ -140,6 +117,16 @@ void Timer_init() //Use 3
 	TIM5->PSC = (uint32_t)COUNT_UP;//Prescaler
 	TIM5->EGR = TIM_EGR_UG;//Reinitialize the counter
 }
+
+void light_init()
+{
+	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN; //Turn on GPIO AB and C;
+	//The light-sensitive resistor part
+	//Light-sensitive resistor as ANALOG input for ADC, we now use pb0 for the purpose
+	GPIOB->MODER &= 0b11111111111111111111111111111100;
+	GPIOB->MODER |= 0b11111111111111111111111111111111;
+}
+
 
 void PWM_channel_init()
 {
@@ -436,8 +423,8 @@ void chromatic_scheme(int key_val)
 				}
 				case 11:
 				{
-					// temperature
-					cur_state = TEMP_MODE;
+					// light
+					cur_state = LIGHT_MODE;
 					break;
 				}
 				case 12: //RG
@@ -472,23 +459,13 @@ void chromatic_scheme(int key_val)
 						set_timer();
 						start_timer();
 					}
-					else if(cur_state == TEMP_MODE) //temp 20~35
+					else if(cur_state == LIGHT_MODE) //temp 20~35
 					{
-						/*duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
-						duty_cycle_G = 0;
-						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);*/
-						if(global_temperature > 30)
-						{
-							duty_cycle_R = SECOND_SLICE;
-							duty_cycle_G = 0;
-							duty_cycle_B = 0;
-						}
-						else
-						{
-							duty_cycle_R = 0;
-							duty_cycle_G = 0;
-							duty_cycle_B = SECOND_SLICE;
-						}
+						get_light_resistor();
+						light = (resistor_value-REF_LIGHT)/10 + 30;
+						duty_cycle_R = light;
+						duty_cycle_G = light;
+						duty_cycle_B = light;
 						set_timer();
 						start_timer();
 					}
@@ -505,23 +482,13 @@ void chromatic_scheme(int key_val)
 						set_timer();
 						start_timer();
 					}
-					else if(cur_state == TEMP_MODE)
+					else if(cur_state == LIGHT_MODE)
 					{
-						/*duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
-						duty_cycle_G = 0;
-						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);*/
-						if(global_temperature > 30)
-						{
-							duty_cycle_R = SECOND_SLICE;
-							duty_cycle_G = 0;
-							duty_cycle_B = 0;
-						}
-						else
-						{
-							duty_cycle_R = 0;
-							duty_cycle_G = 0;
-							duty_cycle_B = SECOND_SLICE;
-						}
+						get_light_resistor();
+						light = (resistor_value-REF_LIGHT)/10 + 30;
+						duty_cycle_R = light;
+						duty_cycle_G = light;
+						duty_cycle_B = light;
 						set_timer();
 						start_timer();
 					}
@@ -535,11 +502,13 @@ void chromatic_scheme(int key_val)
 int main()
 {
 	//use the time delay mode to make the interleaving and the color changing scheme
-	SystemClock_Config();
+	fpu_enable();
+	light_init();
 	keypad_init();
 	GPIO_init_AF();
-	GPIOB_primitive_init();
 	Timer_init();
+	configureADC();
+	startADC();
 	duty_cycle_R = RED_START;
 	duty_cycle_G = GREEN_START;
 	duty_cycle_B = BLUE_START;
