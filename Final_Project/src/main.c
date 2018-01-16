@@ -424,6 +424,7 @@ void chromatic_scheme(int key_val)
 				case 11:
 				{
 					// temperature
+					cur_state = TEMP_MODE;
 					break;
 				}
 				case 12: //RG
