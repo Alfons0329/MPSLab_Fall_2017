@@ -138,13 +138,15 @@ void OneWire_SkipROM(/*OneWire_t* OneWireStruct*/)
 void ONEWIRE_INPUT() //PB8 input configuration
 {
 	//GPIOB 8 for one wite central wire
+					  //10987654321098765432109876543210
 	GPIOB->MODER   &= 0b11111111111111001111111111111111;
 }
 
 void ONEWIRE_OUTPUT() //PB8 output configuration
 {
 	//GPIOB 8 for one wite central wire
-	GPIOB->MODER   = 0b00000000000000010000000000000000;
+					  //10987654321098765432109876543210
+	GPIOB->MODER   |= 0b00000000000000010000000000000000;
 }
 
 #endif /* ONEWIRE_H_ */

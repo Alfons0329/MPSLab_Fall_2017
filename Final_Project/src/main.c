@@ -22,7 +22,7 @@
 #define SLOWEST_SPEED 240000
 //Global and static data declaration
 int cur_state = 0; //default state 0 for color changing and 1 for self-control color scheme
-int duty_cycle_R = 50; // PB3 + AF1 which is corresponding to TIM2_CH1 REG
+int duty_cycle_R = 50; // PB3 + AF1 which is corresponding to TIM2_CH2 REG
 int duty_cycle_G = 50; // PA1 + AF2 which is corresponding to TIM5_CH2 GREEN
 int duty_cycle_B = 50; // PA6 + AF2 which is corresponding to TIM3_CH1 BLUE
 int keypad_value[4][4] = {{0,1,2,3},
@@ -80,6 +80,18 @@ void keypad_init()//keypad along with GPIO Init together
 	GPIOB->PUPDR   &= 0b11111111111111110000000011111111;
 	GPIOB->PUPDR   |= 0b00000000000000001010101000000000;
 
+
+}
+
+void GPIOB_primitive_init() //save time
+{
+	GPIOB->MODER   &= 0b11111111111111001111111111111111;
+	GPIOB->MODER   |= 0b00000000000000010000000000000000;
+	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
+	GPIOB->PUPDR   |= 0b00000000000000010000000000000000;
+	GPIOB->OSPEEDR &= 0b11111111111111001111111111111111;
+	GPIOB->OSPEEDR |= 0b00000000000000010000000000000000;
+	GPIOB->OTYPER  |= 0b11111111111111001111111111111111;
 }
 
 void GPIO_init_AF() //GPIO Alternate Function Init
@@ -461,9 +473,21 @@ void chromatic_scheme(int key_val)
 					}
 					else if(cur_state == TEMP_MODE) //temp 20~35
 					{
-						duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
+						/*duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
 						duty_cycle_G = 0;
-						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);
+						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);*/
+						if(global_temperature > 30)
+						{
+							duty_cycle_R = 0;
+							duty_cycle_G = 0;
+							duty_cycle_B = SECOND_SLICE;
+						}
+						else
+						{
+							duty_cycle_R = SECOND_SLICE;
+							duty_cycle_G = 0;
+							duty_cycle_B = 0;
+						}
 						set_timer();
 						start_timer();
 					}
@@ -482,9 +506,21 @@ void chromatic_scheme(int key_val)
 					}
 					else if(cur_state == TEMP_MODE)
 					{
-						duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
+						/*duty_cycle_R = (uint32_t) (global_temperature - 20) * 17;
 						duty_cycle_G = 0;
-						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);
+						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);*/
+						if(global_temperature > 30)
+						{
+							duty_cycle_R = 0;
+							duty_cycle_G = 0;
+							duty_cycle_B = SECOND_SLICE;
+						}
+						else
+						{
+							duty_cycle_R = SECOND_SLICE;
+							duty_cycle_G = 0;
+							duty_cycle_B = 0;
+						}
 						set_timer();
 						start_timer();
 					}
@@ -501,6 +537,7 @@ int main()
 	SystemClock_Config();
 	keypad_init();
 	GPIO_init_AF();
+	GPIOB_primitive_init();
 	Timer_init();
 	duty_cycle_R = RED_START;
 	duty_cycle_G = GREEN_START;
