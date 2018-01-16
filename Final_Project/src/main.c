@@ -14,7 +14,7 @@
 #define GREEN_START 91
 #define BLUE_START 172
 
-#define REF_LIGHT 1550
+#define REF_LIGHT 1600
 
 #define CYCLE_MODE 0
 #define CONTROL_MODE 1
@@ -76,14 +76,17 @@ void GPIO_init_AF() //GPIO Alternate Function Init
 {
 	/***************pin and alternate function***************
 	 * PB3 + AF1 which is corresponding to TIM2_CH2 RED
+	 * PA0 + AF1 which is corresponding to TIM2_CH1 RED
 	 * PA1 + AF2 which is corresponding to TIM5_CH2 GREEN
 	 * PA6 + AF2 which is corresponding to TIM3_CH1 BLUE
 	 ********************************************************/
 					   //10987654321098765432109876543210
-	GPIOA->MODER   	&= 0b11111111111111111100001111110011;
-	GPIOA->MODER   	|= 0b00000000000000000010100000001000;
+	GPIOA->MODER   	&= 0b11111111111111111100111111110000;
+	GPIOA->MODER   	|= 0b00000000000000000010000000001010;
 	//PortA Pin		   //10987654321098765432109876543210
 	GPIOA->AFR[0]	=  0b00000010000100000000000000100000;
+	GPIOA->AFR[0] 	&= ~GPIO_AFRL_AFSEL0;//AFR[0] LOW
+	GPIOA->AFR[0] 	|= (0b0001<<GPIO_AFRL_AFSEL0_Pos);
 
 	//PB3 TIM2_CH2
 	GPIOB->AFR[0] 	&= ~GPIO_AFRL_AFSEL3;//AFR[0] LOW
@@ -360,7 +363,7 @@ void chromatic_scheme(int key_val)
 				}
 				case 3:
 				{
-					if (cur_state==CONTROL_MODE)
+					if (cur_state==CONTROL_MODE || cur_state==LIGHT_MODE)
 						cur_state = CYCLE_MODE;
 					else{
 						if(speed>SPEED_LIMIT){
@@ -462,7 +465,7 @@ void chromatic_scheme(int key_val)
 					else if(cur_state == LIGHT_MODE) //temp 20~35
 					{
 						get_light_resistor();
-						light = (resistor_value-REF_LIGHT)/10 + 30;
+						light = 255-((resistor_value-REF_LIGHT)/10);
 						duty_cycle_R = light;
 						duty_cycle_G = light;
 						duty_cycle_B = light;
@@ -485,7 +488,7 @@ void chromatic_scheme(int key_val)
 					else if(cur_state == LIGHT_MODE)
 					{
 						get_light_resistor();
-						light = (resistor_value-REF_LIGHT)/10 + 30;
+						light = 255-((resistor_value-REF_LIGHT)/10);
 						duty_cycle_R = light;
 						duty_cycle_G = light;
 						duty_cycle_B = light;
@@ -503,7 +506,6 @@ int main()
 {
 	//use the time delay mode to make the interleaving and the color changing scheme
 	fpu_enable();
-	light_init();
 	keypad_init();
 	GPIO_init_AF();
 	Timer_init();
