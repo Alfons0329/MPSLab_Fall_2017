@@ -10,7 +10,7 @@
 #define ONEWIRE_CMD_READROM				0x33
 #define ONEWIRE_CMD_MATCHROM			0x55
 #define ONEWIRE_CMD_SKIPROM				0xCC
-#include "gpio.h"
+// #include "gpio.h"
 // #include "ref.h" //some useful function can be found here
 typedef struct
 {

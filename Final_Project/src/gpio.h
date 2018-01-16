@@ -38,7 +38,7 @@
 #ifndef GPIO_H_
 #define GPIO_H_
 
-#include "ref.h"
+// #include "ref.h"
 
 #define TM_GPIO_SetPinLow(GPIOx, GPIO_Pin)			((GPIOx)->BRR = (1<<(uint32_t)(GPIO_Pin)))
 #define TM_GPIO_SetPinHigh(GPIOx, GPIO_Pin)			((GPIOx)->BSRR = (1<<(uint32_t)(GPIO_Pin)))
