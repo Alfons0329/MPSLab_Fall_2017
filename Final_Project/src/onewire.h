@@ -36,7 +36,8 @@ int OneWire_Reset()
 {
 	ONEWIRE_INPUT();
 	ONEWIRE_OUTPUT();
-	GPIOB->ODR = 0x0; // high -> low
+				 //5432109876543210
+	GPIOB->ODR = 0b0000000000001000; // high -> low
 	delay_us(480);
 	ONEWIRE_INPUT();
 	delay_us(70);
@@ -59,14 +60,14 @@ void OneWire_WriteBit(int bit)
 	if(bit) //master write1
 	{
 		ONEWIRE_OUTPUT(); //master pulls down the DQ
-		GPIOB->ODR = 0x0;
+		GPIOB->ODR = 0b0000000000001000; // high -> low
 		ONEWIRE_INPUT();//chenage to input make high
 		delay_us(55); //accumulate the time to fit the 60 us criteria
 	}
 	else //master write 0
 	{
 		ONEWIRE_OUTPUT(); //master pulls down the DQ
-		GPIOB->ODR = 0x0;
+		GPIOB->ODR = 0b0000000000001000; // high -> low
 		delay_us(70); //accumulate the time to fit the 60 us criteria
 	}
 	ONEWIRE_INPUT(); //rise again for pulse , if does not implement this, temperature will not be updated
@@ -85,7 +86,7 @@ int OneWire_ReadBit()
 	int data = 0;
 	ONEWIRE_INPUT(); //rise the high voltage to make the required required negedge pulse signal pulse signal
 	ONEWIRE_OUTPUT();//master pulls down the DQ
-	GPIOB->ODR = 0x0;
+	GPIOB->ODR = 0b0000000000001000; // high -> low
 	delay_us(3);//required delay
 	//release line
 	ONEWIRE_INPUT();
