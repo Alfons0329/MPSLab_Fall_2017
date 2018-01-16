@@ -1,5 +1,7 @@
 #include "stm32l476xx.h"
 #include "mylib.h"
+#include "ds18b20.h"
+#include "onewire.h"
 #include <stdio.h>
 //Use cable color to imply what the fucking color it represents
 #define KEYPAD_ROW_MAX 4
@@ -15,7 +17,7 @@
 
 #define CYCLE_MODE 0
 #define CONTROL_MODE 1
-
+#define TEMP_MODE 2
 #define SPEED_LIMIT 30000
 #define SLOWEST_SPEED 240000
 //Global and static data declaration
@@ -47,6 +49,20 @@ int speed = 150000;
  * preload register and shadow register
  * https://read01.com/zh-tw/BgB8jG.html#.Wh6Qt0qWY2w
 *****************************************************************************/
+void SystemClock_Config()
+{
+    //TODO: Setup system clock and SysTick timer interrupt
+	//use the clock from processor
+	SysTick->CTRL |= 0x00000004; //
+	SysTick->LOAD = (uint32_t)7999999; //unsigned int 32 bit counter 8000000 (2s interrupt once)
+	//system interrupt happens for every 8000000 cpu cycles, that is the peroid of 2 second
+	SysTick->CTRL |= 0x00000007; //processor clock, turn on all
+}
+void SysTick_Handler(void) // IF INTERRUPT HAPPENS, DO THIS TASK!
+{
+    //TODO: Show temperature on 7-seg display
+	DS18B20_Read();
+}
 void keypad_init()//keypad along with GPIO Init together
 {
 
@@ -442,6 +458,12 @@ void chromatic_scheme(int key_val)
 						set_timer();
 						start_timer();
 					}
+					else if(cur_state == TEMP_MODE) //temp 20~35
+					{
+						duty_cycle_R = (global_temperature - 20) * 17;
+						duty_cycle_G = 0;
+						duty_cycle_B = SECOND_SLICE - (( global_temperature - 20 ) * 17);
+					}
 					break;
 				}
 				default:
@@ -454,6 +476,12 @@ void chromatic_scheme(int key_val)
 					{
 						set_timer();
 						start_timer();
+					}
+					else if(cur_state == TEMP_MODE)
+					{
+						duty_cycle_R = (global_temperature - 20) * 17;
+						duty_cycle_G = 0;
+						duty_cycle_B = SECOND_SLICE - (( global_temperature - 20 ) * 17);
 					}
 					break;
 				}
