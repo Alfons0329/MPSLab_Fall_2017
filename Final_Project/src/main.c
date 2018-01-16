@@ -85,6 +85,7 @@ void keypad_init()//keypad along with GPIO Init together
 
 void GPIOB_primitive_init() //save time
 {
+			          //10987654321098765432109876543210
 	GPIOB->MODER   &= 0b11111111111111001111111111111111;
 	GPIOB->MODER   |= 0b00000000000000010000000000000000;
 	GPIOB->PUPDR   &= 0b11111111111111001111111111111111;
@@ -478,15 +479,15 @@ void chromatic_scheme(int key_val)
 						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);*/
 						if(global_temperature > 30)
 						{
-							duty_cycle_R = 0;
-							duty_cycle_G = 0;
-							duty_cycle_B = SECOND_SLICE;
-						}
-						else
-						{
 							duty_cycle_R = SECOND_SLICE;
 							duty_cycle_G = 0;
 							duty_cycle_B = 0;
+						}
+						else
+						{
+							duty_cycle_R = 0;
+							duty_cycle_G = 0;
+							duty_cycle_B = SECOND_SLICE;
 						}
 						set_timer();
 						start_timer();
@@ -511,15 +512,15 @@ void chromatic_scheme(int key_val)
 						duty_cycle_B = (uint32_t) SECOND_SLICE - (( global_temperature - 20 ) * 17);*/
 						if(global_temperature > 30)
 						{
-							duty_cycle_R = 0;
-							duty_cycle_G = 0;
-							duty_cycle_B = SECOND_SLICE;
-						}
-						else
-						{
 							duty_cycle_R = SECOND_SLICE;
 							duty_cycle_G = 0;
 							duty_cycle_B = 0;
+						}
+						else
+						{
+							duty_cycle_R = 0;
+							duty_cycle_G = 0;
+							duty_cycle_B = SECOND_SLICE;
 						}
 						set_timer();
 						start_timer();
